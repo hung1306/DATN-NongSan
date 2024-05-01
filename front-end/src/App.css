@@ -8,3 +8,15 @@
 .placeholder-color::placeholder {
     color: #CDE6CD;
 }
+
+/* Start Farmer */
+/* RegisterFarmerStep1 */
+.bg-ebffeb{
+    background-color: #EBFFEB;
+}
+
+button.bg-primary:hover {
+    background-color: #1ed768; /* Màu nhạt hơn */
+  }
+
+/* End Farmer */
