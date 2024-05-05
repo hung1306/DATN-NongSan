@@ -87,7 +87,7 @@ function RegisterCustomerStep1() {
       const userId = response.data.userid;
       console.log("User ID:", userId);
       // Điều hướng sang trang nhập thông tin phụ
-      navigate(`/step2?userid=${userId}`);
+      navigate(`/register/step2?userid=${userId}`);
     } catch (error) {
       console.error("Error during registration:", error);
       alert("Đã có lỗi xảy ra!");

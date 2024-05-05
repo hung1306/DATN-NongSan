@@ -3,9 +3,108 @@ import { faUser, faShoppingCart,faCheckCircle  } from "@fortawesome/free-solid-s
 // import { Link } from "react-router-dom";
 import HeaderFarmer from "../../../../components/HeaderFarmer/HeaderFarmer"
 import '../../../../App.css'
+import { useState } from "react";
+import { useNavigate } from 'react-router-dom';
+import axios from "axios";
+
 // import Map from './components/Map'
 // const key = 'yourKey'
 export default function HeaderCustomer() {
+
+    const [farmName, setFarmName] = useState("");
+    const [farmType, setFarmType] = useState("");
+    const [contactName, setContactName] = useState("");
+    const [idNumber, setIdNumber] = useState("");
+    const [farmScale, setFarmScale] = useState("");
+    const [farmDescription, setFarmDescription] = useState("");
+
+
+    const [farmNameError, setFarmNameError] = useState("");
+    const [farmTypeError, setFarmTypeError] = useState("");
+    const [contactNameError, setContactNameError] = useState("");
+    const [idNumberError, setIdNumberError] = useState("");
+    const [farmScaleError, setFarmScaleError] = useState("");
+    const [farmDescriptionError, setFarmDescriptionError] = useState("");
+
+    const navigate = useNavigate();
+
+    const validate = () => {
+        let isValid = true;
+
+        // Reset errors
+        setFarmNameError("");
+        setFarmTypeError("");
+        setContactNameError("");
+        setIdNumberError("");
+        setFarmScaleError("");
+        setFarmDescriptionError("");
+
+        if (farmName.trim() === "") {
+            setFarmNameError("Vui lòng nhập tên trang trại");
+            isValid = false;
+        }
+
+        // Validate farm type
+        if (farmType.trim() === "") {
+            setFarmTypeError("Vui lòng nhập loại trang trại");
+            isValid = false;
+        }
+
+        // Validate contact name
+        if (contactName.trim() === "") {
+            setContactNameError("Vui lòng nhập tên người liên hệ");
+            isValid = false;
+        }
+
+        // Validate ID number
+        if (idNumber.trim() === "") {
+            setIdNumberError("Vui lòng nhập số CMND/CCCD");
+            isValid = false;
+        }
+
+        // Validate farm scale
+        if (farmScale.trim() === "") {
+            setFarmScaleError("Vui lòng nhập quy mô trang trại");
+            isValid = false;
+        }
+
+        // Validate farm description
+        if (farmDescription.trim() === "") {
+            setFarmDescriptionError("Vui lòng nhập mô tả trang trại");
+            isValid = false;
+        }
+        return isValid;
+    };
+
+    const handleNext = async () => {
+        // Validate input fields here
+        try {
+            if (!validate()) {
+              return;
+            }
+            const userData = {
+                farmName,
+                farmType,
+                contactName,
+                idNumber,
+                farmScale,
+                farmDescription,
+            };
+      
+            // Gửi yêu cầu API cho giai đoạn 1 (nhập thông tin cơ bản)
+            const response = await axios.post(
+              "http://localhost:3000/api/authFarmer/farmer/register/step2",
+              userData
+            );
+            const userId = response.data.userid;
+            console.log("User ID:", userId);
+            // Điều hướng sang trang nhập thông tin phụ
+            navigate(`/step3?userid=${userId}`);
+          } catch (error) {
+            console.error("Error during registration:", error);
+            alert("Đã có lỗi xảy ra!");
+          }
+    };
  return (
     <div className="h-screen flex flex-col">
         <HeaderFarmer />
@@ -44,57 +143,90 @@ export default function HeaderCustomer() {
 
         {/* Nhập thông tin */}
         <div className="flex mt-5 bg-white py-5 px-10 rounded-xl">
-            <div className="w-full pr-4">
-                {/* Tên trang trại */}
-                <div className="mb-4">
-                    <label htmlFor="farmName" className="block text-gray-700 font-bold mb-2">Tên trang trại:</label>
-                    <input type="text" id="farmName" placeholder="Tên trang trại" className="border rounded-md py-2 px-3 w-full bg-ebffeb" />
-                </div>
-                
-                {/* Loại trang trại */}
-                <div className="mb-4">
-                    <label htmlFor="farmType" className="block text-gray-700 font-bold mb-2">Loại trang trại:</label>
-                    <input type="text" id="farmType" placeholder="Loại trang trại" className="border rounded-md py-2 px-3 w-full bg-ebffeb" />
-                </div>
-                
-                {/* Tên người liên hệ */}
-                <div className="mb-4">
-                    <label htmlFor="contactName" className="block text-gray-700 font-bold mb-2">Tên người liên hệ:</label>
-                    <input type="text" id="contactName" placeholder="Tên người liên hệ" className="border rounded-md py-2 px-3 w-full bg-ebffeb" />
-                </div>
-                
-                {/* Số CMND/CCCD */}
-                <div className="mb-4">
-                    <label htmlFor="idNumber" className="block text-gray-700 font-bold mb-2">Số CMND/CCCD:</label>
-                    <input type="text" id="idNumber" placeholder="Số CMND/CCCD" className="border rounded-md py-2 px-3 w-full bg-ebffeb" />
-                </div>
-                
-                {/* Quy mô trang trại */}
-                <div className="mb-4">
-                    <label htmlFor="farmScale" className="block text-gray-700 font-bold mb-2">Quy mô trang trại:</label>
-                    <input type="text" id="farmScale" placeholder="Quy mô trang trại" className="border rounded-md py-2 px-3 w-full bg-ebffeb" />
-                </div>
-                
-                {/* Mô tả trang trại */}
-                <div className="mb-4">
-                    <label htmlFor="farmDescription" className="block text-gray-700 font-bold mb-2">Mô tả trang trại:</label>
-                    <textarea id="farmDescription" placeholder="Mô tả trang trại" className="border rounded-md py-2 px-3 w-full h-40 bg-ebffeb resize-none"></textarea>
-                </div>
-                {/* gg Map */}
-                {/* <div>
-                    <Map 
-                        googleMapURL={`https://maps.googleapis.com/maps/api/js?key=${key}&callback=initMap`}
-                        loadingElement={<div style={{ height: `100%` }} />}
-                        containerElement={<div style={{ height: `90vh`, margin: `auto`, border: '2px solid black' }} />}
-                        mapElement={<div style={{ height: `100%` }} />}
-                    />
-                </div> */}
-                    <div className="flex justify-between mt-4">
-                        <button className="bg-primary text-white py-2 px-4 rounded-md">Quay lại</button>
-                        <button className="bg-primary text-white py-2 px-4 rounded-md">Tiếp tục</button>
+                    <div className="w-full pr-4">
+                        <div className="mb-4">
+                            <label htmlFor="farmName" className="block text-gray-700 font-bold mb-2">Tên trang trại:</label>
+                            <input 
+                                type="text" 
+                                id="farmName" 
+                                placeholder="Tên trang trại" 
+                                value={farmName} 
+                                onChange={(e) => setFarmName(e.target.value)} 
+                                className="border rounded-md py-2 px-3 w-full bg-ebffeb" 
+                            />
+                            {farmNameError && <p className="text-red-500">{farmNameError}</p>}
+                        </div>
+                        
+                        <div className="mb-4">
+                            <label htmlFor="farmType" className="block text-gray-700 font-bold mb-2">Loại trang trại:</label>
+                            <input 
+                                type="text" 
+                                id="farmType" 
+                                placeholder="Loại trang trại" 
+                                value={farmType} 
+                                onChange={(e) => setFarmType(e.target.value)} 
+                                className="border rounded-md py-2 px-3 w-full bg-ebffeb" 
+                            />
+                            {farmTypeError && <p className="text-red-500">{farmTypeError}</p>}
+                        </div>
+                        
+                        <div className="mb-4">
+                            <label htmlFor="contactName" className="block text-gray-700 font-bold mb-2">Tên người liên hệ:</label>
+                            <input 
+                                type="text" 
+                                id="contactName" 
+                                placeholder="Tên người liên hệ" 
+                                value={contactName} 
+                                onChange={(e) => setContactName(e.target.value)} 
+                                className="border rounded-md py-2 px-3 w-full bg-ebffeb" 
+                            />
+                            {contactNameError && <p className="text-red-500">{contactNameError}</p>}
+                        </div>
+                        
+                        <div className="mb-4">
+                            <label htmlFor="idNumber" className="block text-gray-700 font-bold mb-2">Số CMND/CCCD:</label>
+                            <input 
+                                type="text" 
+                                id="idNumber" 
+                                placeholder="Số CMND/CCCD" 
+                                value={idNumber} 
+                                onChange={(e) => setIdNumber(e.target.value)} 
+                                className="border rounded-md py-2 px-3 w-full bg-ebffeb" 
+                            />
+                            {idNumberError && <p className="text-red-500">{idNumberError}</p>}
+                        </div>
+                        
+                        <div className="mb-4">
+                            <label htmlFor="farmScale" className="block text-gray-700 font-bold mb-2">Quy mô trang trại:</label>
+                            <input 
+                                type="text" 
+                                id="farmScale" 
+                                placeholder="Quy mô trang trại" 
+                                value={farmScale} 
+                                onChange={(e) => setFarmScale(e.target.value)} 
+                                className="border rounded-md py-2 px-3 w-full bg-ebffeb" 
+                            />
+                            {farmScaleError && <p className="text-red-500">{farmScaleError}</p>}
+                        </div>
+                        
+                        <div className="mb-4">
+                            <label htmlFor="farmDescription" className="block text-gray-700 font-bold mb-2">Mô tả trang trại:</label>
+                            <textarea 
+                                id="farmDescription" 
+                                placeholder="Mô tả trang trại" 
+                                value={farmDescription} 
+                                onChange={(e) => setFarmDescription(e.target.value)} 
+                                className="border rounded-md py-2 px-3 w-full h-40 bg-ebffeb resize-none"
+                            ></textarea>
+                            {farmDescriptionError && <p className="text-red-500">{farmDescriptionError}</p>}
+                        </div>
+                        
+                        <div className="flex justify-between mt-4">
+                            <button className="bg-primary text-white py-2 px-4 rounded-md">Quay lại</button>
+                            <button onClick={handleNext} className="bg-primary text-white py-2 px-4 rounded-md">Tiếp tục</button>
+                        </div>
                     </div>
-            </div>
-        </div>
+                </div>
 
 
         {/* Kết thúc nhập thông tin */}

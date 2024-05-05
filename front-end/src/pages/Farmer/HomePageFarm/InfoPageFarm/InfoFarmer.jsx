@@ -5,10 +5,11 @@
   import '../../../../App.css'
   import {  useState, useRef } from "react";
   import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-  import { faBars, faTimes, faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+  import { faBars, faTimes, faArrowLeft, faAngleRight } from "@fortawesome/free-solid-svg-icons";
   export default function HeaderCustomer() {
       // Hiện thị thanh nav-icon
       const [showNav, setShowNav] = useState(false);
+      const [editField, setEditField] = useState(null);
     const navRef = useRef();
 
     const toggleNav = () => {
@@ -37,6 +38,10 @@
         // Xử lý cập nhật thông tin cá nhân ở đây
         console.log("Đang cập nhật thông tin cá nhân...");
     };
+
+    const handleEditField = (field) => {
+        setEditField(field);
+      };
   return (
       <div className="h-screen flex flex-col">
           <HeaderFarmer />
@@ -63,32 +68,46 @@
                     </div>
                 )}
             </div>
-            <div className={`flex-grow flex flex-row justify-center items-center ${showNav ? 'ml-64' : ''}`}>
-                <div className="bg-white p-4 rounded-lg shadow-md w-full max-w-4xl flex justify-between">
-                    <div className="w-1/2 pr-4">
-                        <p className="mb-7">Email: example@example.com</p>
-                        <hr className="mb-7" />
-                        <p className="mb-7">Username: example_user</p>
-                        <hr className="mb-7" />
-                        <p className="mb-7">Mật khẩu: ********</p>
-                        <hr className="mb-7" />
-                        <p className="mb-7">Họ và tên: John Doe</p>
-                        <hr className="mb-7" />
-                        <p className="mb-7">Số điện thoại: 1234567890</p>
-                        <hr className="mb-7" />
-                        <p className="mb-7">Địa chỉ: 123 Street, City, Country</p>
-                        <hr className="mb-7" />
-                        <div className="flex justify-end w-full">
-                        <button className="bg-primary text-white py-2 px-4 rounded-md mb-4" onClick={handleUpdateProfile}>Cập nhật thông tin</button>
-                        </div>
-                    </div>
-                    <div className="w-1/2 pl-4 border-l border-gray-300">
-                        <div className="flex flex-col items-center">
-                            <img src="/src/assets/avata_img/avata.png" alt="Avatar" className="w-40 h-40 rounded-full mb-4" />
-                            <button className="bg-primary text-white py-2 px-4 rounded-md">Thay đổi avatar</button>
-                        </div>
-                    </div>
-                </div>
+            <div className={`flex-grow flex flex-row justify-center items-center ${showNav ? "ml-64" : ""}`}>
+        <div className="bg-white p-4 rounded-lg shadow-md w-full max-w-4xl flex justify-between">
+          <div className="w-1/2 pr-4">
+            <p className="mb-3">
+              Email: example@example.com <FontAwesomeIcon icon={faAngleRight} className="ml-1 text-gray-500 cursor-pointer" onClick={() => handleEditField("email")}/>
+            </p>
+            <hr className="mb-3" />
+            <p className="mb-3">
+              Username: example_user <FontAwesomeIcon icon={faAngleRight} className="ml-1 text-gray-500 cursor-pointer" onClick={() => handleEditField("username")}/>
+            </p>
+            <hr className="mb-3" />
+            <p className="mb-3">
+              Mật khẩu: ******** <FontAwesomeIcon icon={faAngleRight} className="ml-1 text-gray-500 cursor-pointer" onClick={() => handleEditField("password")}/>
+            </p>
+            <hr className="mb-3" />
+            <p className="mb-3">
+              Họ và tên: John Doe <FontAwesomeIcon icon={faAngleRight} className="ml-1 text-gray-500 cursor-pointer" onClick={() => handleEditField("name")}/>
+            </p>
+            <hr className="mb-3" />
+            <p className="mb-3">
+              Số điện thoại: 1234567890 <FontAwesomeIcon icon={faAngleRight} className="ml-1 text-gray-500 cursor-pointer" onClick={() => handleEditField("phone")}/>
+            </p>
+            <hr className="mb-3" />
+            <p className="mb-3">
+              Địa chỉ: 123 Street, City, Country <FontAwesomeIcon icon={faAngleRight} className="ml-1 text-gray-500 cursor-pointer" onClick={() => handleEditField("address")}/>
+            </p>
+            <hr className="mb-3" />
+            <div className="flex justify-end w-full">
+              <button className="bg-primary text-white py-2 px-4 rounded-md mb-4" onClick={handleUpdateProfile}>
+                Cập nhật thông tin
+              </button>
+            </div>
+          </div>
+          <div className="w-1/2 pl-4 border-l border-gray-300">
+            <div className="flex flex-col items-center">
+              <img src="/src/assets/avata_img/avata.png" alt="Avatar" className="w-40 h-40 rounded-full mb-4" />
+              <button className="bg-primary text-white py-2 px-4 rounded-md">Thay đổi avatar</button>
+            </div>
+          </div>
+        </div>
             </div>
       </div>
   );
