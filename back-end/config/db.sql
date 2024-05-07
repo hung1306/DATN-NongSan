@@ -30,8 +30,8 @@ CREATE TABLE "User" (
     Province VARCHAR(255),
     PhoneNumber VARCHAR(15),
     IndentityCard VARCHAR(255), 
-    AddressFarmer VARCHAR(255), 
-    Dob DATE
+    Address VARCHAR(255), 
+    Dob DATE,
     Status BOOLEAN,
     Role VARCHAR(20),
     Avatar TEXT
@@ -44,22 +44,22 @@ VALUES
     ('user2', 'user2@example.com', 'hashedpassword2', 'User 2', '456 Street B', 'Commune B', 'District B', 'Province B', '987654321', 'ID987654321', 'Address2', 'MM-DD-YY', TRUE, 'farmer', 'avatar2.jpg');
 
 -- Tạo bảng Farm
-Hà thêm ContactName,IdentityCard, FarmArea->FarmScale
-CREATE TABLE Farm (
-    FarmId UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    UserId UUID,
-    FarmName VARCHAR(100) NOT NULL,
-    ContactName VARCHAR(100) NOT NULL,
-    IdentityCard VARCHAR(255)
-    FarmStreet VARCHAR(255),
-    FarmCommune VARCHAR(255),
-    FarmDistrict VARCHAR(255),
-    FarmProvince VARCHAR(255),
-    FarmDes TEXT,
-    FarmAddress TEXT,
-    FarmScale NUMERIC,
-    FarmType VARCHAR(255)
-);
+-- Hà thêm ContactName,IdentityCard, FarmArea->FarmScale
+    CREATE TABLE Farm (
+        FarmId UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        UserId UUID,
+        FarmName VARCHAR(100) NOT NULL,
+        ContactName VARCHAR(100) NOT NULL,
+        IdentityCard VARCHAR(255)
+        FarmStreet VARCHAR(255),
+        FarmCommune VARCHAR(255),
+        FarmDistrict VARCHAR(255),
+        FarmProvince VARCHAR(255),
+        FarmDes TEXT,
+        FarmAddress TEXT,
+        FarmScale VARCHAR(255),
+        FarmType VARCHAR(255)
+    );
 
 -- Chèn dữ liệu cơ bản cho bảng Farm
 INSERT INTO Farm (UserId, FarmName, ContactName, IdentityCard, FarmStreet, FarmCommune, FarmDistrict, FarmProvince, FarmDes, FarmAddress, FarmScale, FarmType)

@@ -6,10 +6,11 @@ import '../../../../App.css'
 import { useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import axios from "axios";
+import { useLocation } from "react-router-dom";
 
 // import Map from './components/Map'
 // const key = 'yourKey'
-export default function HeaderCustomer() {
+export default function RegisterFarmerStep2() {
 
     const [farmName, setFarmName] = useState("");
     const [farmType, setFarmType] = useState("");
@@ -25,6 +26,9 @@ export default function HeaderCustomer() {
     const [idNumberError, setIdNumberError] = useState("");
     const [farmScaleError, setFarmScaleError] = useState("");
     const [farmDescriptionError, setFarmDescriptionError] = useState("");
+
+    const location = useLocation();
+    const userId = new URLSearchParams(location.search).get('userid');
 
     const navigate = useNavigate();
 
@@ -82,7 +86,7 @@ export default function HeaderCustomer() {
             if (!validate()) {
               return;
             }
-            const userData = {
+            const farmData = {
                 farmName,
                 farmType,
                 contactName,
@@ -93,18 +97,26 @@ export default function HeaderCustomer() {
       
             // Gửi yêu cầu API cho giai đoạn 1 (nhập thông tin cơ bản)
             const response = await axios.post(
-              "http://localhost:3000/api/authFarmer/farmer/register/step2",
-              userData
+              `http://localhost:3000/api/authFarmer/farmer/register/step2/${userId}`,
+              farmData
             );
-            const userId = response.data.userid;
-            console.log("User ID:", userId);
+            const farmId = response.data.farmid;
+            console.log("Farm ID:", farmId);
             // Điều hướng sang trang nhập thông tin phụ
-            navigate(`/step3?userid=${userId}`);
+            navigate(`/farmer/register/step3?farmId=${farmId}`);
           } catch (error) {
             console.error("Error during registration:", error);
             alert("Đã có lỗi xảy ra!");
           }
     };
+
+    const handlePrevious = async() => {
+        const confirmed = window.confirm("Bạn có chắc chắn muốn quay lại bước trước đó không?");
+        if (confirmed) {
+            // Nếu người dùng xác nhận, điều hướng đến bước trước đó
+            navigate('/farmer/register/step1');
+        }
+    }
  return (
     <div className="h-screen flex flex-col">
         <HeaderFarmer />
@@ -222,7 +234,7 @@ export default function HeaderCustomer() {
                         </div>
                         
                         <div className="flex justify-between mt-4">
-                            <button className="bg-primary text-white py-2 px-4 rounded-md">Quay lại</button>
+                            <button onClick={handlePrevious} className="bg-primary text-white py-2 px-4 rounded-md">Quay lại</button>
                             <button onClick={handleNext} className="bg-primary text-white py-2 px-4 rounded-md">Tiếp tục</button>
                         </div>
                     </div>

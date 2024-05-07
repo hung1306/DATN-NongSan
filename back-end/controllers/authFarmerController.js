@@ -24,20 +24,20 @@ const registerFarmerStep1 = async (req, res) => {
 const registerFarmerStep2 = async (req, res) => {
     try {
         const { userId } = req.params;
-        const { farmName, farmType, contactName, identityCard, farmScale, farmDes } = req.body;
+        const { farmName, farmType, contactName, idNumber, farmScale, farmDescription } = req.body;
         
         // Kiểm tra xem các thông tin bắt buộc đã được gửi lên từ client chưa
-        if (!farmName || !farmType || !contactName || !identityCard || !farmScale || !farmDes) {
+        if (!farmName || !farmType || !contactName || !idNumber || !farmScale || !farmDescription) {
             return res.status(400).send('Vui lòng nhập đầy đủ thông tin.');
         }
 
         // Tiến hành cập nhật thông tin trang trại vào cơ sở dữ liệu
-        const updatedUser = await pool.query(
-            'UPDATE "User" SET farm_name = $1, farm_type = $2, contact_name = $3, identity_card = $4, farm_scale = $5, farm_des = $6 WHERE userid = $7 RETURNING *',
-            [farmName, farmType, contactName, identityCard, farmScale, farmDes, userId]
+        const newFarm = await pool.query(
+            'INSERT INTO Farm (farmname, farmtype, contactname, identitycard, farmscale, farmdes, userid) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
+            [farmName, farmType, contactName, idNumber, farmScale, farmDescription, userId]
         );
 
-        res.json(updatedUser.rows[0]);
+        res.json(newFarm.rows[0]);
     } catch (error) {
         console.error('Error updating additional info:', error);
         res.status(500).send('Internal Server Error');

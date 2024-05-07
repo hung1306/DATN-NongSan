@@ -4,9 +4,9 @@ const authMiddlewares = require("../middlewares/authMiddlewares");
 
 router.post('/farmer/register/step1', authFarmerController.registerFarmerStep1);
 
-router.put('/farmer/register/step2/:userId', authFarmerController.registerFarmerStep2);
+router.post('/farmer/register/step2/:userId', authFarmerController.registerFarmerStep2);
 
-router.put('/farmer/register/step3/:userId', authFarmerController.registerFarmerStep3);
+router.put('/farmer/register/step3/:farmId', authFarmerController.registerFarmerStep3);
 
 router.get('/protected', authMiddlewares, (req, res) => {
     res.json({ message: 'This is a protected route' });
