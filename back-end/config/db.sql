@@ -50,14 +50,14 @@ VALUES
         UserId UUID,
         FarmName VARCHAR(100) NOT NULL,
         ContactName VARCHAR(100) NOT NULL,
-        IdentityCard VARCHAR(255)
+        IdentityCard VARCHAR(255),
         FarmStreet VARCHAR(255),
         FarmCommune VARCHAR(255),
         FarmDistrict VARCHAR(255),
         FarmProvince VARCHAR(255),
         FarmDes TEXT,
         FarmAddress TEXT,
-        FarmScale VARCHAR(255),
+        FarmArea VARCHAR(255),
         FarmType VARCHAR(255)
     );
 

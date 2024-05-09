@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
-import '../../../../App.css';
+import "../../../../App.css";
 function RegisterCustomerStep2() {
   const [street, setStreet] = useState("");
   const [commune, setCommune] = useState("");
@@ -11,7 +11,8 @@ function RegisterCustomerStep2() {
   const [avatar, setAvatar] = useState(null);
   // const { userId } = useParams();
   const location = useLocation();
-  const userId = new URLSearchParams(location.search).get('userid');
+  console.log(location);
+  const userId = new URLSearchParams(location.search).get("userid");
   const handleAvatarChange = (event) => {
     setAvatar(event.target.files[0]);
   };
@@ -30,7 +31,7 @@ function RegisterCustomerStep2() {
       // const formData = new FormData();
       // formData.append("avatar", avatar);
       // formData.append(JSON.stringify(additionalData));
-      console.log(avatar)
+      console.log(avatar);
       // Gửi yêu cầu API cho giai đoạn 2 (nhập thông tin phụ và upload avatar)
       await axios.put(
         `http://localhost:3000/api/auth/register/step2/${userId}`,
