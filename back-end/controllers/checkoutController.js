@@ -392,22 +392,34 @@ const createPaymentIntent = async (req, res) => {
     estimatedDeliveryTime,
   } = req.body;
 
+  const sqlOrder = `
+    INSERT INTO "Order" 
+    (userid, estimatedelivery, shippingaddress, orderstatus, ordercreatetime, orderupdatetime, totalamount) 
+    VALUES ($1, $2, $3, $4, $5, $6, $7) 
+    RETURNING orderid`;
+
+  const sqlOrderItem = `
+    INSERT INTO orderitem 
+    (orderid, productid, quantityofitem) 
+    VALUES ($1, $2, $3)`;
+
+  const sqlDeleteCart = `DELETE FROM cart WHERE productid = $1`;
+
   try {
-    // Bắt đầu một giao dịch
+    // Begin transaction
     await pool.query("BEGIN");
 
-    // Tạo đơn hàng mới
-    const orderStatus = "Đã thanh toán";
-    const currentTime = new Date();
+    // Calculate total order amount
     const total = items.reduce(
       (sum, item) =>
         sum + item.productprice * (1 - 0.01 * item.promotion) * item.quantity,
       0
     );
 
-    const sqlOrder = `INSERT INTO "Order" (userid, estimatedelivery, shippingaddress, orderstatus, ordercreatetime, orderupdatetime, totalamount) 
-                      VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING orderid`;
+    const orderStatus = "Đã thanh toán";
+    const currentTime = new Date();
 
+    // Insert order into "Order" table
     const resultOrder = await pool.query(sqlOrder, [
       userId,
       estimatedDeliveryTime,
@@ -420,29 +432,32 @@ const createPaymentIntent = async (req, res) => {
 
     const orderId = resultOrder.rows[0].orderid;
 
-    // Lưu các mục đơn hàng
-    const sqlOrderItem = `INSERT INTO orderitem (orderid, productid, quantityofitem) VALUES ($1, $2, $3)`;
-
-    for (const item of items) {
+    // Insert items into orderitem table and delete them from cart
+    const orderItemsPromises = items.map(async (item) => {
       await pool.query(sqlOrderItem, [orderId, item.productid, item.quantity]);
-    }
+      await pool.query(sqlDeleteCart, [item.productid]);
+    });
 
-    // Cam kết giao dịch
+    await Promise.all(orderItemsPromises);
+
+    // Commit the transaction after successful order creation
     await pool.query("COMMIT");
 
-    // Tạo Payment Intent từ Stripe có kèm `orderId` trong metadata
+    // Create Stripe Payment Intent with metadata containing orderId
     const paymentIntent = await stripe.paymentIntents.create({
       amount,
       currency,
-      metadata: { orderId: orderId.toString() },
+      metadata: { orderId: orderId.toString() }, // Attach orderId to metadata
     });
 
     res.status(200).json({
       clientSecret: paymentIntent.client_secret,
-      orderId: orderId, // Gửi client secret về frontend
+      orderId: orderId, // Return orderId and client secret to the frontend
     });
   } catch (error) {
     console.error("Error occurred:", error);
+
+    // Rollback transaction in case of error
     await pool.query("ROLLBACK");
     res.status(500).json({ error: "Failed to create payment intent" });
   }
