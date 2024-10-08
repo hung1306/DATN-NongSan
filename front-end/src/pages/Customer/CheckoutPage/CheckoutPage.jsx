@@ -11,10 +11,23 @@ import { toast } from "react-toastify";
 import { formatDate } from "../../../utils/formatDate";
 import { useToast } from "../../../context/ToastContext";
 
+import { loadStripe } from "@stripe/stripe-js";
+import {
+  Elements,
+  CardElement,
+  useStripe,
+  useElements,
+} from "@stripe/react-stripe-js";
+
+// Khởi tạo Stripe với Publishable Key của bạn
+const stripePromise = loadStripe(
+  "pk_test_51Q60zuLnoPrvRvUrrUcNQXTJ2J2uQLrR8TVVP42qNwAN3z5KEd4uk6W7IhWdrmSfhrKWyb3bX4Q1RI7xX9roDWrP00tHgppJjY"
+);
+
 const CheckoutPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  //set toast khi dat hang thanh cong
+  // set toast khi dat hang thanh cong
   const { setToastMessage } = useToast();
 
   const { selectedItems } = location.state || { selectedItems: [] };
@@ -23,10 +36,16 @@ const CheckoutPage = () => {
   const token = localStorage.getItem("accessToken");
   const decodedToken = jwtDecode(token);
   const userId = decodedToken.userid;
+  // const orderId = decodedToken.orderid;
+  // console.log(orderId);
 
   const [userInfo, setUserInfo] = useState(null);
   const [shippingInfo, setShippingInfo] = useState(null);
-  // Lay thong tin user tu userId
+  const [paymentMethod, setPaymentMethod] = useState("");
+  const stripe = useStripe();
+  const elements = useElements();
+
+  // Lấy thông tin user từ userId
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
@@ -74,8 +93,6 @@ const CheckoutPage = () => {
     ));
   };
 
-  const [paymentMethod, setPaymentMethod] = useState("");
-
   const handlePaymentChange = (event) => {
     setPaymentMethod(event.target.value);
   };
@@ -85,6 +102,7 @@ const CheckoutPage = () => {
   const [newAddress, setNewAddress] = useState(
     shippingInfo ? shippingInfo.deliveryAddress : ""
   );
+
   const handleEditClick = () => {
     setIsEditing(true);
   };
@@ -99,17 +117,19 @@ const CheckoutPage = () => {
       return;
     }
     setShippingInfo({ ...shippingInfo, deliveryAddress: newAddress });
-
     setIsEditing(false);
   };
 
   const handleCheckout = async () => {
+    const totalAmount = calculateTotalPrice();
     const orderDetails = {
       userId: userId,
       paymentMethod: paymentMethod,
       items: selectedItems,
       shippingAddress: shippingInfo.deliveryAddress,
       estimatedDeliveryTime: shippingInfo.estimatedDeliveryTime,
+      amount: totalAmount,
+      currency: "VND",
     };
 
     try {
@@ -117,21 +137,106 @@ const CheckoutPage = () => {
         toast.error("Vui lòng chọn phương thức thanh toán!");
         return;
       }
-      const response = await axios.post(
-        `${API_BASE_URL}/checkout`,
-        orderDetails,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
 
-      setToastMessage(response.data.message);
-      navigate("/purchase-history");
+      if (paymentMethod === "Thanh toán online") {
+        // Gọi API tạo Payment Intent từ backend
+        const response = await axios.post(
+          `${API_BASE_URL}/checkout/create-payment-intent`,
+          orderDetails,
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        const { clientSecret, orderId } = response.data; // Nhận orderId từ response
+
+        console.log("Order ID from server:", orderId);
+
+        // Xác thực thanh toán với Stripe
+        const cardElement = elements.getElement(CardElement);
+        const { error, paymentIntent } = await stripe.confirmCardPayment(
+          clientSecret,
+          {
+            payment_method: {
+              card: cardElement,
+            },
+          }
+        );
+
+        if (error) {
+          toast.error("Thanh toán thất bại, vui lòng thử lại!");
+          console.error("Payment failed:", error);
+        } else if (paymentIntent.status === "succeeded") {
+          toast.success("Thanh toán thành công!");
+
+          // Sau khi thanh toán thành công, gọi API lưu thông tin vào database
+          await axios.post(
+            `${API_BASE_URL}/checkout/save-payment-info`,
+            {
+              userId: userId,
+              orderId: orderId, // Đảm bảo bạn có orderId trong dữ liệu đơn hàng
+              paymentId: paymentIntent.paymentid,
+              amount: totalAmount,
+              paymentMethod: paymentMethod,
+            },
+            {
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
+
+          // Chuyển hướng đến trang lịch sử mua hàng
+          navigate("/purchase-history");
+        }
+      } else {
+        // Xử lý thanh toán khi nhận hàng
+        const response = await axios.post(
+          `${API_BASE_URL}/checkout`,
+          orderDetails,
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        setToastMessage(response.data.message);
+        navigate("/purchase-history");
+      }
     } catch (error) {
       console.error("Checkout failed:", error);
+      toast.error("Đặt hàng thất bại, vui lòng thử lại!");
     }
+  };
+
+  const cardElementOptions = {
+    style: {
+      base: {
+        color: "#333", // Darker text color for clearer visibility
+        fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
+        fontSize: "18px", // Slightly larger font size
+        fontWeight: "500",
+        "::placeholder": {
+          color: "#999", // Clearer placeholder color
+        },
+        backgroundColor: "#f9f9f9", // Light background for better contrast
+        padding: "12px", // Add padding for a more spacious look
+        borderRadius: "6px",
+        border: "2px solid #ccc", // Thicker border for visibility
+        margin: "8px 0",
+      },
+      invalid: {
+        color: "#e63946", // Error color for invalid inputs
+        iconColor: "#e63946",
+      },
+      complete: {
+        color: "#4caf50", // Success color for complete inputs
+      },
+    },
+    hidePostalCode: true,
   };
 
   return (
@@ -281,6 +386,17 @@ const CheckoutPage = () => {
               </div>
             </div>
 
+            {paymentMethod === "Thanh toán online" && (
+              <div className="my-5">
+                <label className="block mb-2 text-sm font-bold text-gray-700">
+                  Thông tin thẻ
+                </label>
+                <div className="border border-gray-300 rounded-lg p-3">
+                  <CardElement options={cardElementOptions} />
+                </div>
+              </div>
+            )}
+
             <button
               className="bg-primary text-white p-2 rounded-md w-2/3 mt-5 hover:opacity-80 transition duration-300"
               onClick={handleCheckout}
@@ -296,4 +412,10 @@ const CheckoutPage = () => {
   );
 };
 
-export default CheckoutPage;
+const WrappedCheckoutPage = () => (
+  <Elements stripe={stripePromise}>
+    <CheckoutPage />
+  </Elements>
+);
+
+export default WrappedCheckoutPage;
