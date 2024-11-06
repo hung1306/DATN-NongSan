@@ -3,13 +3,13 @@ import pandas as pd
 import requests
 
 # Đường dẫn tới file CSV chứa thông tin sản phẩm
-csv_file = './productImage.csv'
+csv_file = './dataImageProduct.csv'
 
 # Đọc file CSV chứa productid, productname và URL của hình ảnh (productimage1)
 df = pd.read_csv(csv_file)
 
 # Tạo folder để lưu hình ảnh tải về
-image_dir = 'Image'
+image_dir = 'productImage'
 if not os.path.exists(image_dir):
     os.makedirs(image_dir)
 

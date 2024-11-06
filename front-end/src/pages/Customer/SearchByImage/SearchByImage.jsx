@@ -11,9 +11,9 @@ const SearchByImage = () => {
             <div className="w-4/5 mx-auto bg-white rounded-md p-5 mt-36 shadow-2xl">
                 <h1 className="font-bold text-primary text-2xl">Kết quả tìm kiếm bằng hình ảnh...</h1>
             </div>
-            <div className="rounded-lg w-4/5 m-auto bg-secondary mt-5 mb-10 p-5 shadow-2xl">
+            <div className="rounded-lg w-4/5 m-auto bg-secondary min-h-screen mt-5 mb-10 p-5 shadow-2xl">
                 {searchResults.length === 0 ? (
-                <p>No results found.</p>
+                <p className="text-primary font-bold text-center text-2xl mt-5">Không tìm thấy sản phẩm nào</p>
                 ) : (
                 <ProductList products={searchResults} />
                 )}

@@ -24,10 +24,10 @@ exports.autoUpdateProductBatch = async (req, res) => {
 
       // Adjust logic based on standard expiry
       if (daysUntilExpiry > standardExpiry * 0.5) {
-        newQuality = "Tươi";
+        newQuality = "Mới thu hoạch";
         newPromotion = 0;
       } else if (daysUntilExpiry > standardExpiry * 0.25) {
-        newQuality = "Tương đối tươi";
+        newQuality = "Tươi";
         newPromotion = 10;
       } else if (daysUntilExpiry > standardExpiry * 0.1) {
         newQuality = "Bình thường";

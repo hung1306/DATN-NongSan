@@ -59,7 +59,7 @@ function SearchPage() {
           )}
         </div>
 
-        <div className="rounded-md shadow-2xl w-4/5 bg-white m-auto flex flex-wrap justify-center my-5 mb-10">
+        <div className="rounded-md shadow-2xl w-4/5 bg-white m-auto flex flex-wrap justify-center my-5 mb-10 h-screen">
           {loading ? (
             <Loading />
           ) : (

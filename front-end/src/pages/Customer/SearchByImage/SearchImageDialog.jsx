@@ -58,7 +58,7 @@ export default function SearchImageDialog({ onClose }) {
 
   return (
     <div className="z-50 fixed top-0 left-0 inset-0 bg-gray-900 bg-opacity-80 flex justify-center items-center m-auto">
-      <div className="bg-white p-4 rounded-lg w-5/12 m-auto text-primary h-7/12 overflow-auto shadow-2xl border border-primary relative">
+      <div className="bg-white p-4 rounded-lg w-5/12 m-auto text-primary overflow-auto shadow-2xl border border-primary relative">
         <div className="flex justify-end">
           <button
             className="text-primary px-2 hover:bg-primary hover:text-secondary hover:px-2 text-3xl font-bold fixed"
@@ -94,7 +94,7 @@ export default function SearchImageDialog({ onClose }) {
               </div>
               {imagePreview && (
                 <div className="flex justify-center my-3">
-                  <img src={imagePreview} alt="Preview" className="w-11/12 h-80 object-cover rounded-lg" />
+                  <img src={imagePreview} alt="Preview" className="w-full h-80 object-cover rounded-lg mt-5" />
                 </div>
               )}
               {error && <p style={{ color: 'red' }}>{error}</p>}

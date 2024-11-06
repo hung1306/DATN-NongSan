@@ -1,7 +1,7 @@
 import pandas as pd
 
 # Load the CSV file
-df = pd.read_csv('./productImage.csv')
+df = pd.read_csv('./dataImageProduct.csv')
 
 # Function to clean the product name
 def clean_product_name(name):

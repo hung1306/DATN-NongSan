@@ -1,81 +1,94 @@
 from flask import Flask, request, jsonify
-import numpy as np
-from tensorflow.keras.applications import ResNet50
-from PIL import Image
 from sklearn.metrics.pairwise import cosine_similarity
-from tensorflow.keras.applications.resnet50 import preprocess_input
+from sklearn.preprocessing import normalize
+from transformers import ViTImageProcessor, ViTModel  # Updated import
+import numpy as np
+import torch
 import os
-import sys
+from PIL import Image, ImageOps, ImageEnhance, ImageFilter
 import logging
-
-# Đặt mã hóa đầu ra thành UTF-8
-sys.stdout.reconfigure(encoding='utf-8')
-
-# Cấu hình logging
-logging.basicConfig(level=logging.DEBUG)
+import random
 
 # Khởi tạo Flask app
 app = Flask(__name__)
 
-# Load ResNet50 pre-trained model
-model = ResNet50(weights='imagenet', include_top=False, pooling='avg')
+# Khởi tạo ViT model và image processor
+image_processor = ViTImageProcessor.from_pretrained('google/vit-base-patch16-224-in21k')  # Changed to image processor
+model = ViTModel.from_pretrained('google/vit-base-patch16-224-in21k')
 
-# Function to load image and preprocess it for ResNet50
-def load_and_preprocess_image(img_path):
-    img = Image.open(img_path).convert("RGB")  # Chuyển đổi ảnh thành RGB
-    img = img.resize((224, 224))  # ResNet50 expects images of size 224x224
-    img_array = np.array(img)
-    img_array = np.expand_dims(img_array, axis=0)  # Thêm chiều batch
-    img_array = preprocess_input(img_array)
-    return img_array
-
-# Function to extract features from an image using ResNet50
-def extract_features(img_path):
-    img_array = load_and_preprocess_image(img_path)
-    features = model.predict(img_array)
-    return features
-
-# Load feature database từ file .npy
+# Tải đặc trưng của sản phẩm từ file .npz
 base_dir = os.path.dirname(os.path.abspath(__file__))
-feature_database_path = os.path.join(base_dir, './feature_database.npy')
+feature_database_path = os.path.join(base_dir, './vit_features_preprocess_image.npz')
+feature_database = np.load(feature_database_path, allow_pickle=True)
+feature_database = {key: value for key, value in feature_database.items()}
 
-# Kiểm tra xem file feature_database.npy có tồn tại không
-if not os.path.exists(feature_database_path):
-    logging.error(f"Feature database file not found at {feature_database_path}")
-    sys.exit(1)
+# Hàm để tải và tiền xử lý ảnh nâng cao
+def load_and_preprocess_image(image_path):
+    img = Image.open(image_path).convert("RGB")
+    img = ImageOps.exif_transpose(img)  # Điều chỉnh orientation
+    img = img.resize((224, 224))  # Resize ảnh về 224x224 để nhất quán với ViT
 
-feature_database = np.load(feature_database_path, allow_pickle=True).item()
+    # Tăng cường hình ảnh: Lật ngang, Xoay, Điều chỉnh độ sáng, Độ tương phản
+    if random.random() > 0.5:
+        img = img.transpose(Image.FLIP_LEFT_RIGHT)
+    img = img.rotate(random.uniform(-10, 10))  # Xoay nhỏ ngẫu nhiên trong khoảng -10 đến 10 độ
 
-# API để tìm kiếm hình ảnh
+    # Điều chỉnh độ sáng và độ tương phản
+    enhancer = ImageEnhance.Brightness(img)
+    img = enhancer.enhance(random.uniform(0.8, 1.2))
+    enhancer = ImageEnhance.Contrast(img)
+    img = enhancer.enhance(random.uniform(0.8, 1.2))
+
+    # Áp dụng Gaussian Blur nhẹ để giảm nhiễu
+    img = img.filter(ImageFilter.GaussianBlur(radius=0.5))
+
+    # Sử dụng image processor để chuẩn bị dữ liệu cho ViT
+    inputs = image_processor(images=img, return_tensors="pt")
+    return inputs['pixel_values']
+
+# Hàm trích xuất đặc trưng của ảnh
+def extract_features(image_path):
+    pixel_values = load_and_preprocess_image(image_path)
+    with torch.no_grad():
+        outputs = model(pixel_values)
+        feature_vector = outputs.last_hidden_state.mean(dim=1).squeeze().numpy()
+    return normalize([feature_vector])[0]
+
+# API nhận diện ảnh
 @app.route('/search-image', methods=['POST'])
 def search_image():
     if 'image' not in request.files:
         return jsonify({'error': 'No image uploaded'}), 400
-
-    # Lưu ảnh tạm thời
+    
     image_file = request.files['image']
-    image_path = os.path.join(base_dir, "tempImage.jpg")
+    image_path = os.path.join("tempImage.jpg")
     image_file.save(image_path)
 
-    # Tìm kiếm sản phẩm tương tự
     try:
-        logging.debug("Extracting features from the uploaded image")
+        # Trích xuất đặc trưng của ảnh tải lên
         query_features = extract_features(image_path)
+        
+        # Tính độ tương đồng cosine
         similarities = []
-        for product_id, data in feature_database.items():
-            product_features = data['features']
-            similarity = cosine_similarity(query_features, product_features)
-            similarities.append((product_id, similarity[0][0]))
+        for product_id, product_features in feature_database.items():
+            if product_features.shape[0] > 1:  # Ensure there are enough samples
+                similarity = cosine_similarity([query_features], [product_features])
+                similarity_score = similarity[0][0]
+                if similarity_score > 0.5:  # Ngưỡng độ tương đồng
+                    similarities.append((product_id, similarity_score))
 
-        # Sắp xếp kết quả theo độ tương tự và chỉ lấy productid
+        # Sắp xếp danh sách sản phẩm theo độ tương đồng, lấy top 5 sản phẩm
         similarities = sorted(similarities, key=lambda x: x[1], reverse=True)
-        top_product_ids = [item[0] for item in similarities[:8]]  # Lấy top 8 sản phẩm tương tự
+        top_product_ids = [item[0] for item in similarities][:5]  # Limit to top 5
+        similarities_score = [item[1] for item in similarities][:5]  # Limit to top 5
+        logging.debug(f"Similarities: {similarities_score}")
 
-        logging.debug(f"Top product IDs: {top_product_ids}")
         return jsonify({'product_ids': top_product_ids})
+
     except Exception as e:
         logging.error(f"Error during image search: {e}")
-        return jsonify({'error': 'Internal server error'}), 500
+        return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
+    logging.basicConfig(level=logging.DEBUG)
     app.run(debug=True, host='0.0.0.0', port=12000)
