@@ -40,4 +40,10 @@ router.post(
 
 router.post("/distributor/login", authController.loginDistributor);
 
+router.post(
+  "/shipper/register",
+  authController.upload.single("avatar"),
+  authController.shipperRegister
+);
+
 module.exports = router;

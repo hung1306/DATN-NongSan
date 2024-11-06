@@ -1,4 +1,5 @@
 const pool = require("../config/dbConnect");
+
 const stripe = require("stripe")(process.env.STRIPE_KEY);
 const notificationUtils = require("../utils/notificationsUtils");
 
@@ -73,7 +74,7 @@ const addCheckOut = async (req, res) => {
         "SELECT batchquantity FROM product_batch WHERE batchid = $1",
         [item.batchid]
       );
-      
+
       const currentQuantity = currentQuantityRows[0].batchquantity;
       console.log("Current quantity:", currentQuantity);
       console.log("Item quantity:", item.quantity);
@@ -715,18 +716,35 @@ const getAllOrderToDistributor = async (req, res) => {
     const totalOrdersResult = await pool.query('SELECT COUNT(*) FROM "Order"');
     const totalOrders = parseInt(totalOrdersResult.rows[0].count, 10);
 
-    // Lấy đơn hàng với thông tin chi tiết (có thể kết hợp với bảng khác nếu cần)
+    // Lấy danh sách đơn hàng cùng thông tin chi tiết
     const ordersQuery = `
-      SELECT o.*, u.fullname
+      SELECT o.*, u.fullname AS user_fullname, o.shipperid
       FROM "Order" o
       JOIN "User" u ON o.userid = u.userid
       ORDER BY o.orderupdatetime DESC
       LIMIT $1 OFFSET $2
     `;
     const ordersResult = await pool.query(ordersQuery, [limit, offset]);
+    const orders = ordersResult.rows;
+
+    // Lấy thông tin shipper cho từng order
+    for (let order of orders) {
+      if (order.shipperid) {
+        const shipperQuery = `
+          SELECT fullname 
+          FROM "User" 
+          WHERE userid = $1 AND role = 'shipper'
+        `;
+        const shipperResult = await pool.query(shipperQuery, [order.shipperid]);
+        order.shipper_fullname =
+          shipperResult.rows[0]?.fullname || "No assigned shipper";
+      } else {
+        order.shipper_fullname = "No assigned shipper";
+      }
+    }
 
     res.json({
-      orders: ordersResult.rows,
+      orders,
       pagination: {
         totalOrders,
         currentPage: parseInt(page, 10),
@@ -851,6 +869,192 @@ const cancelOrderByCustomer = async (req, res) => {
   }
 };
 
+// Lấy shipper trong khu vực
+const getAllShipperOfDeliveryarea = async (req, res) => {
+  const orderId = req.params.orderId;
+  try {
+    // Lấy địa chỉ giao hàng
+    const shippingAddressResult = await pool.query(
+      'SELECT shippingaddress FROM "Order" WHERE orderid = $1',
+      [orderId]
+    );
+
+    const shippingAddress = shippingAddressResult.rows[0]?.shippingaddress;
+
+    // Tìm khu vực giao hàng từ địa chỉ
+    const deliveryArea = shippingAddress.match(/Quận\s+\d+/);
+    if (!deliveryArea) {
+      return res.status(400).json({ message: "Khu vực không hợp lệ" });
+    }
+
+    let areaConditions;
+    const area = deliveryArea[0]; // lấy chuỗi khu vực như "Quận 2"
+
+    // Xác định khu vực dựa trên input của người dùng
+    if (
+      [
+        "Quận 1",
+        "Quận 2",
+        "Quận 3",
+        "Quận 5",
+        "Quận 10",
+        "Quận 4",
+        "Quận Phú Nhuận",
+        "Quận Bình Thạnh",
+      ].includes(area)
+    ) {
+      areaConditions = "Khu vực 1";
+    } else if (
+      [
+        "Quận 8",
+        "Quận Tân Bình",
+        "Quận Tân Phú",
+        "Quận Gò Vấp",
+        "Quận 11",
+        "Quận 7",
+      ].includes(area)
+    ) {
+      areaConditions = "Khu vực 2";
+    } else if (
+      [
+        "Thủ Đức",
+        "Quận 9",
+        "Quận 12",
+        "Củ Chi",
+        "Hóc Môn",
+        "Quận Bình Chánh",
+        "Cần Giờ",
+        "Nhà Bè",
+      ].includes(area)
+    ) {
+      areaConditions = "Khu vực 3";
+    } else {
+      return res.status(400).json({ message: "Khu vực không hợp lệ" });
+    }
+
+    // Lấy tất cả shipper với điều kiện role, shipperstatus và deliveryarea
+    const shippersResult = await pool.query(
+      `SELECT * FROM "User" WHERE role = 'shipper' AND shipperstatus = 'Đang chờ' AND deliveryarea = $1`,
+      [areaConditions]
+    );
+
+    // Kiểm tra xem có shipper nào không
+    if (shippersResult.rows.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "Không tìm thấy shipper cho khu vực này." });
+    }
+
+    // Trả về danh sách shipper
+    return res.status(200).json({ shippers: shippersResult.rows });
+  } catch (error) {
+    console.error("Error fetching shippers:", error);
+    return res.status(500).json({ message: "Lỗi khi lấy danh sách shipper" });
+  }
+};
+
+// Cập nhật shipper for order
+const updateShipperForOrder = async (req, res) => {
+  const { orderId, shipperId } = req.body;
+  const currentTime = new Date();
+  const sql = `UPDATE "Order" SET shipperid = $1, orderupdatetime = $2 WHERE orderid = $3`;
+
+  try {
+    // Thực hiện truy vấn cập nhật shipper cho đơn hàng
+    await pool.query(sql, [shipperId, currentTime, orderId]);
+
+    res.json({
+      message: "Cập nhật shipper cho đơn hàng thành công",
+      updateTime: currentTime,
+    });
+  } catch (error) {
+    console.error("Error updating shipper for order:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+// Shipper - Lấy danh sách đơn hàng của mình
+const getAllOrderToShipper = async (req, res) => {
+  const { shipperid } = req.params; // Lấy shipperid từ URL params
+  const { page = 1, pageSize = 10 } = req.query;
+  const offset = (page - 1) * pageSize;
+  const limit = parseInt(pageSize, 10);
+
+  try {
+    // Đếm tổng số đơn hàng của shipper này
+    const totalOrdersResult = await pool.query(
+      'SELECT COUNT(*) FROM "Order" WHERE shipperid = $1',
+      [shipperid]
+    );
+    const totalOrders = parseInt(totalOrdersResult.rows[0].count, 10);
+
+    // Truy vấn danh sách đơn hàng theo shipperid
+    const ordersQuery = `
+      SELECT o.*, u.fullname AS customer_name, u.phonenumber
+      FROM "Order" o
+      JOIN "User" u ON o.userid = u.userid
+      WHERE o.shipperid = $1
+      ORDER BY o.orderupdatetime DESC
+      LIMIT $2 OFFSET $3
+    `;
+    const ordersResult = await pool.query(ordersQuery, [
+      shipperid,
+      limit,
+      offset,
+    ]);
+
+    res.json({
+      orders: ordersResult.rows,
+      pagination: {
+        totalOrders,
+        currentPage: parseInt(page, 10),
+        pageSize: limit,
+        totalPages: Math.ceil(totalOrders / limit),
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching orders for shipper:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+const getOrderDetailShipper = async (req, res) => {
+  const { orderIdDetail } = req.params; // Lấy orderIdDetail từ URL params
+
+  try {
+    // Truy vấn chi tiết đơn hàng và thông tin khách hàng
+    const orderDetailQuery = `
+      SELECT 
+        o.orderid, 
+        o.shippingaddress, 
+        o.totalamount, 
+        o.orderstatus, 
+        o.ordercreatetime, 
+        o.orderupdatetime,
+        u.fullname AS customer_name, 
+        u.phonenumber AS customer_phone
+      FROM "Order" o
+      JOIN "User" u ON o.userid = u.userid
+      WHERE o.orderid = $1
+    `;
+
+    const orderDetailResult = await pool.query(orderDetailQuery, [
+      orderIdDetail,
+    ]);
+
+    // Kiểm tra xem đơn hàng có tồn tại không
+    if (orderDetailResult.rows.length === 0) {
+      return res.status(404).json({ message: "Đơn hàng không tồn tại" });
+    }
+
+    // Trả về thông tin chi tiết đơn hàng
+    res.json(orderDetailResult.rows[0]);
+  } catch (error) {
+    console.error("Error fetching order detail:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
 module.exports = {
   addCheckOut,
   getShippingInfo,
@@ -866,4 +1070,8 @@ module.exports = {
   getAllOrderToDistributor,
   updateStatusByDistributor,
   cancelOrderByCustomer,
+  getAllShipperOfDeliveryarea,
+  updateShipperForOrder,
+  getAllOrderToShipper,
+  getOrderDetailShipper,
 };

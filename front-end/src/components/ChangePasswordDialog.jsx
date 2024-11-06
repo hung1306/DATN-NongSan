@@ -69,7 +69,8 @@ export default function ChangePasswordDialog({ onClose, userId, Role }) {
       onClose();
       setToastMessage(response.data.message);
       if (Role === "customer") navigate("/login");
-      else navigate("/farmer/login");
+      if (Role === "farmer") navigate("/farmer/login");
+      else navigate("/shipper/login");
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
     } catch (error) {

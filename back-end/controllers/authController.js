@@ -428,7 +428,7 @@ const registerFarmerStep2 = async (req, res) => {
 
     res.json({
       farm: newFarm.rows[0],
-      message: "Đăng ký trang trại thành công"
+      message: "Đăng ký trang trại thành công",
     });
   } catch (error) {
     console.error("Error updating additional info:", error);
@@ -503,6 +503,147 @@ const loginDistributor = async (req, res) => {
   }
 };
 
+const shipperRegister = async (req, res) => {
+  try {
+    // Bước 1: Lấy thông tin người dùng từ request body
+    const {
+      username,
+      password,
+      email,
+      fullname,
+      phonenumber,
+      role,
+      status,
+      address,
+      identityCard,
+      dob,
+      shipperstatus,
+      deliveryarea,
+    } = req.body;
+    const avatar = req.file;
+
+    // Mã hóa mật khẩu
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+    // Kiểm tra username đã tồn tại
+    const existingUsername = await pool.query(
+      'SELECT * FROM "User" WHERE username = $1',
+      [username]
+    );
+    if (existingUsername.rows.length > 0) {
+      return res.status(400).send("Username đã tồn tại");
+    }
+
+    // Kiểm tra email đã tồn tại
+    const existingEmail = await pool.query(
+      'SELECT * FROM "User" WHERE email = $1',
+      [email]
+    );
+    if (existingEmail.rows.length > 0) {
+      return res.status(400).send("Email đã tồn tại, vui lòng chọn email khác");
+    }
+
+    // Kiểm tra số điện thoại đã tồn tại
+    const existingPhonenumber = await pool.query(
+      'SELECT * FROM "User" WHERE phonenumber = $1',
+      [phonenumber]
+    );
+    if (existingPhonenumber.rows.length > 0) {
+      return res
+        .status(400)
+        .send("Số điện thoại đã tồn tại, vui lòng chọn số điện thoại khác");
+    }
+
+    // Bước 2: Chèn thông tin người dùng vào cơ sở dữ liệu
+    const newUser = await pool.query(
+      'INSERT INTO "User" (username, password, email, fullname, phonenumber, role, status, shipperstatus, deliveryarea) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *',
+      [
+        username,
+        hashedPassword,
+        email,
+        fullname,
+        phonenumber,
+        role,
+        status,
+        shipperstatus,
+        deliveryarea,
+      ]
+    );
+
+    const userId = newUser.rows[0].userid; // Lấy userId vừa được tạo
+
+    // Kiểm tra tính hợp lệ của địa chỉ
+    const parsedAddress = JSON.parse(address);
+    const { street, commune, district, province } = parsedAddress;
+
+    if (!street || !commune || !district || !province) {
+      return res.status(400).send("Địa chỉ không đầy đủ.");
+    }
+
+    // Kiểm tra số CMND và ngày sinh
+    if (!identityCard) {
+      return res.status(400).send("Số CMND không được gửi.");
+    }
+    if (!dob) {
+      return res.status(400).send("Ngày sinh không được gửi.");
+    }
+
+    // Tải ảnh đại diện lên Storage
+    let avatarUrl = null;
+    if (avatar) {
+      const avatarBuffer = avatar.buffer;
+      const avatarFileName = `avatars/${uuidv4()}`;
+      const avatarRef = ref(storage, avatarFileName);
+
+      await uploadBytes(avatarRef, avatarBuffer, {
+        contentType: avatar.mimetype,
+      });
+      avatarUrl = await getDownloadURL(avatarRef);
+    }
+
+    // Cập nhật thông tin người dùng trong PostgreSQL
+    const updatedUser = await pool.query(
+      'UPDATE "User" SET street = $1, commune = $2, district = $3, province = $4, indentitycard = $5, dob = $6, avatar = $7 WHERE userid = $8 RETURNING *',
+      [
+        street,
+        commune,
+        district,
+        province,
+        identityCard,
+        dob,
+        avatarUrl,
+        userId,
+      ]
+    );
+
+    //Lấy thông tin nhà phân phối
+    const distributor = await pool.query(
+      `SELECT distributorid FROM distributor`
+    );
+
+    const shipperName = await pool.query(
+      `SELECT fullname FROM "User" WHERE userid = $1`,
+      [userId]
+    );
+    const distributorid = distributor.rows[0];
+    // Gọi hàm để gửi thông báo cho nhà phân phối
+    notificationUtils.createNotification(
+      distributorid.distributorid,
+      "Distributor",
+      "Đăng ký tài khoản người giao hàng mới",
+      `Có người giao hàng ${shipperName.rows[0].fullname} mới đăng ký tài khoản, hãy xét duyệt để người giao hàng hoàn tất thủ tục đăng ký`,
+      "CreateNewShipper"
+    );
+
+    // Trả về kết quả
+    res.json({ message: "Đăng ký thành công", user: updatedUser.rows[0] });
+  } catch (error) {
+    console.error("Error during shipper registration:", error);
+    res.status(500).send("Internal Server Error");
+  }
+};
+
 module.exports = {
   registerStep1,
   registerStep2,
@@ -514,4 +655,5 @@ module.exports = {
   registerFarmerStep2,
   registerFarmerStep3,
   loginDistributor,
+  shipperRegister,
 };

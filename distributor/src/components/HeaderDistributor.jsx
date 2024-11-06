@@ -4,7 +4,8 @@ import { useToast } from "../context/ToastContext";
 
 export default function HeaderDistributor() {
   const navigate = useNavigate();
-  const {setToastMessage} = useToast();
+  const { setToastMessage } = useToast();
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -18,60 +19,69 @@ export default function HeaderDistributor() {
     setToastMessage("Đăng xuất thành công");
   };
 
-
   return (
-    <header className="py-5 bg-primary text-white px-3 sm:px-4 md:px-8 lg:px-16 xl:px-32 2xl:px-64 fixed top-0 w-full z-40">
-      <nav className="flex flex-col w-11/12 m-auto sm:flex-row justify-between items-center">
-        <div className="flex items-center">
-          <h1 className="font-extrabold text-2xl sm:text-4xl mx-2 sm:mx-5">
-            <Link to="/">AgriMart</Link>
+    <header className="py-4 bg-primary text-white px-4 sm:px-6 lg:px-16 fixed top-0 w-full z-40 shadow-md">
+      <nav className="flex flex-wrap items-center justify-between max-w-7xl mx-auto">
+        <div className="flex items-center space-x-4">
+          <h1 className="font-bold text-2xl sm:text-3xl">
+            <Link to="/" className="hover:text-secondary">
+              AgriMart
+            </Link>
           </h1>
-          <h1 className="text-xl font-medium ml-1 mb-2">Kênh nhà phân phối</h1>
+          <span className="text-lg hidden sm:inline font-medium">
+            Kênh nhà phân phối
+          </span>
         </div>
-        <div className="flex items-center">
+
+        <div className="flex flex-wrap items-center space-x-3 sm:space-x-5">
           <Link
             to="/"
-            className="btn btn-primary font-medium hover:text-fourth m-2"
+            className="text-white hover:bg-white hover:text-primary font-medium px-2 py-1 rounded-lg transition duration-150"
           >
             Trang chủ
           </Link>
           <Link
             to="/farmer"
-            className="btn btn-primary font-medium hover:text-fourth m-2"
+            className="text-white hover:bg-white hover:text-primary font-medium px-2 py-1 rounded-lg transition duration-150"
           >
             Nông dân
           </Link>
           <Link
+            to="/shipper"
+            className="text-white hover:bg-white hover:text-primary font-medium px-2 py-1 rounded-lg transition duration-150"
+          >
+            Người giao hàng
+          </Link>
+          <Link
             to="/category"
-            className="btn btn-primary font-medium hover:text-fourth m-2"
+            className="text-white hover:bg-white hover:text-primary font-medium px-2 py-1 rounded-lg transition duration-150"
           >
             Danh mục
           </Link>
           <Link
             to="/product"
-            className="btn btn-primary font-medium hover:text-fourth m-2"
+            className="text-white hover:bg-white hover:text-primary font-medium px-2 py-1 rounded-lg transition duration-150"
           >
             Sản phẩm
           </Link>
           <Link
             to="/order"
-            className="btn btn-primary font-medium hover:text-fourth m-2"
+            className="text-white hover:bg-white hover:text-primary font-medium px-2 py-1 rounded-lg transition duration-150"
           >
             Đơn hàng
           </Link>
           <Link
             to="/notification"
-            className="btn btn-primary font-medium hover:text-fourth m-2"
+            className="text-white hover:bg-white hover:text-primary font-medium px-2 py-1 rounded-lg transition duration-150"
           >
             Thông báo
           </Link>
-          <Link
-            to="/login"
-            className="btn btn-primary font-medium hover:text-fourth m-2"
+          <button
             onClick={onLogout}
+            className=" hover:bg-white hover:text-primary text-white font-medium px-3 py-2 rounded-lg transition duration-150"
           >
             Đăng xuất
-          </Link>
+          </button>
         </div>
       </nav>
     </header>

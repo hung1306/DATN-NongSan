@@ -118,7 +118,7 @@ const CheckoutPage = () => {
       deliveryDistrict.includes("Quận Phú Nhuận") ||
       deliveryDistrict.includes("Quận Bình Thạnh")
     ) {
-      return 10000 + 4000 * totalQuantity; // Phí giao hàng cho khu vực 1
+      return 1000 * totalQuantity; // Phí giao hàng cho khu vực 1
     } else if (
       deliveryDistrict.includes("Quận Tân Bình") ||
       deliveryDistrict.includes("Quận Tân Phú") ||
@@ -127,9 +127,9 @@ const CheckoutPage = () => {
       deliveryDistrict.includes("Quận 11") ||
       deliveryDistrict.includes("Quận 7")
     ) {
-      return 15000 + 4000 * totalQuantity; // Phí giao hàng cho khu vực 2
+      return 5000 + 1000 * totalQuantity; // Phí giao hàng cho khu vực 2
     } else {
-      return 25000 + 4000 * totalQuantity; // Phí giao hàng cho khu vực khác
+      return 8000 + 1000 * totalQuantity; // Phí giao hàng cho khu vực khác
     }
   };
 
@@ -148,7 +148,7 @@ const CheckoutPage = () => {
           {item.productname}
         </h3>
         <p className="w-1/4 text-lg font-semibold text-primary">
-        {Math.round(item.batchprice * (1 - 0.01 * item.promotion))} đ
+          {Math.round(item.batchprice * (1 - 0.01 * item.promotion))} đ
         </p>
         <p className="w-1/4 text-lg font-semibold text-primary">
           {item.quantity} kg

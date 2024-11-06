@@ -30,7 +30,10 @@ import { ToastProvider } from "../context/ToastContext";
 import { LoadingProvider } from "../context/LoadingContext";
 import PaymentSuccessPage from "../pages/Customer/PaymentSuccessPage/PaymentSuccessPage";
 import SearchByImage from "../pages/Customer/SearchByImage/SearchByImage";
-
+import ShipperRegister from "../pages/Shipper/ShipperResgister/ShipperRegister";
+import ShipperLogin from "../pages/Shipper/ShipperLogin/ShipperLogin";
+import ShipperPage from "../pages/Shipper/ShipperPage/ShipperPage";
+import ShipperProfile from "../pages/Shipper/ShipperProfile/ShipperProfile";
 
 export default function AppRoutes() {
   return (
@@ -63,7 +66,6 @@ export default function AppRoutes() {
             <Route path="/payment-success" element={<PaymentSuccessPage />} />
             <Route path="/farm/season/:id" element={<FarmSeasonPage />} />
             <Route path="/search-image" element={<SearchByImage />} />
-
             {/* Route cho farmer */}
             <Route path="/farmer/login" element={<FarmerLogin />} />
             <Route path="/farmer" element={<FarmerDashboard />} />
@@ -85,6 +87,10 @@ export default function AppRoutes() {
             <Route path="/farmer/orders" element={<FarmerShowOrders />} />
             <Route path="/farmer/profile" element={<FarmerDetailInfo />} />
             <Route path="*" element={<NotFound />} />
+            <Route path="/shipper/register" element={<ShipperRegister />} />
+            <Route path="/shipper/login" element={<ShipperLogin />} />
+            <Route path="/shipper" element={<ShipperPage />} />
+            <Route path="/shipper/profile" element={<ShipperProfile />} />
           </Routes>
         </Router>
       </LoadingProvider>

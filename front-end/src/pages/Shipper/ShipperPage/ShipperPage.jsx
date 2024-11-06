@@ -1,27 +1,34 @@
-import HeaderDistributor from "../../components/HeaderDistributor";
+import HeaderShipper from "../../../components/ShipperComponent/HeaderShipper"; // Adjust path as needed
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { API_BASE_URL } from "../../config/config";
-import { formatDate } from "../../utils/formatDate";
-import OrderDetail from "./OrderDetail";
-import { Pagination } from "../../components/Pagination";
+import { API_BASE_URL } from "../../../config/config";
+import ShipperDetail from "./ShipperDetail";
+import { Pagination } from "../../../components/Pagination";
 import { ToastContainer } from "react-toastify";
+import { jwtDecode } from "jwt-decode";
 
-export default function OrderPage() {
+export default function ShipperPage() {
   const [orders, setOrders] = useState([]);
   const [page, setPage] = useState(1);
   const pageSize = 10;
   const [totalPages, setTotalPages] = useState(1);
 
+  const token = localStorage.getItem("accessToken");
+  const decodedToken = jwtDecode(token);
+  const shipperId = decodedToken.userid;
+
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const response = await axios.get(`${API_BASE_URL}/distributor/orders`, {
-          params: {
-            page,
-            pageSize,
-          },
-        });
+        const response = await axios.get(
+          `${API_BASE_URL}/shipper/orders/${shipperId}`,
+          {
+            params: {
+              page,
+              pageSize,
+            },
+          }
+        );
         setOrders(response.data.orders);
         setTotalPages(response.data.pagination.totalPages);
       } catch (error) {
@@ -46,12 +53,15 @@ export default function OrderPage() {
   const refreshOrders = () => {
     const fetchOrders = async () => {
       try {
-        const response = await axios.get(`${API_BASE_URL}/distributor/orders`, {
-          params: {
-            page,
-            pageSize,
-          },
-        });
+        const response = await axios.get(
+          `${API_BASE_URL}/shipper/orders/${shipperId}`,
+          {
+            params: {
+              page,
+              pageSize,
+            },
+          }
+        );
         setOrders(response.data.orders);
         setTotalPages(response.data.pagination.totalPages);
       } catch (error) {
@@ -63,7 +73,7 @@ export default function OrderPage() {
 
   return (
     <div>
-      <HeaderDistributor />
+      <HeaderShipper />
       <ToastContainer />
       <div className="flex">
         <div className="bg-secondary w-full right-0 top-0 mt-20">
@@ -76,12 +86,11 @@ export default function OrderPage() {
                 <thead>
                   <tr className="bg-primary text-white">
                     <th className="w-1/12 py-2">Mã đơn hàng</th>
-                    <th className="w-1/12 py-2">Tên khách hàng</th>
-                    <th className="w-1/12 py-2">Ngày đặt</th>
+                    <th className="w-2/12 py-2">Tên khách hàng</th>
+                    <th className="w-1/12 py-2">Số điện thoại</th>
                     <th className="w-2/12 py-2">Địa chỉ nhận hàng</th>
-                    <th className="w-1/12 py-2">Nhân viên giao hàng</th>
                     <th className="w-1/12 py-2">Tổng tiền</th>
-                    <th className="w-1/12 py-2">Trạng thái</th>
+                    <th className="w-2/12 py-2">Trạng thái đơn hàng</th>
                     <th className="w-2/12 py-2"></th>
                   </tr>
                 </thead>
@@ -92,15 +101,10 @@ export default function OrderPage() {
                       className="text-center font-medium border"
                     >
                       <td className="py-2">{order.orderid.slice(0, 8)}</td>
-                      <td className="py-2">{order.user_fullname}</td>
-                      <td className="py-2">
-                        {formatDate(order.ordercreatetime)}
-                      </td>
+                      <td className="py-2">{order.customer_name}</td>
+                      <td className="py-2">{order.phonenumber}</td>{" "}
+                      {/* Assuming phone number is included in the API response */}
                       <td className="py-2">{order.shippingaddress}</td>
-                      <td className="py-2">
-                        {order.shipper_fullname || "Chưa có"}
-                      </td>{" "}
-                      {/* Hiển thị shipper riêng cho từng order */}
                       <td className="py-2">
                         {order.totalamount.toLocaleString()} đ
                       </td>
@@ -129,7 +133,7 @@ export default function OrderPage() {
         </div>
       </div>
       {isOpenOrderDetail && (
-        <OrderDetail
+        <ShipperDetail
           onClose={() => setIsOpenOrderDetail(false)}
           orderIdDetail={orderIdDetail}
           refreshOrders={refreshOrders}

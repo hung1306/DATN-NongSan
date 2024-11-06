@@ -174,14 +174,17 @@ const getAllFarmer = async (req, res) => {
     const offset = (page - 1) * limit;
 
     // Lấy tất cả farmer có status = false và thông tin trang trại của họ với phân trang
-    const result = await pool.query(`
+    const result = await pool.query(
+      `
       SELECT u.*, f.farmname
       FROM "User" u
       LEFT JOIN farm f ON u.userid = f.userid
       WHERE u.role = 'farmer'
       ORDER BY u.status ASC, u.userid
       LIMIT $1 OFFSET $2
-    `, [limit, offset]);
+    `,
+      [limit, offset]
+    );
     const farmersWithFarms = result.rows;
 
     // Lấy tổng số lượng farmer để tính tổng số trang
@@ -193,10 +196,10 @@ const getAllFarmer = async (req, res) => {
     const totalFarmers = parseInt(countResult.rows[0].total);
     const totalPages = Math.ceil(totalFarmers / limit);
 
-    res.json({ 
-      farmersWithFarms, 
-      page, 
-      totalPages 
+    res.json({
+      farmersWithFarms,
+      page,
+      totalPages,
     });
   } catch (error) {
     console.error("Error fetching farmers:", error);
@@ -206,37 +209,158 @@ const getAllFarmer = async (req, res) => {
 const getFarmerDetails = async (req, res) => {
   const { userId } = req.params;
   try {
-    const result = await pool.query(`
+    const result = await pool.query(
+      `
       SELECT u.*, f.*
       FROM "User" u
       LEFT JOIN farm f ON u.userid = f.userid
       WHERE u.userid = $1
-    `, [userId]);
+    `,
+      [userId]
+    );
     res.json(result.rows[0]);
   } catch (error) {
     console.error("Error fetching farmer details:", error);
     res.status(500).json({ message: "Internal Server Error" });
   }
-};  
+};
 
 const updateFarmerStatus = async (req, res) => {
   const { userId } = req.params;
   const { status } = req.body;
   try {
-    const result = await pool.query(`
+    const result = await pool.query(
+      `
       UPDATE "User"
       SET status = $1
       WHERE userid = $2
       RETURNING *
-    `, [status, userId]);
-    
+    `,
+      [status, userId]
+    );
+
     // Sử dụng res.status(200).json(obj) để trả về phản hồi
     res.status(200).json({
       data: result.rows[0],
-      message: "Cập nhật trạng thái nông dân thành công"
+      message: "Cập nhật trạng thái nông dân thành công",
     });
   } catch (error) {
     console.error("Error updating farmer status:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+const updateShipperRegisterStatus = async (req, res) => {
+  const { userId } = req.params;
+  const { status } = req.body;
+  try {
+    const result = await pool.query(
+      `
+      UPDATE "User"
+      SET status = $1
+      WHERE userid = $2
+      RETURNING *
+    `,
+      [status, userId]
+    );
+
+    res.status(200).json({
+      data: result.rows[0],
+      message: "Cập nhật trạng thái người giao hàng thành công",
+    });
+  } catch (error) {
+    console.error("Error updating farmer status:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+const updateShipperStatus = async (req, res) => {
+  const { userId } = req.params;
+  const { shipperstatus } = req.body;
+  try {
+    const result = await pool.query(
+      `
+      UPDATE "User"
+      SET shipperstatus = $1
+      WHERE userid = $2
+      RETURNING *
+    `,
+      [shipperstatus, userId]
+    );
+
+    res.status(200).json({
+      data: result.rows[0],
+      message: "Cập nhật trạng thái người giao hàng thành công",
+    });
+  } catch (error) {
+    console.error("Error updating farmer status:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+const getAllShippers = async (req, res) => {
+  try {
+    // Lấy page và limit từ query parameters, mặc định là page 1 và limit 10
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const offset = (page - 1) * limit;
+
+    // Lấy tất cả shipper từ bảng "User" với phân trang
+    const result = await pool.query(
+      `
+      SELECT *
+      FROM "User"
+      WHERE role = 'shipper'
+      ORDER BY status ASC, userid
+      LIMIT $1 OFFSET $2
+    `,
+      [limit, offset]
+    );
+    const shippers = result.rows;
+
+    // Lấy tổng số lượng shipper để tính tổng số trang
+    const countResult = await pool.query(`
+      SELECT COUNT(*) AS total
+      FROM "User"
+      WHERE role = 'shipper'
+    `);
+    const totalShippers = parseInt(countResult.rows[0].total);
+    const totalPages = Math.ceil(totalShippers / limit);
+
+    res.json({
+      shippers,
+      page,
+      totalPages,
+    });
+  } catch (error) {
+    console.error("Error fetching shippers:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+const getShipperDetail = async (req, res) => {
+  try {
+    const { userid } = req.params;
+
+    // Truy vấn để lấy thông tin chi tiết của shipper với userid
+    const result = await pool.query(
+      `
+      SELECT *
+      FROM "User"
+      WHERE userid = $1 AND role = 'shipper'
+    `,
+      [userid]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: "Không tìm thấy shipper" });
+    }
+
+    const shipperDetail = result.rows[0];
+
+    res.json(shipperDetail);
+  } catch (error) {
+    console.error("Error fetching shipper details:", error);
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
@@ -251,4 +375,8 @@ module.exports = {
   getAllFarmer,
   getFarmerDetails,
   updateFarmerStatus,
+  updateShipperStatus,
+  getAllShippers,
+  getShipperDetail,
+  updateShipperRegisterStatus,
 };

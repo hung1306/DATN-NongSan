@@ -13,22 +13,57 @@ export default function FarmerOrderDetail({
   refreshOrders,
 }) {
   const [orderDetail, setOrderDetail] = useState(null);
-  const [orderStatus, setOrderStatus] = useState(
-    orderDetail?.orderStatus || ""
-  );
-  const [updateTime, setUpdateTime] = useState(null);
 
-  const validStatuses = {
-    "Đã tạo": ["Đã tạo", "Đã xác nhận", "Đã hủy"],
-    "Đã xác nhận": ["Đã xác nhận", "Đang giao hàng", "Đã hủy"],
-    "Đang giao hàng": ["Đang giao hàng", "Hoàn tất", "Đã hủy"],
-    "Hoàn tất": ["Hoàn tất"],
-    "Đã hủy": ["Đã hủy"],
+  const [shippers, setShippers] = useState([]);
+  const [selectedShipper, setSelectedShipper] = useState("");
+
+  useEffect(() => {
+    // const extractDeliveryArea = (address) => {
+    //   const match = address.match(/Quận\s+\d+/);
+    //   return match ? match[0] : null;
+    // };
+
+    const fetchShippers = async () => {
+      // const deliveryArea = extractDeliveryArea(orderDetail?.deliveryAddress);
+      try {
+        const response = await axios.get(
+          `${API_BASE_URL}/shipper/deliveryArea/${orderIdDetail}`
+        );
+        setShippers(response.data.shippers);
+      } catch (error) {
+        console.error("Failed to fetch shippers: ", error);
+      }
+    };
+
+    fetchShippers();
+  }, [orderDetail]);
+
+  const onUpdateShipper = async (orderId, shipperId) => {
+    try {
+      const response = await axios.put(`${API_BASE_URL}/order/shipper-update`, {
+        orderId: orderId,
+        shipperId: shipperId,
+      });
+      toast.success(response.data.message);
+      onClose();
+      refreshOrders();
+    } catch (error) {
+      console.log("Failed to update shipper: ", error);
+      toast.error("Cập nhật shipper thất bại");
+    }
   };
 
-  const getValidStatuses = (currentStatus) => {
-    return validStatuses[currentStatus] || [];
-  };
+  // const validStatuses = {
+  //   "Đã tạo": ["Đã tạo", "Đã xác nhận", "Đã hủy"],
+  //   "Đã xác nhận": ["Đã xác nhận", "Đang giao hàng", "Đã hủy"],
+  //   "Đang giao hàng": ["Đang giao hàng", "Hoàn tất", "Đã hủy"],
+  //   "Hoàn tất": ["Hoàn tất"],
+  //   "Đã hủy": ["Đã hủy"],
+  // };
+
+  // const getValidStatuses = (currentStatus) => {
+  //   return validStatuses[currentStatus] || [];
+  // };
 
   useEffect(() => {
     const fetchOrderDetail = async () => {
@@ -37,8 +72,6 @@ export default function FarmerOrderDetail({
           `${API_BASE_URL}/farmer/order/${orderIdDetail}`
         );
         setOrderDetail(response.data);
-        setOrderStatus(response.data.orderStatus);
-        setUpdateTime(response.data.updateTime);
       } catch (error) {
         console.error(error);
       }
@@ -47,32 +80,6 @@ export default function FarmerOrderDetail({
     fetchOrderDetail();
   }, [orderIdDetail]);
 
-  const onChangeStatus = async (orderId, orderStatus) => {
-    try {
-      const response = await axios.put(
-        `${API_BASE_URL}/distributor/order-update`,
-        {
-          orderId: orderId,
-          status: orderStatus,
-        }
-      );
-      setUpdateTime(response.data.updateTime);
-      onClose();
-      toast.success(response.data.message);
-      refreshOrders();
-    } catch (error) {
-      console.log("Failed to update status: ", error);
-      toast.error(error.response.data.message);
-    }
-  };
-
-  const isDisabled =
-    orderDetail?.orderStatus === orderStatus ||
-    orderDetail?.orderStatus === "Đã hủy" ||
-    orderDetail?.orderStatus === "Hoàn tất";
-  const selectDisabled =
-    orderDetail?.orderStatus === "Đã hủy" ||
-    orderDetail?.orderStatus === "Hoàn tất";
   return (
     <div className="z-50 fixed top-0 left-0 inset-0 bg-gray-900 bg-opacity-80 flex justify-center items-center m-auto">
       <div className="bg-white p-6 rounded-lg w-5/12 m-auto text-primary h-3/4 overflow-auto shadow-xl border border-primary">
@@ -115,39 +122,12 @@ export default function FarmerOrderDetail({
               <p className="font-bold text-xl w-1/4 mx-3">
                 Trạng thái đơn hàng:
               </p>
-              <p className="text-lg w-3/4">
-                <select
-                  value={orderStatus}
-                  onChange={(e) => setOrderStatus(e.target.value)}
-                  className="mr-1"
-                  disabled={selectDisabled}
-                >
-                  {getValidStatuses(orderDetail?.orderStatus).map((status) => (
-                    <option key={status} value={status}>
-                      {status}
-                    </option>
-                  ))}
-                </select>
-
-                <button
-                  className={`font-bold ${
-                    isDisabled ? "cursor-not-allowed" : "cursor-pointer"
-                  }`}
-                  onClick={() =>
-                    !isDisabled && onChangeStatus(orderIdDetail, orderStatus)
-                  }
-                  disabled={isDisabled}
-                >
-                  Thay đổi
-                </button>
-              </p>
+              <p className="text-lg w-3/4">{orderDetail?.orderStatus}</p>
             </div>
             <div className="flex my-2">
               <p className="font-bold text-xl w-1/4 mx-3">Ngày cập nhật:</p>
               <p className="text-lg w-3/4">
-                {updateTime
-                  ? formatDate(updateTime)
-                  : formatDate(orderDetail?.orderUpdateTime)}
+                {formatDate(orderDetail?.orderUpdateTime)}
               </p>
             </div>
             <div className="border border-primary"></div>
@@ -198,6 +178,32 @@ export default function FarmerOrderDetail({
                 Trạng thái thanh toán:
               </p>
               <p className="text-lg w-3/4">{orderDetail?.paymentStatus}</p>
+            </div>
+            <div className="flex my-2">
+              <p className="font-bold text-xl w-1/4 mx-3">Chọn shipper:</p>
+              <p className="text-lg w-3/4">
+                <select
+                  value={selectedShipper}
+                  onChange={(e) => setSelectedShipper(e.target.value)}
+                  className="mr-1"
+                >
+                  <option value="">--Chọn shipper--</option>
+                  {shippers.map((shipper) => (
+                    <option key={shipper.userid} value={shipper.userid}>
+                      {shipper.username}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  className="ml-3 font-bold cursor-pointer"
+                  onClick={() =>
+                    onUpdateShipper(orderIdDetail, selectedShipper)
+                  }
+                  disabled={!selectedShipper}
+                >
+                  Cập nhật Shipper
+                </button>
+              </p>
             </div>
           </div>
         </div>

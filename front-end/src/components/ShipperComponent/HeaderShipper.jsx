@@ -5,35 +5,34 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import axios from "axios";
-import { API_BASE_URL } from "../../../config/config.js";
-import { isFarmer } from "../../../utils/roleCheck";
-import { useToast } from "../../../context/ToastContext";
+import { API_BASE_URL } from "../../config/config";
+import { isShipper } from "../../utils/roleCheck";
+import { useToast } from "../../context/ToastContext";
 
-export default function HeaderFarmer() {
+export default function HeaderShipper() {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [fullName, setFullName] = useState("");
   const [avatar, setAvatar] = useState("");
   const token = localStorage.getItem("accessToken");
+
   useEffect(() => {
     if (!token) {
-      navigate("/farmer/login");
+      navigate("/shipper/login");
     }
 
-    //Kiểm tra có phải là customer hay không
     if (token) {
       const decodedToken = jwtDecode(token);
       setFullName(decodedToken?.fullname);
       setAvatar(decodedToken?.avatar);
-      if (!isFarmer(token)) {
+      if (!isShipper(token)) {
         localStorage.removeItem("accessToken");
         localStorage.removeItem("refreshToken");
-        navigate("/farmer/login");
+        navigate("/shipper/login");
       }
     }
   }, [token, navigate]);
 
-  //set toast khi logout
   const { setToastMessage } = useToast();
 
   const handleLogout = async () => {
@@ -43,8 +42,7 @@ export default function HeaderFarmer() {
         localStorage.removeItem("accessToken");
         localStorage.removeItem("refreshToken");
         setToastMessage("Đăng xuất thành công!");
-
-        navigate("/farmer/login");
+        navigate("/shipper/login");
       } else {
         toast.error("Đăng xuất thất bại. Vui lòng thử lại.", {
           position: "top-right",
@@ -53,7 +51,7 @@ export default function HeaderFarmer() {
       }
     } catch (error) {
       console.error("Error during logout:", error);
-      toast.error(error, {
+      toast.error("Có lỗi xảy ra trong quá trình đăng xuất.", {
         position: "top-right",
         time: 500,
       });
@@ -66,17 +64,16 @@ export default function HeaderFarmer() {
       <nav className="flex justify-between w-full m-auto py-2">
         <section className="flex flex-col sm:flex-row items-center">
           <h1 className="font-bold text-3xl sm:text-4xl mx-2 sm:mx-5">
-            <Link to="/farmer">AgriMart</Link>
+            <Link to="/shipper">AgriMart</Link>
           </h1>
           <div className="text-2xl font-medium">
-            <p className="">Kênh nhà nông dân</p>
+            <p>Kênh giao hàng</p>
           </div>
         </section>
         <section className="flex space-x-2 text-xl">
           <div className="flex items-center cursor-pointer mx-5">
             <FontAwesomeIcon icon={faBell} />
           </div>
-
           <div className="flex items-center ml-3">
             <div className="relative inline-block text-left">
               <div
@@ -100,18 +97,18 @@ export default function HeaderFarmer() {
                     aria-labelledby="options-menu"
                   >
                     <a
-                      href="/farmer/profile"
+                      href="/shipper/profile"
                       className="block px-4 py-2 text-lg text-primary hover:bg-fourth hover:font-bold"
                       role="menuitem"
                     >
                       Thông tin cá nhân
                     </a>
                     <a
-                      href="/farmer"
+                      href="/shipper"
                       className="block px-4 py-2 text-lg text-primary hover:bg-fourth hover:font-bold"
                       role="menuitem"
                     >
-                      Yêu cầu hỗ trợ
+                      Danh sách đơn hàng
                     </a>
                     <a
                       href="#"

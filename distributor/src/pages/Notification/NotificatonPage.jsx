@@ -64,6 +64,8 @@ export default function NotificatonPage() {
         navigate("/order");
       } else if (notification.notificationtype === "CreateNewFarmer") {
         navigate("/farmer");
+      } else if (notification.notificationtype === "CreateNewShipper") {
+        navigate("/shipper");
       }
     } catch (error) {
       console.error("Error updating notification:", error);
