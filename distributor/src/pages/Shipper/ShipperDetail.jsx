@@ -57,7 +57,7 @@ export default function ShipperDetail({ onClose, shipperId }) {
         <h2 className="text-3xl text-center text-primary font-bold">
           Chi tiết người giao hàng
         </h2>
-        <div className="border border-primary mt-2"></div>
+        {/* <div className="border border-primary mt-2"></div> */}
 
         <div className="py-4">
           <div className="flex my-3">

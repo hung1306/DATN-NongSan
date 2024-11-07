@@ -13,9 +13,7 @@ export default function ShipperDetail({
   refreshOrders,
 }) {
   const [orderDetail, setOrderDetail] = useState(null);
-  const [orderStatus, setOrderStatus] = useState(
-    orderDetail?.orderStatus || ""
-  );
+  const [orderStatus, setOrderStatus] = useState("");
   const [updateTime, setUpdateTime] = useState(null);
 
   useEffect(() => {
@@ -25,6 +23,7 @@ export default function ShipperDetail({
           `${API_BASE_URL}/shipper/orderdetail/${orderIdDetail}`
         );
         setOrderDetail(response.data);
+        setOrderStatus(response.data.orderstatus); // Initialize orderStatus based on fetched data
       } catch (error) {
         console.error("Failed to fetch order details:", error);
       }
@@ -56,34 +55,33 @@ export default function ShipperDetail({
       refreshOrders();
     } catch (error) {
       console.error("Failed to update status: ", error);
-      toast.error(error.response.data.message);
+      toast.error(error.response?.data?.message || "Failed to update status");
     }
   };
 
   const isDisabled =
-    orderDetail?.orderStatus === orderStatus ||
-    orderDetail?.orderStatus === "Đã hủy" ||
-    orderDetail?.orderStatus === "Hoàn tất";
-  const selectDisabled =
-    orderDetail?.orderStatus === "Đã hủy" ||
-    orderDetail?.orderStatus === "Hoàn tất";
+    orderDetail?.orderstatus === orderStatus ||
+    ["Đã hủy", "Hoàn tất"].includes(orderDetail?.orderstatus);
+  const selectDisabled = ["Đã hủy", "Hoàn tất"].includes(
+    orderDetail?.orderstatus
+  );
 
   return (
     <div className="fixed inset-0 bg-gray-900 bg-opacity-70 flex justify-center items-center z-50">
       <div className="bg-white rounded-lg shadow-lg w-11/12 sm:w-8/12 lg:w-6/12 xl:w-5/12 p-6 relative">
         <button
           onClick={onClose}
-          className="absolute  hover:bg-primary hover:px-2 px-2  top-3 right-3 text-gray-600 hover:text-gray-800 text-3xl"
+          className="absolute hover:bg-primary hover:px-2 px-2 top-3 right-3 text-primary hover:text-white text-3xl"
         >
           <FontAwesomeIcon icon={faTimes} />
         </button>
-        <h2 className="text-2xl font-semibold text-center text-primary mb-6">
+        <h2 className="text-2xl font-bold text-center text-primary mb-6">
           Chi tiết đơn hàng
         </h2>
 
         <div className="space-y-4">
           {[
-            ["Mã đơn hàng:", orderDetail?.orderid.slice(0, 8)],
+            ["Mã đơn hàng:", orderDetail?.orderid?.slice(0, 8)],
             ["Tên khách hàng:", orderDetail?.customer_name],
             ["Số điện thoại:", orderDetail?.customer_phone],
             ["Địa chỉ giao hàng:", orderDetail?.shippingaddress],
@@ -104,7 +102,7 @@ export default function ShipperDetail({
           ))}
 
           <div className="flex items-center text-lg">
-            <p className="font-medium w-1/3">Trạng thái đơn h:</p>
+            <p className="font-medium w-1/3">Trạng thái đơn hàng:</p>
             <div className="w-2/3 flex items-center space-x-2">
               <select
                 value={orderStatus}

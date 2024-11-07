@@ -20,20 +20,20 @@ export default function HeaderDistributor() {
   };
 
   return (
-    <header className="py-4 bg-primary text-white px-4 sm:px-6 lg:px-16 fixed top-0 w-full z-40 shadow-md">
+    <header className="bg-primary text-white p-5 sm:px-6 lg:px-16 fixed top-0 w-full z-40 shadow-md">
       <nav className="flex flex-wrap items-center justify-between max-w-7xl mx-auto">
         <div className="flex items-center space-x-4">
-          <h1 className="font-bold text-2xl sm:text-3xl">
-            <Link to="/" className="hover:text-secondary">
+          <h1 className="font-bold text-3xl sm:text-3xl">
+            <Link to="/" className="hover:text-fourth">
               AgriMart
             </Link>
           </h1>
-          <span className="text-lg hidden sm:inline font-medium">
+          <span className="text-lg hidden sm:inline font-medium mb-3">
             Kênh nhà phân phối
           </span>
         </div>
 
-        <div className="flex flex-wrap items-center space-x-3 sm:space-x-5">
+        <div className="flex flex-wrap items-center ">
           <Link
             to="/"
             className="text-white hover:bg-white hover:text-primary font-medium px-2 py-1 rounded-lg transition duration-150"

@@ -265,7 +265,7 @@ const ShipperRegister = () => {
     <>
       <ToastContainer />
       {loading ? (
-        <div className="flex justify-center items-center h-full w-full">
+        <div className="flex justify-center items-center h-screen w-full">
           <Loading />
         </div>
       ) : (
@@ -397,15 +397,25 @@ const ShipperRegister = () => {
                 >
                   Nhập lại mật khẩu:
                 </label>
-                <input
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  type="password"
-                  placeholder="Nhập lại mật khẩu"
-                  value={confirmPassword}
-                  onChange={handleChange}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-primary"
-                />
+                <div className="relative">
+                  <input
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Nhập lại mật khẩu"
+                    value={confirmPassword}
+                    onChange={handleChange}
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-primary"
+                  />
+                  <button
+                    type="button"
+                    className="absolute right-2 top-2"
+                    onClick={handlePasswordVisibility}
+                  >
+                    <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
+                  </button>
+                </div>
+
                 {confirmPasswordError && (
                   <p className="text-red-500 text-sm">{confirmPasswordError}</p>
                 )}
@@ -581,7 +591,7 @@ const ShipperRegister = () => {
 
             <button
               onClick={handleNext}
-              className="w-full bg-primary text-white py-3 rounded-lg mt-4 hover:bg-secondary transition duration-300"
+              className="w-full bg-primary text-white py-3 rounded-lg mt-4 hover:opacity-85 transition duration-300 font-bold"
             >
               Đăng ký
             </button>

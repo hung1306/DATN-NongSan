@@ -358,31 +358,27 @@ const getOrderDetailFarmer = async (req, res) => {
 
     const items = await Promise.all(
       orderItems.map(async (item) => {
-        // Kiểm tra item có tồn tại và có productid không
         if (!item || !item.productid) {
           console.error("Invalid order item:", item);
-          return null; // Hoặc có thể throw error
+          return null;
         }
 
         const productQuery = `SELECT * FROM product WHERE productid = $1`;
         const productResult = await pool.query(productQuery, [item.productid]);
         const product = productResult.rows[0];
 
-        // Kiểm tra sản phẩm có tồn tại không
         if (!product) {
           console.error("Product not found for productid:", item.productid);
-          return null; // Hoặc có thể throw error
+          return null;
         }
 
-        // Lấy giá từ bảng product_batch
-        const batchQuery = `SELECT * FROM product_batch WHERE productid = $1 LIMIT 1`; // Chọn một batch giá đầu tiên
+        const batchQuery = `SELECT * FROM product_batch WHERE productid = $1 LIMIT 1`;
         const batchResult = await pool.query(batchQuery, [item.productid]);
         const batch = batchResult.rows[0];
 
-        // Kiểm tra batch có tồn tại không
         if (!batch) {
           console.error("Batch not found for productid:", item.productid);
-          return null; // Hoặc có thể throw error
+          return null;
         }
 
         return {
@@ -390,14 +386,13 @@ const getOrderDetailFarmer = async (req, res) => {
           productName: product.productname,
           productImage: product.productimage1,
           quantity: item.quantityofitem,
-          price: batch.batchprice, // Sử dụng batchprice từ bảng product_batch
+          price: batch.batchprice,
           unitofmeasure: batch.unitofmeasure,
           overviewdes: product.overviewdes,
         };
       })
     );
 
-    // Lọc ra những items hợp lệ (không null)
     const validItems = items.filter((item) => item !== null);
 
     const userQuery = `SELECT * FROM "User" WHERE userid = $1`;
@@ -408,6 +403,15 @@ const getOrderDetailFarmer = async (req, res) => {
     const paymentResult = await pool.query(paymentQuery, [orderId]);
     const payment = paymentResult.rows[0];
 
+    let shipperName = null;
+    if (order.shipperid) {
+      const shipperQuery = `SELECT fullname FROM "User" WHERE userid = $1`;
+      const shipperResult = await pool.query(shipperQuery, [order.shipperid]);
+      if (shipperResult.rows.length > 0) {
+        shipperName = shipperResult.rows[0].fullname;
+      }
+    }
+
     const returnResult = {
       orderId: order.orderid,
       orderStatus: order.orderstatus,
@@ -416,6 +420,8 @@ const getOrderDetailFarmer = async (req, res) => {
       totalAmount: order.totalamount,
       deliveryAddress: order.shippingaddress,
       estimatedDeliveryTime: order.estimatedelivery,
+      shipperId: order.shipperid,
+      shipperName: shipperName, // Thêm tên shipper vào kết quả trả về
       paymentMethod: payment.paymentmethod,
       paymentStatus: payment.paymentstatus,
       paymentCreateTime: payment.paymentcreatetime,
@@ -426,7 +432,7 @@ const getOrderDetailFarmer = async (req, res) => {
         email: user.email,
         phonenumber: user.phonenumber,
       },
-      items: validItems, // Chỉ bao gồm các item hợp lệ
+      items: validItems,
     };
 
     res.json(returnResult);
@@ -737,9 +743,9 @@ const getAllOrderToDistributor = async (req, res) => {
         `;
         const shipperResult = await pool.query(shipperQuery, [order.shipperid]);
         order.shipper_fullname =
-          shipperResult.rows[0]?.fullname || "No assigned shipper";
+          shipperResult.rows[0]?.fullname || "Chưa có shipper";
       } else {
-        order.shipper_fullname = "No assigned shipper";
+        order.shipper_fullname = "Chưa có shipper";
       }
     }
 

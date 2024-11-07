@@ -1,7 +1,7 @@
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
-import { PropTypes } from "prop-types";
+import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import { API_BASE_URL } from "../../config/config";
 import { formatDate } from "../../utils/formatDate";
@@ -13,18 +13,11 @@ export default function FarmerOrderDetail({
   refreshOrders,
 }) {
   const [orderDetail, setOrderDetail] = useState(null);
-
   const [shippers, setShippers] = useState([]);
-  const [selectedShipper, setSelectedShipper] = useState("");
+  const [selectedShipper, setSelectedShipper] = useState(null);
 
   useEffect(() => {
-    // const extractDeliveryArea = (address) => {
-    //   const match = address.match(/Quận\s+\d+/);
-    //   return match ? match[0] : null;
-    // };
-
     const fetchShippers = async () => {
-      // const deliveryArea = extractDeliveryArea(orderDetail?.deliveryAddress);
       try {
         const response = await axios.get(
           `${API_BASE_URL}/shipper/deliveryArea/${orderIdDetail}`
@@ -36,34 +29,29 @@ export default function FarmerOrderDetail({
     };
 
     fetchShippers();
-  }, [orderDetail]);
+  }, [orderIdDetail]);
 
   const onUpdateShipper = async (orderId, shipperId) => {
+    if (orderDetail?.orderStatus !== "Đã tạo") {
+      toast.error(
+        "Chỉ có thể cập nhật shipper khi đơn hàng đang ở trạng thái 'Đã tạo'"
+      );
+      return;
+    }
+
     try {
       const response = await axios.put(`${API_BASE_URL}/order/shipper-update`, {
-        orderId: orderId,
-        shipperId: shipperId,
+        orderId,
+        shipperId,
       });
       toast.success(response.data.message);
       onClose();
       refreshOrders();
     } catch (error) {
-      console.log("Failed to update shipper: ", error);
+      console.error("Failed to update shipper: ", error);
       toast.error("Cập nhật shipper thất bại");
     }
   };
-
-  // const validStatuses = {
-  //   "Đã tạo": ["Đã tạo", "Đã xác nhận", "Đã hủy"],
-  //   "Đã xác nhận": ["Đã xác nhận", "Đang giao hàng", "Đã hủy"],
-  //   "Đang giao hàng": ["Đang giao hàng", "Hoàn tất", "Đã hủy"],
-  //   "Hoàn tất": ["Hoàn tất"],
-  //   "Đã hủy": ["Đã hủy"],
-  // };
-
-  // const getValidStatuses = (currentStatus) => {
-  //   return validStatuses[currentStatus] || [];
-  // };
 
   useEffect(() => {
     const fetchOrderDetail = async () => {
@@ -72,13 +60,20 @@ export default function FarmerOrderDetail({
           `${API_BASE_URL}/farmer/order/${orderIdDetail}`
         );
         setOrderDetail(response.data);
+        setSelectedShipper(response.data.shipperId); // Thiết lập shipper đã chọn
       } catch (error) {
-        console.error(error);
+        console.error("Failed to fetch order detail: ", error);
       }
     };
 
     fetchOrderDetail();
   }, [orderIdDetail]);
+
+  const handleShipperChange = (event) => {
+    setSelectedShipper(event.target.value);
+  };
+
+  const isOrderEditable = orderDetail?.orderStatus === "Đã tạo"; // Kiểm tra trạng thái đơn hàng
 
   return (
     <div className="z-50 fixed top-0 left-0 inset-0 bg-gray-900 bg-opacity-80 flex justify-center items-center m-auto">
@@ -98,15 +93,15 @@ export default function FarmerOrderDetail({
           <div className="flex flex-col">
             <div className="flex my-2">
               <p className="font-bold text-xl w-1/4 mx-3">Tên khách hàng:</p>
-              <p className="text-lg w-3/4">{orderDetail?.user.fullName}</p>
+              <p className="text-lg w-3/4">{orderDetail?.user?.fullName}</p>
             </div>
             <div className="flex my-2">
               <p className="font-bold text-xl w-1/4 mx-3">Email:</p>
-              <p className="text-lg w-3/4">{orderDetail?.user.email}</p>
+              <p className="text-lg w-3/4">{orderDetail?.user?.email}</p>
             </div>
             <div className="flex my-2">
               <p className="font-bold text-xl w-1/4 mx-3">Số điện thoại:</p>
-              <p className="text-lg w-3/4">{orderDetail?.user.phonenumber}</p>
+              <p className="text-lg w-3/4">{orderDetail?.user?.phonenumber}</p>
             </div>
             <div className="flex my-2">
               <p className="font-bold text-xl w-1/4 mx-3">Địa chỉ giao hàng:</p>
@@ -130,42 +125,44 @@ export default function FarmerOrderDetail({
                 {formatDate(orderDetail?.orderUpdateTime)}
               </p>
             </div>
-            <div className="border border-primary"></div>
+            <div className="border border-primary my-3"></div>
+
             <div className="flex flex-col my-2">
               <div className="font-bold text-xl my-3 mx-3">
                 Danh sách sản phẩm:
               </div>
-              <div className="">
-                <ul>
-                  {orderDetail?.items?.length > 0 ? (
-                    orderDetail.items.map((item, index) => (
-                      <li key={index} className="flex items-center text-center">
-                        <p className="text-lg w-3/12 mx-5 font-medium">
-                          {item.productName}
-                        </p>
-                        <img
-                          src={item.productImage}
-                          alt={item.productName}
-                          className="h-28 w-40"
-                        />
-                        <p className="text-xl mx-5 font-medium">
-                          {Number(item.price.toLocaleString("vi-VN"))}đ
-                        </p>
-                        <p className="text-xl mx-5 font-medium">
-                          {item.quantity}
-                        </p>
-                      </li>
-                    ))
-                  ) : (
-                    <p>No order items available.</p>
-                  )}
-                </ul>
-              </div>
-              <div className="border border-primary my-3"></div>
+              <ul>
+                {orderDetail?.items?.length > 0 ? (
+                  orderDetail.items.map((item, index) => (
+                    <li key={index} className="flex items-center text-center">
+                      <p className="text-lg w-3/12 mx-5 font-medium">
+                        {item.productName}
+                      </p>
+                      <img
+                        src={item.productImage}
+                        alt={item.productName}
+                        className="h-28 w-40"
+                      />
+                      <p className="text-xl mx-5 font-medium">
+                        {Number(item.price).toLocaleString("vi-VN")}
+                      </p>
+                      <p className="text-xl mx-5 font-medium">
+                        {item.quantity}
+                      </p>
+                    </li>
+                  ))
+                ) : (
+                  <p>Không có sản phẩm nào trong đơn hàng.</p>
+                )}
+              </ul>
             </div>
+            <div className="border border-primary my-3"></div>
+
             <div className="flex my-2">
               <p className="font-bold text-xl w-1/4 mx-3">Tổng tiền:</p>
-              <p className="text-lg w-3/4">{orderDetail?.totalAmount} đ</p>
+              <p className="text-lg w-3/4">
+                {Number(orderDetail?.totalAmount).toLocaleString("vi-VN")} đ
+              </p>
             </div>
             <div className="flex my-2">
               <p className="font-bold text-xl w-1/4 mx-3">
@@ -181,29 +178,36 @@ export default function FarmerOrderDetail({
             </div>
             <div className="flex my-2">
               <p className="font-bold text-xl w-1/4 mx-3">Chọn shipper:</p>
-              <p className="text-lg w-3/4">
+              <div className="text-lg w-3/4">
                 <select
-                  value={selectedShipper}
-                  onChange={(e) => setSelectedShipper(e.target.value)}
+                  value={selectedShipper || ""}
+                  onChange={handleShipperChange}
                   className="mr-1"
+                  disabled={!isOrderEditable} // Disable nếu trạng thái không phải "Đã tạo"
                 >
-                  <option value="">--Chọn shipper--</option>
+                  <option value="" disabled>
+                    {selectedShipper ? "Chọn shipper" : "Chưa có shipper"}
+                  </option>
                   {shippers.map((shipper) => (
                     <option key={shipper.userid} value={shipper.userid}>
-                      {shipper.username}
+                      {shipper.fullname}
                     </option>
                   ))}
                 </select>
                 <button
-                  className="ml-3 font-bold cursor-pointer"
+                  className={`ml-3 font-bold ${
+                    !selectedShipper || !isOrderEditable
+                      ? "cursor-not-allowed opacity-90"
+                      : ""
+                  }`}
                   onClick={() =>
                     onUpdateShipper(orderIdDetail, selectedShipper)
                   }
-                  disabled={!selectedShipper}
+                  disabled={!selectedShipper || !isOrderEditable}
                 >
                   Cập nhật Shipper
                 </button>
-              </p>
+              </div>
             </div>
           </div>
         </div>

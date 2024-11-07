@@ -68,7 +68,8 @@ export default function ShipperPage() {
                   <tr className="bg-primary text-white">
                     <th className="w-1/6 py-2">Tên người giao hàng</th>
                     <th className="w-1/12 py-2">Số điện thoại</th>
-                    <th className="w-1/4 py-2">Trạng thái người giao hàng</th>
+                    <th className="w-1/4 py-2">Địa chỉ</th>
+                    <th className="w-1/6 py-2">Trạng thái người giao hàng</th>
                     <th className="w-1/6 py-2">Trạng thái tài khoản</th>
                     <th className="w-1/6 py-2"></th>
                   </tr>
@@ -82,6 +83,10 @@ export default function ShipperPage() {
                       >
                         <td className="py-2">{shipper.fullname}</td>
                         <td className="py-2">{shipper.phonenumber}</td>
+                        <td className="py-2">
+                          {shipper?.street}, {shipper?.commune},{" "}
+                          {shipper?.district}, {shipper?.province}
+                        </td>
                         <td className="py-2">{shipper.shipperstatus}</td>
                         <td className="py-2">
                           {shipper.status ? "Đã kích hoạt" : "Chưa kích hoạt"}

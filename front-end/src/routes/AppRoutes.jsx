@@ -1,4 +1,6 @@
+// AppRoutes.js
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import PrivateRoute from "./PrivateRoute/PrivateRoute"; // Import PrivateRoute
 import CartPage from "../pages/Customer/CartPage/CartPage";
 import CategoryPage from "../pages/Customer/CategoryPage/CategoryPage";
 import CheckoutPage from "../pages/Customer/CheckoutPage/CheckoutPage";
@@ -34,6 +36,8 @@ import ShipperRegister from "../pages/Shipper/ShipperResgister/ShipperRegister";
 import ShipperLogin from "../pages/Shipper/ShipperLogin/ShipperLogin";
 import ShipperPage from "../pages/Shipper/ShipperPage/ShipperPage";
 import ShipperProfile from "../pages/Shipper/ShipperProfile/ShipperProfile";
+import FarmerPrivateRoute from "./PrivateRoute/FarmerPrivateRoute";
+import ShipperPrivateRoute from "./PrivateRoute/ShipperPrivateRoute";
 
 export default function AppRoutes() {
   return (
@@ -42,36 +46,53 @@ export default function AppRoutes() {
         <Router>
           <Routes>
             <Route path="/" element={<HomePage />} />
-            {/* Route cho customer  */}
+            {/* Các route công khai cho customer */}
             <Route path="/register/step1" element={<RegisterCustomerStep1 />} />
             <Route path="/register/step2" element={<RegisterCustomerStep2 />} />
             <Route path="/login" element={<LoginCustomer />} />
             <Route path="/product/:id" element={<ProductDetailShow />} />
             <Route path="/category/:id" element={<CategoryPage />} />
-            <Route path="/cart" element={<CartPage />} />
-            <Route path="/checkout" element={<CheckoutPage />} />
-            <Route
-              path="/checkout-detail/:id"
-              element={<CheckoutDetailPage />}
-            />
-            <Route path="/search" element={<SearchPage />} />
-            <Route path="/purchase-history" element={<PurchasesHistory />} />
-            <Route path="/detail-info" element={<DetailInfoPage />} />
             <Route path="/about-agri" element={<AboutAgriPage />} />
             <Route path="/farm/info/:id" element={<FarmInfoPage />} />
+            <Route path="/search-image" element={<SearchByImage />} />
+            <Route path="/search" element={<SearchPage />} />
+
+            {/* Các route cần bảo vệ cho customer */}
+            <Route
+              path="/cart"
+              element={<PrivateRoute element={<CartPage />} />}
+            />
+            <Route
+              path="/checkout"
+              element={<PrivateRoute element={<CheckoutPage />} />}
+            />
+            <Route
+              path="/checkout-detail/:id"
+              element={<PrivateRoute element={<CheckoutDetailPage />} />}
+            />
+            <Route
+              path="/purchase-history"
+              element={<PrivateRoute element={<PurchasesHistory />} />}
+            />
+            <Route
+              path="/detail-info"
+              element={<PrivateRoute element={<DetailInfoPage />} />}
+            />
+            <Route
+              path="/payment-success"
+              element={<PrivateRoute element={<PaymentSuccessPage />} />}
+            />
             <Route
               path="/farm/productdetail/:id"
-              element={<FarmProductPage />}
+              element={<PrivateRoute element={<FarmProductPage />} />}
             />
-            <Route path="/payment-success" element={<PaymentSuccessPage />} />
-            <Route path="/farm/season/:id" element={<FarmSeasonPage />} />
-            <Route path="/search-image" element={<SearchByImage />} />
-            {/* Route cho farmer */}
+            <Route
+              path="/farm/season/:id"
+              element={<PrivateRoute element={<FarmSeasonPage />} />}
+            />
+
+            {/* Các route công khai cho farmer */}
             <Route path="/farmer/login" element={<FarmerLogin />} />
-            <Route path="/farmer" element={<FarmerDashboard />} />
-            <Route path="/farmer/products" element={<FarmerShowProducts />} />
-            <Route path="/farmer/farms/crop" element={<FarmerCrop />} />
-            <Route path="/farmer/farm/info" element={<FarmerProfile />} />;
             <Route
               path="/farmer/register/step1"
               element={<FarmerRegisterStep1 />}
@@ -84,13 +105,47 @@ export default function AppRoutes() {
               path="/farmer/register/step3"
               element={<FarmerRegisterStep3 />}
             />
-            <Route path="/farmer/orders" element={<FarmerShowOrders />} />
-            <Route path="/farmer/profile" element={<FarmerDetailInfo />} />
-            <Route path="*" element={<NotFound />} />
+
+            {/* Các route cần bảo vệ cho farmer */}
+            <Route
+              path="/farmer"
+              element={<FarmerPrivateRoute element={<FarmerDashboard />} />}
+            />
+            <Route
+              path="/farmer/products"
+              element={<FarmerPrivateRoute element={<FarmerShowProducts />} />}
+            />
+            <Route
+              path="/farmer/farms/crop"
+              element={<FarmerPrivateRoute element={<FarmerCrop />} />}
+            />
+            <Route
+              path="/farmer/farm/info"
+              element={<FarmerPrivateRoute element={<FarmerProfile />} />}
+            />
+            <Route
+              path="/farmer/orders"
+              element={<FarmerPrivateRoute element={<FarmerShowOrders />} />}
+            />
+            <Route
+              path="/farmer/profile"
+              element={<FarmerPrivateRoute element={<FarmerDetailInfo />} />}
+            />
+
+            {/* Các route công khai và cần bảo vệ cho shipper */}
             <Route path="/shipper/register" element={<ShipperRegister />} />
             <Route path="/shipper/login" element={<ShipperLogin />} />
-            <Route path="/shipper" element={<ShipperPage />} />
-            <Route path="/shipper/profile" element={<ShipperProfile />} />
+            <Route
+              path="/shipper"
+              element={<ShipperPrivateRoute element={<ShipperPage />} />}
+            />
+            <Route
+              path="/shipper/profile"
+              element={<ShipperPrivateRoute element={<ShipperProfile />} />}
+            />
+
+            {/* Route mặc định cho trang không tồn tại */}
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </Router>
       </LoadingProvider>

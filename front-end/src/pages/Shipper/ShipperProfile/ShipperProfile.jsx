@@ -6,20 +6,21 @@ import { API_BASE_URL } from "../../../config/config";
 import ChangePasswordDialog from "../../../components/ChangePasswordDialog";
 import ChangeInfoDialog from "../../../components/ChangeInfoDialog";
 import ChangeAvatarDialog from "../../../components/DialogShipper/ChangeAvatarDialog";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 export default function ShipperProfile() {
   const token = localStorage.getItem("accessToken");
   const decodedToken = jwtDecode(token);
   const userId = decodedToken.userid;
   const [shipper, setShipper] = useState({});
 
-  const [newStatus, setNewStatus] = useState("");
+  const [newStatus, setNewStatus] = useState(shipper.shipperstatus);
   const [isEditingStatus, setIsEditingStatus] = useState(false);
 
   useEffect(() => {
     const fetchShipper = async () => {
       const response = await axios.get(`${API_BASE_URL}/user/${userId}`);
       setShipper(response.data);
+      setNewStatus(response.data.shipperstatus);
     };
 
     fetchShipper();
@@ -47,7 +48,7 @@ export default function ShipperProfile() {
       setIsEditingStatus(false);
       const response = await axios.get(`${API_BASE_URL}/user/${userId}`);
       setShipper(response.data);
-      toast.success("Cập nhật trạng thái thành công!");
+      toast.success("Cập nhật trạng thái giao hàng thành công!");
     } catch (error) {
       console.error("Lỗi cập nhật trạng thái:", error);
     }
@@ -56,7 +57,6 @@ export default function ShipperProfile() {
   return (
     <div>
       <HeaderShipper />
-      <ToastContainer />
       <div className="flex">
         <div className="bg-fourth w-full h-screen fixed right-0 top-0 mt-20">
           <div className="bg-secondary w-11/12 m-auto mt-3 rounded-lg shadow-2xl">
@@ -117,7 +117,7 @@ export default function ShipperProfile() {
                   </div>
                   <div className="flex">
                     <p className="font-bold text-xl p-3 text-primary">
-                      Trạng thái:
+                      Trạng thái giao hàng:
                     </p>
                     {isEditingStatus ? (
                       <select

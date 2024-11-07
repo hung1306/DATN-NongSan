@@ -8,6 +8,7 @@ import axios from "axios";
 import { API_BASE_URL } from "../../config/config";
 import { isShipper } from "../../utils/roleCheck";
 import { useToast } from "../../context/ToastContext";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function HeaderShipper() {
   const navigate = useNavigate();
@@ -44,10 +45,7 @@ export default function HeaderShipper() {
         setToastMessage("Đăng xuất thành công!");
         navigate("/shipper/login");
       } else {
-        toast.error("Đăng xuất thất bại. Vui lòng thử lại.", {
-          position: "top-right",
-          time: 500,
-        });
+        toast.error("Đăng xuất thất bại. Vui lòng thử lại.");
       }
     } catch (error) {
       console.error("Error during logout:", error);

@@ -15,7 +15,7 @@ function SearchPage() {
   const [loading, setLoading] = useState(true);
 
   const [productSearch, setProductSearch] = useState([]);
-  
+
   useEffect(() => {
     setLoading(true);
     setProductSearch(location.state.productSearch);
@@ -59,7 +59,7 @@ function SearchPage() {
           )}
         </div>
 
-        <div className="rounded-md shadow-2xl w-4/5 bg-white m-auto flex flex-wrap justify-center my-5 mb-10 h-screen">
+        <div className="rounded-md shadow-2xl w-4/5 bg-white mx-auto flex flex-wrap my-12 min-h-96">
           {loading ? (
             <Loading />
           ) : (

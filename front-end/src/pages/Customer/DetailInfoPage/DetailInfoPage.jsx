@@ -8,8 +8,8 @@ import { formatDate } from "./../../../utils/formatDate";
 import ChangePasswordDialog from "../../../components/ChangePasswordDialog";
 import ChangeInfoDialog from "../../../components/ChangeInfoDialog";
 import ChangeAvatarCustomerDialog from "../../../components/DialogCustomer/ChangeAvatarCustomerDialog";
-import Loading from "../../../components/Loading.jsx"; // Import the Loading component
-import { useLoading } from "../../../context/LoadingContext"; // Import useLoading
+import Loading from "../../../components/Loading.jsx"; 
+import { useLoading } from "../../../context/LoadingContext";
 
 export default function DetailInfoPage() {
   const token = localStorage.getItem("accessToken");
