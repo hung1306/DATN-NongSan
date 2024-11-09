@@ -24,7 +24,6 @@ import FarmerRegisterStep3 from "../pages/Farmer/FarmerRegister/FarmerRegisterSt
 import FarmerShowProducts from "../pages/Farmer/FarmerProduct/FarmerShowProducts";
 import FarmerCrop from "../pages/Farmer/FarmerCrop/FarmerCrop";
 import FarmerShowOrders from "../pages/Farmer/FarmerOrder/FarmerShowOrders";
-import CheckoutDetailPage from "../pages/Customer/CheckoutDetailPage/CheckoutDetailPage";
 import FarmerDetailInfo from "../pages/Farmer/FarmerInfo/FarmerDetailInfo";
 import DetailInfoPage from "../pages/Customer/DetailInfoPage/DetailInfoPage";
 import FarmerProfile from "../pages/Farmer/FarmerProfile/FarmerProfile";
@@ -65,10 +64,6 @@ export default function AppRoutes() {
             <Route
               path="/checkout"
               element={<PrivateRoute element={<CheckoutPage />} />}
-            />
-            <Route
-              path="/checkout-detail/:id"
-              element={<PrivateRoute element={<CheckoutDetailPage />} />}
             />
             <Route
               path="/purchase-history"

@@ -195,28 +195,25 @@ const getPurchaseHistory = async (req, res) => {
     );
     const totalCount = parseInt(totalCountResult.rows[0].count);
 
-    // Fetch order IDs with pagination
-    const getOrderIds = `
-      SELECT orderid FROM "Order" WHERE userid = $1 LIMIT $2 OFFSET $3
-    `;
-    const orderIds = await pool.query(getOrderIds, [userId, pageSize, offset]);
-
-    if (orderIds.rows.length === 0) {
-      return res.status(400).json({ message: "No purchase history found" });
-    }
-
-    // Fetch purchase history, order status, and payment status in a single query
-    const orderIdsArray = orderIds.rows.map((order) => order.orderid);
+    // Fetch purchase history, order status, and payment status with pagination and sorting
     const getPurchasesHistorySQL = `
-      SELECT ph.orderid, ph.purchasedate, ph.totalamount, o.orderstatus, p.paymentstatus
+      SELECT ph.orderid, ph.purchasedate, ph.totalamount, o.orderstatus, p.paymentstatus, o.orderupdatetime
       FROM purchaseshistory ph
       JOIN "Order" o ON ph.orderid = o.orderid
       JOIN payment p ON ph.paymentid = p.paymentid
-      WHERE ph.orderid = ANY($1::uuid[])
+      WHERE o.userid = $1
+      ORDER BY o.orderupdatetime DESC
+      LIMIT $2 OFFSET $3
     `;
     const purchasesHistory = await pool.query(getPurchasesHistorySQL, [
-      orderIdsArray,
+      userId,
+      pageSize,
+      offset,
     ]);
+
+    if (purchasesHistory.rows.length === 0) {
+      return res.status(400).json({ message: "No purchase history found" });
+    }
 
     const result = purchasesHistory.rows.map((row) => ({
       orderId: row.orderid,
@@ -224,6 +221,7 @@ const getPurchaseHistory = async (req, res) => {
       totalAmount: row.totalamount,
       orderStatus: row.orderstatus,
       paymentStatus: row.paymentstatus,
+      orderUpdateTime: row.orderupdatetime,
     }));
 
     res.json({
@@ -240,7 +238,6 @@ const getPurchaseHistory = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
-
 const getOrderItemById = async (req, res) => {
   const { orderId } = req.params;
   const sql = `SELECT * FROM orderitem WHERE orderid = $1`;

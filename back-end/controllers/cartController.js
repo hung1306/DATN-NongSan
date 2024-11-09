@@ -4,7 +4,9 @@ exports.addToCart = async (req, res) => {
   const { userId, productId, quantity, batchId } = req.body;
 
   if (quantity === 0) {
-    return res.status(400).json({ message: "Số lượng sản phẩm phải lớn hơn 0" });
+    return res
+      .status(400)
+      .json({ message: "Số lượng sản phẩm phải lớn hơn 0" });
   }
 
   try {
@@ -12,7 +14,11 @@ exports.addToCart = async (req, res) => {
     const existingProductQuery = `
       SELECT * FROM cart WHERE userid = $1 AND productid = $2 AND batchid = $3
     `;
-    const existingProduct = await pool.query(existingProductQuery, [userId, productId, batchId]);
+    const existingProduct = await pool.query(existingProductQuery, [
+      userId,
+      productId,
+      batchId,
+    ]);
 
     if (existingProduct.rows.length > 0) {
       // Cập nhật số lượng nếu sản phẩm đã tồn tại trong giỏ hàng
@@ -21,7 +27,12 @@ exports.addToCart = async (req, res) => {
         WHERE userid = $2 AND productid = $3 AND batchid = $4 
         RETURNING *
       `;
-      const updatedCart = await pool.query(updateCartQuery, [quantity, userId, productId, batchId]);
+      const updatedCart = await pool.query(updateCartQuery, [
+        quantity,
+        userId,
+        productId,
+        batchId,
+      ]);
       return res.status(200).json(updatedCart.rows[0]);
     }
 
@@ -31,7 +42,12 @@ exports.addToCart = async (req, res) => {
       VALUES ($1, $2, $3, $4) 
       RETURNING *
     `;
-    const cart = await pool.query(insertCartQuery, [userId, productId, quantity, batchId]);
+    const cart = await pool.query(insertCartQuery, [
+      userId,
+      productId,
+      quantity,
+      batchId,
+    ]);
     res.status(200).json(cart.rows[0]);
   } catch (error) {
     console.error("Error adding to cart:", error);
@@ -47,18 +63,17 @@ exports.getAllCart = async (req, res) => {
   const offset = (page - 1) * pageSize;
 
   try {
-    // Fetch total count of cart items
-    const totalCountResult = await pool.query(
-      "SELECT COUNT(*) FROM cart WHERE userid = $1",
-      [userId]
-    );
-    const totalCount = parseInt(totalCountResult.rows[0].count);
+    // Fetch total count of cart items and cart items with pagination
+    const [totalCountResult, cart] = await Promise.all([
+      pool.query("SELECT COUNT(*) FROM cart WHERE userid = $1", [userId]),
+      pool.query("SELECT * FROM cart WHERE userid = $1 LIMIT $2 OFFSET $3", [
+        userId,
+        pageSize,
+        offset,
+      ]),
+    ]);
 
-    // Fetch cart items with pagination
-    const cart = await pool.query(
-      "SELECT * FROM cart WHERE userid = $1 LIMIT $2 OFFSET $3",
-      [userId, pageSize, offset]
-    );
+    const totalCount = parseInt(totalCountResult.rows[0].count);
 
     if (cart.rows.length === 0) {
       return res.status(400).json({ message: "Giỏ hàng của bạn đang trống" });
@@ -68,24 +83,27 @@ exports.getAllCart = async (req, res) => {
     const productIds = cart.rows.map((item) => item.productid);
     const batchIds = cart.rows.map((item) => item.batchid);
 
-    // Fetch product details, quantities, and batch details in a single query
+    // Fetch product details, quantities, batch details, and farm names in a single query
     const products = await pool.query(
-      `SELECT p.*, c.quantity, pb.*
+      `SELECT p.*, c.quantity, pb.*, f.farmname
         FROM product p 
         JOIN cart c ON p.productid = c.productid 
         JOIN product_batch pb ON c.batchid = pb.batchid
+        JOIN farm f ON p.farmid = f.farmid
         WHERE c.userid = $1 AND c.productid = ANY($2::uuid[]) AND c.batchid = ANY($3::uuid[])`,
       [userId, productIds, batchIds]
     );
 
-    // Map product details and batch details to cart items
+    // Map product details, batch details, and farm names to cart items
     const cartItems = cart.rows.map((cartItem) => {
       const product = products.rows.find(
-        (p) => p.productid === cartItem.productid && p.batchid === cartItem.batchid
+        (p) =>
+          p.productid === cartItem.productid && p.batchid === cartItem.batchid
       );
       return {
         ...product,
         quantity: cartItem.quantity,
+        farmname: product.farmname || null,
       };
     });
 

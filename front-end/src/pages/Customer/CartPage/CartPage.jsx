@@ -201,7 +201,8 @@ export default function CartPage() {
                         {index + 1}
                       </td>
                       <td className="px-3 py-2 whitespace-nowrap text-lg text-center text-primary font-medium border">
-                        {item.productname}
+                        {item.productname} 
+                      {" "} ({item.farmname})
                       </td>
                       <td className="px-3 py-2 whitespace-nowrap text-lg text-center text-primary font-medium border">
                         <img

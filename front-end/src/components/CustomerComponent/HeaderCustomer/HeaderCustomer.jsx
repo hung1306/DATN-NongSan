@@ -16,7 +16,6 @@ import "react-toastify/dist/ReactToastify.css";
 import { API_BASE_URL } from "../../../config/config";
 import { isCustomer } from "../../../utils/roleCheck";
 import { useToast } from "../../../context/ToastContext";
-import Loading from "../../Loading.jsx"; // Import the Loading component
 import SearchImageDialog from "../../../pages/Customer/SearchByImage/SearchImageDialog.jsx";
 import { formatDate } from "./../../../utils/formatDate";
 
@@ -26,7 +25,6 @@ export default function HeaderCustomer() {
   const [query, setQuery] = useState("");
   const [fullName, setFullName] = useState("");
   const [avatar, setAvatar] = useState("");
-  const [loading, setLoading] = useState(false); // Add loading state
   const { setToastMessage } = useToast();
   const token = localStorage.getItem("accessToken");
   const [userId, setUserId] = useState("");
@@ -45,7 +43,6 @@ export default function HeaderCustomer() {
   }, [token, navigate]);
 
   const handleLogout = async () => {
-    setLoading(true); // Set loading to true before API call
     try {
       const response = await axios.get(`${API_BASE_URL}/auth/logout`);
       if (response.status === 200) {
@@ -67,9 +64,7 @@ export default function HeaderCustomer() {
         position: "top-right",
         time: 500,
       });
-    } finally {
-      setLoading(false); // Set loading to false after API call
-    }
+    } 
   };
 
   const handleCartClick = () => {
@@ -92,7 +87,6 @@ export default function HeaderCustomer() {
   };
 
   const handleRouteToLoginFarmer = async () => {
-    setLoading(true); // Set loading to true before API call
     try {
       const response = await axios.get(`${API_BASE_URL}/auth/logout`);
       if (response.status === 200) {
@@ -108,13 +102,10 @@ export default function HeaderCustomer() {
         position: "top-right",
         time: 500,
       });
-    } finally {
-      setLoading(false); // Set loading to false after API call
-    }
+    } 
   };
 
   const handleRouteToRegisterFarmer = async () => {
-    setLoading(true); // Set loading to true before API call
     try {
       const response = await axios.get(`${API_BASE_URL}/auth/logout`);
       if (response.status === 200) {
@@ -130,9 +121,7 @@ export default function HeaderCustomer() {
         position: "top-right",
         time: 500,
       });
-    } finally {
-      setLoading(false); // Set loading to false after API call
-    }
+    } 
   };
 
   //Search Image
@@ -179,7 +168,7 @@ export default function HeaderCustomer() {
   return (
     <header className="p-4 bg-primary text-white px-2 sm:px-4 md:px-8 lg:px-16 xl:px-32 2xl:px-64 fixed top-0 w-full z-40 shadow-2xl">
       <ToastContainer />
-      {loading && <Loading />}{" "}
+      {/* {loading && <Loading />}{" "} */}
       {/* Display loading spinner when loading is true */}
       <nav className="flex flex-col w-4/5 m-auto sm:flex-row justify-between items-center">
         <section className="flex space-x-2 sm:space-x-4">

@@ -118,34 +118,34 @@ export default function PurchasesHistory() {
             {purchasesHistory.length ? (
               purchasesHistory.map((purchase, index) => (
                 <tr key={purchase.orderId} className="hover:bg-gray-100">
-                  <td className="p-5 text-lg text-center text-gray-900 bg-fourth ">
+                  <td className="p-7 text-lg text-center text-gray-900 bg-fourth ">
                     {index + 1}
                   </td>
 
-                  <td className="p-5 text-lg text-center text-gray-900 bg-fourth ">
+                  <td className="p-7 text-lg text-center text-gray-900 bg-fourth ">
                     {purchase.orderId.slice(0, 8)}
                   </td>
 
-                  <td className="p-5 text-lg text-center text-gray-900 bg-fourth ">
+                  <td className="p-7 text-lg text-center text-gray-900 bg-fourth ">
                     {purchase.orderStatus}
                   </td>
 
-                  <td className="p-5 text-lg text-center text-gray-900 bg-fourth ">
+                  <td className="p-7 text-lg text-center text-gray-900 bg-fourth ">
                     {purchase.paymentStatus}
                   </td>
 
-                  <td className="p-5 text-lg text-center text-gray-900 bg-fourth ">
+                  <td className="p-7 text-lg text-center text-gray-900 bg-fourth ">
                     {formatDate(purchase.purchaseDate)}
                   </td>
 
-                  <td className="p-5 text-lg text-center text-gray-900 bg-fourth ">
+                  <td className="p-7 text-lg text-center text-gray-900 bg-fourth ">
                     {Number(purchase.totalAmount)
                       .toFixed(0)
                       .toLocaleString("vi-VN")}{" "}
                     đ
                   </td>
 
-                  <td className="p-5 text-lg text-center bg-fourth ">
+                  <td className="p-7 text-lg text-center bg-fourth ">
                     <button
                       className="text-primary hover:opacity-80 font-bold"
                       onClick={() => handleButtonClick(purchase.orderId)}

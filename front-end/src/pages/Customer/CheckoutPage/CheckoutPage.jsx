@@ -144,13 +144,18 @@ const CheckoutPage = () => {
           alt={item.productname1}
           className="w-1/5 object-cover rounded"
         />
-        <h3 className="w-1/4 text-lg font-bold text-primary ml-2">
+        <h3 className="w-1/4 text-lg font-bold text-primary ml-2 text-center">
+          <p>
           {item.productname}
+          </p>
+          <span className="font-normal italic">
+            ({item.farmname})
+          </span>
         </h3>
-        <p className="w-1/4 text-lg font-semibold text-primary">
+        <p className="w-1/4 text-lg font-semibold text-primary text-center">
           {Math.round(item.batchprice * (1 - 0.01 * item.promotion))} đ
         </p>
-        <p className="w-1/4 text-lg font-semibold text-primary">
+        <p className="w-1/4 text-lg font-semibold text-primary text-center">
           {item.quantity} kg
         </p>
       </div>
