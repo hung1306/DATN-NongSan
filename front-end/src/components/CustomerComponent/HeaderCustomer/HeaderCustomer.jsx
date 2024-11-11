@@ -168,8 +168,7 @@ export default function HeaderCustomer() {
   return (
     <header className="p-4 bg-primary text-white px-2 sm:px-4 md:px-8 lg:px-16 xl:px-32 2xl:px-64 fixed top-0 w-full z-40 shadow-2xl">
       <ToastContainer />
-      {/* {loading && <Loading />}{" "} */}
-      {/* Display loading spinner when loading is true */}
+      
       <nav className="flex flex-col w-4/5 m-auto sm:flex-row justify-between items-center">
         <section className="flex space-x-2 sm:space-x-4">
           <p

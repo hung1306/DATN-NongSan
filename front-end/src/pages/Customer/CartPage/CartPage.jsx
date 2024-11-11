@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { API_BASE_URL } from "../../../config/config";
 import HeaderCustomer from "../../../components/CustomerComponent/HeaderCustomer/HeaderCustomer";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { updateQuantityCart } from "../../../service/CustomerService/cartService";
 import DeleteCartDialog from "./DeleteCartDialog";
 import Loading from "../../../components/Loading";
@@ -119,7 +119,7 @@ export default function CartPage() {
   return (
     <>
       {loading ? (
-        <div className="flex justify-center items-center h-full w-full">
+        <div className="flex justify-center items-center h-screen w-full">
           <Loading />
         </div>
       ) : (
@@ -190,7 +190,10 @@ export default function CartPage() {
               <tbody className="bg-white divide-y divide-gray-200">
                 {cart.length === 0 ? (
                   <tr>
-                    <td colSpan="8" className="px-3 py-2 text-lg text-center text-primary font-medium border">
+                    <td
+                      colSpan="8"
+                      className="px-3 py-2 text-lg text-center text-primary font-medium border"
+                    >
                       Giỏ hàng của bạn đang trống
                     </td>
                   </tr>
@@ -201,15 +204,24 @@ export default function CartPage() {
                         {index + 1}
                       </td>
                       <td className="px-3 py-2 whitespace-nowrap text-lg text-center text-primary font-medium border">
-                        {item.productname} 
-                      {" "} ({item.farmname})
+                        <Link
+                          to={`/product/${item.productid}`}
+                          className="text-primary cursor-pointer"
+                        >
+                          {item.productname} ({item.farmname})
+                        </Link>
                       </td>
                       <td className="px-3 py-2 whitespace-nowrap text-lg text-center text-primary font-medium border">
-                        <img
-                          src={item.productimage1}
-                          alt={item.productimage1}
-                          className="w-48 h-16 object-cover m-auto"
-                        />
+                        <Link
+                          to={`/product/${item.productid}`}
+                          className="block"
+                        >
+                          <img
+                            src={item.productimage1}
+                            alt={item.productname}
+                            className="w-48 h-16 object-cover m-auto"
+                          />
+                        </Link>
                       </td>
                       <td className="px-3 py-2 whitespace-nowrap text-lg text-center text-primary font-medium border">
                         {Number(item.batchprice)} đ
@@ -219,7 +231,10 @@ export default function CartPage() {
                           <button
                             className="font-extrabold text-2xl mx-5 w-8 h-8 bg-primary text-white rounded-lg hover:opacity-80"
                             onClick={() =>
-                              handleUpdateQuantity(item.productid, item.quantity - 1)
+                              handleUpdateQuantity(
+                                item.productid,
+                                item.quantity - 1
+                              )
                             }
                             disabled={item.quantity - 1 === 0}
                           >
@@ -230,7 +245,10 @@ export default function CartPage() {
                         <button
                           className="font-extrabold text-2xl mx-5 w-8 h-8 bg-primary text-white rounded-lg hover:opacity-80"
                           onClick={() =>
-                            handleUpdateQuantity(item.productid, item.quantity + 1)
+                            handleUpdateQuantity(
+                              item.productid,
+                              item.quantity + 1
+                            )
                           }
                           disabled={item.quantity + 1 > item.batchquantity}
                         >
@@ -238,7 +256,9 @@ export default function CartPage() {
                         </button>
                       </td>
                       <td className="px-3 py-2 whitespace-nowrap text-lg text-center text-primary font-medium border">
-                        {item.batchquantity >= item.quantity ? "Còn hàng" : "Hết hàng"}
+                        {item.batchquantity >= item.quantity
+                          ? "Còn hàng"
+                          : "Hết hàng"}
                       </td>
                       <td className="px-3 py-2 whitespace-nowrap text-lg text-center text-primary font-medium border">
                         <input
@@ -258,7 +278,7 @@ export default function CartPage() {
                     </tr>
                   ))
                 )}
-            </tbody>
+              </tbody>
             </table>
             {/* <div className="flex justify-end p-3 ">
               <span className="text-lg font-bold">

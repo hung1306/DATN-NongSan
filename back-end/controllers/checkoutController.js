@@ -253,6 +253,7 @@ const getOrderItemById = async (req, res) => {
         continue;
       }
       const temp = {
+        productid: product.rows[0].productid,
         productimage1: product.rows[0].productimage1,
         productname: product.rows[0].productname,
         overview: product.rows[0].overviewdes,

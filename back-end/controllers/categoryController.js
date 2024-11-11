@@ -207,3 +207,20 @@ exports.getCategoryCountByFarmerId = async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
+// Lấy số lượng sản phẩm theo từng danh mục
+exports.getCategoryCount = async (req, res) => {
+  try {
+    const categorySalesResult = await pool.query(
+      `SELECT category.categoryname, COUNT(product.productid) as quantity
+        FROM product
+        JOIN category ON product.categoryid = category.categoryid
+        GROUP BY category.categoryname`
+    );
+
+    res.json(categorySalesResult.rows );
+  } catch (error) {
+    console.error("Error fetching category count:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+}

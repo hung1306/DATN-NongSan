@@ -1,54 +1,133 @@
 const pool = require("../config/dbConnect");
 
+// exports.addToCart = async (req, res) => {
+//   const { userId, productId, quantity, batchId } = req.body;
+
+//   if (quantity === 0) {
+//     return res.status(400).json({ message: "Số lượng sản phẩm phải lớn hơn 0" });
+//   }
+
+//   try {
+//     // Lấy batchquantity từ bảng product_batch
+//     const batchQuantityQuery = `
+//       SELECT batchquantity FROM product_batch WHERE batchid = $1
+//     `;
+//     const batchResult = await pool.query(batchQuantityQuery, [batchId]);
+
+//     if (batchResult.rows.length === 0) {
+//       return res.status(400).json({ message: "Batch không tồn tại" });
+//     }
+
+//     const batchQuantity = batchResult.rows[0].batchquantity;
+
+//     if (quantity > batchQuantity) {
+//       return res.status(400).json({ message: "Số lượng sản phẩm vượt quá số lượng trong kho" });
+//     }
+
+//     // Kiểm tra xem sản phẩm đã có trong giỏ hàng hay chưa
+//     const existingProductQuery = `
+//       SELECT * FROM cart WHERE userid = $1 AND productid = $2 AND batchid = $3
+//     `;
+//     const existingProduct = await pool.query(existingProductQuery, [
+//       userId,
+//       productId,
+//       batchId,
+//     ]);
+
+//     if (existingProduct.rows.length > 0) {
+//       // Cập nhật số lượng nếu sản phẩm đã tồn tại trong giỏ hàng
+//       const updateCartQuery = `
+//         UPDATE cart SET quantity = quantity + $1 
+//         WHERE userid = $2 AND productid = $3 AND batchid = $4 
+//         RETURNING *
+//       `;
+//       const updatedCart = await pool.query(updateCartQuery, [
+//         quantity,
+//         userId,
+//         productId,
+//         batchId,
+//       ]);
+//       return res.status(200).json(updatedCart.rows[0]);
+//     }
+
+//     // Thêm sản phẩm mới vào giỏ hàng
+//     const insertCartQuery = `
+//       INSERT INTO cart (userid, productid, quantity, batchid) 
+//       VALUES ($1, $2, $3, $4) 
+//       RETURNING *
+//     `;
+//     const cart = await pool.query(insertCartQuery, [
+//       userId,
+//       productId,
+//       quantity,
+//       batchId,
+//     ]);
+//     res.status(200).json(cart.rows[0]);
+//   } catch (error) {
+//     console.error("Error adding to cart:", error);
+//     res.status(500).json({ message: "Internal Server Error" });
+//   }
+// };
+
+const getBatchQuantity = async (batchId) => {
+  const query = `SELECT batchquantity FROM product_batch WHERE batchid = $1`;
+  const result = await pool.query(query, [batchId]);
+  return result.rows.length > 0 ? result.rows[0].batchquantity : null;
+};
+
+const getExistingProduct = async (userId, productId, batchId) => {
+  const query = `SELECT * FROM cart WHERE userid = $1 AND productid = $2 AND batchid = $3`;
+  const result = await pool.query(query, [userId, productId, batchId]);
+  return result.rows.length > 0 ? result.rows[0] : null;
+};
+
+const updateCartQuantity = async (quantity, userId, productId, batchId) => {
+  const query = `
+    UPDATE cart SET quantity = quantity + $1 
+    WHERE userid = $2 AND productid = $3 AND batchid = $4 
+    RETURNING *
+  `;
+  const result = await pool.query(query, [quantity, userId, productId, batchId]);
+  return result.rows[0];
+};
+
+const insertCart = async (userId, productId, quantity, batchId) => {
+  const query = `
+    INSERT INTO cart (userid, productid, quantity, batchid) 
+    VALUES ($1, $2, $3, $4) 
+    RETURNING *
+  `;
+  const result = await pool.query(query, [userId, productId, quantity, batchId]);
+  return result.rows[0];
+};
+
 exports.addToCart = async (req, res) => {
   const { userId, productId, quantity, batchId } = req.body;
 
   if (quantity === 0) {
-    return res
-      .status(400)
-      .json({ message: "Số lượng sản phẩm phải lớn hơn 0" });
+    return res.status(400).json({ message: "Số lượng sản phẩm phải lớn hơn 0" });
   }
 
   try {
-    // Kiểm tra xem sản phẩm đã có trong giỏ hàng hay chưa
-    const existingProductQuery = `
-      SELECT * FROM cart WHERE userid = $1 AND productid = $2 AND batchid = $3
-    `;
-    const existingProduct = await pool.query(existingProductQuery, [
-      userId,
-      productId,
-      batchId,
-    ]);
+    const batchQuantity = await getBatchQuantity(batchId);
 
-    if (existingProduct.rows.length > 0) {
-      // Cập nhật số lượng nếu sản phẩm đã tồn tại trong giỏ hàng
-      const updateCartQuery = `
-        UPDATE cart SET quantity = quantity + $1 
-        WHERE userid = $2 AND productid = $3 AND batchid = $4 
-        RETURNING *
-      `;
-      const updatedCart = await pool.query(updateCartQuery, [
-        quantity,
-        userId,
-        productId,
-        batchId,
-      ]);
-      return res.status(200).json(updatedCart.rows[0]);
+    if (batchQuantity === null) {
+      return res.status(400).json({ message: "Batch không tồn tại" });
     }
 
-    // Thêm sản phẩm mới vào giỏ hàng
-    const insertCartQuery = `
-      INSERT INTO cart (userid, productid, quantity, batchid) 
-      VALUES ($1, $2, $3, $4) 
-      RETURNING *
-    `;
-    const cart = await pool.query(insertCartQuery, [
-      userId,
-      productId,
-      quantity,
-      batchId,
-    ]);
-    res.status(200).json(cart.rows[0]);
+    if (quantity > batchQuantity) {
+      return res.status(400).json({ message: "Số lượng sản phẩm vượt quá số lượng trong kho" });
+    }
+
+    const existingProduct = await getExistingProduct(userId, productId, batchId);
+
+    if (existingProduct) {
+      const updatedCart = await updateCartQuantity(quantity, userId, productId, batchId);
+      return res.status(200).json(updatedCart);
+    }
+
+    const cart = await insertCart(userId, productId, quantity, batchId);
+    res.status(200).json(cart);
   } catch (error) {
     console.error("Error adding to cart:", error);
     res.status(500).json({ message: "Internal Server Error" });
