@@ -44,7 +44,7 @@ export default function HomePage() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get(`${API_BASE_URL}/category/count-categories`);
+        const response = await axios.get(`${API_BASE_URL}/count-categories`);
         const categoriesData = response.data.map(category => ({
           ...category,
           quantity: Number(category.quantity)

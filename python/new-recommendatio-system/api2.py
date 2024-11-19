@@ -1,3 +1,4 @@
+# FILE:API1.PY CONTEXT
 from flask import Flask, request, jsonify
 import pickle
 import pandas as pd
@@ -105,7 +106,10 @@ def recommend():
             collab_scores_z = pd.Series(zscore(collab_scores_scaled.fillna(0)), index=collab_scores.index)
             content_scores_z = pd.Series(zscore(content_scores_scaled.fillna(0)), index=product_content_df['productid'])
 
-            hybrid_scores = 0.6 * collab_scores_z + 0.4 * content_scores_z
+            # Increase weight for interacted products
+            interacted_weight = 1.5
+            hybrid_scores = 0.5 * collab_scores_z + 0.5 * content_scores_z
+            hybrid_scores[interacted_products] *= interacted_weight
             hybrid_scores = hybrid_scores.fillna(0)
 
             top_n = 32      
