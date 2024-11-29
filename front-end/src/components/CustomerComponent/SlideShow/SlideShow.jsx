@@ -1,15 +1,11 @@
-import Slider from 'react-slick';
-import 'slick-carousel/slick/slick.css';
-import 'slick-carousel/slick/slick-theme.css';
-import slider1 from '../../../assets/slider/slider1.jpg';
-import slider2 from '../../../assets/slider/slider2.jpg';
-import slider3 from '../../../assets/slider/slider3.jpg';
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+import slider1 from "../../../assets/slider/slider1.jpg";
+import slider2 from "../../../assets/slider/slider2.jpg";
+import slider3 from "../../../assets/slider/slider3.jpg";
 
-const imgs = [
-  slider1,
-  slider2,
-  slider3
-]
+const imgs = [slider1, slider2, slider3];
 
 const SlideShow = () => {
   const settings = {

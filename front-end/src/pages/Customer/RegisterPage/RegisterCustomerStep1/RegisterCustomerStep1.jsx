@@ -113,7 +113,7 @@ const RegisterCustomerStep1 = () => {
     <>
       <ToastContainer />
       {loading ? (
-        <div className="flex justify-center items-center h-full w-full">
+        <div className="flex justify-center items-center h-screen w-full">
           <Loading />
         </div>
       ) : (
@@ -121,11 +121,11 @@ const RegisterCustomerStep1 = () => {
           <div className="backgroundImg">
             
             <div className="w-1/2 m-auto bg-fourth rounded-2xl px-2 py-4 shadow-2xl">
-              <h1 className="text-primary py-3 font-bold text-center text-4xl">
-                Đăng ký
+              <h1 className="text-primary py-3 font-bold text-center text-3xl">
+                Đăng ký tài khoản khách hàng
               </h1>
               <div className="flex justify-center px-5 my-3">
-                <div className="bg-secondary w-6/12 mx-2 rounded-xl p-2">
+                <div className="bg-secondary w-6/12 mx-2 rounded-xl p-3 shadow-xl">
                   <label
                     htmlFor="username"
                     className="block text-xl text-primary font-bold mb-2"
@@ -140,10 +140,10 @@ const RegisterCustomerStep1 = () => {
                     onChange={(e) => setUsername(e.target.value)}
                     className="bg-fourth text-base text-primary p-2 rounded-xl w-full border border-fourth"
                   />
-                  {usernameError && <p className="text-red-500">{usernameError}</p>}
+                  {usernameError && <p className="text-red-500 italic">{usernameError}</p>}
                 </div>
 
-                <div className="bg-secondary w-6/12 mx-2 rounded-xl p-2">
+                <div className="bg-secondary w-6/12 mx-2 rounded-xl p-3 shadow-xl">
                   <label
                     htmlFor="email"
                     className="block text-xl text-primary font-bold mb-2"
@@ -158,12 +158,12 @@ const RegisterCustomerStep1 = () => {
                     onChange={(e) => setEmail(e.target.value)}
                     className="bg-fourth text-base text-primary p-2 rounded-xl w-full border border-fourth"
                   />
-                  {emailError && <p className="text-red-500">{emailError}</p>}
+                  {emailError && <p className="text-red-500 italic">{emailError}</p>}
                 </div>
               </div>
 
               <div className="flex justify-center px-5 my-3">
-                <div className="bg-secondary w-6/12 mx-2 rounded-xl p-2">
+                <div className="bg-secondary w-6/12 mx-2 rounded-xl p-3 shadow-xl">
                   <label
                     htmlFor="password"
                     className="block text-xl text-primary font-bold mb-2"
@@ -185,9 +185,9 @@ const RegisterCustomerStep1 = () => {
                       className="absolute right-3 top-3 cursor-pointer"
                     />
                   </div>
-                  {passwordError && <p className="text-red-500">{passwordError}</p>}
+                  {passwordError && <p className="text-red-500 italic">{passwordError}</p>}
                 </div>
-                <div className="bg-secondary w-6/12 mx-2 rounded-xl p-2">
+                <div className="bg-secondary w-6/12 mx-2 rounded-xl p-3 shadow-xl">
                   <label
                     htmlFor="confirmPassword"
                     className="block text-xl text-primary font-bold mb-2"
@@ -210,13 +210,13 @@ const RegisterCustomerStep1 = () => {
                     />
                   </div>
                   {confirmPasswordError && (
-                    <p className="text-red-500">{confirmPasswordError}</p>
+                    <p className="text-red-500 italic">{confirmPasswordError}</p>
                   )}
                 </div>
               </div>
 
               <div className="flex justify-center px-5 my-3">
-                <div className="bg-secondary w-6/12 mx-2 rounded-xl p-2">
+                <div className="bg-secondary w-6/12 mx-2 rounded-xl p-3 shadow-xl">
                   <label
                     htmlFor="phonenumber"
                     className="block text-xl text-primary font-bold mb-2"
@@ -232,10 +232,10 @@ const RegisterCustomerStep1 = () => {
                     className="bg-fourth text-base text-primary p-2 rounded-xl w-full border border-fourth"
                   />
                   {phonenumberError && (
-                    <p className="text-red-500">{phonenumberError}</p>
+                    <p className="text-red-500 italic">{phonenumberError}</p>
                   )}
                 </div>
-                <div className="bg-secondary w-6/12 mx-2 rounded-xl p-2">
+                <div className="bg-secondary w-6/12 mx-2 rounded-xl p-3 shadow-xl">
                   <label
                     htmlFor="fullname"
                     className="block text-xl text-primary font-bold mb-2"
@@ -250,20 +250,21 @@ const RegisterCustomerStep1 = () => {
                     onChange={(e) => setFullname(e.target.value)}
                     className="bg-fourth text-base text-primary p-2 rounded-xl w-full border border-fourth"
                   />
-                  {fullnameError && <p className="text-red-500">{fullnameError}</p>}
+                  {fullnameError && <p className="text-red-500 italic">{fullnameError}</p>}
                 </div>
               </div>
               <div className="flex items-center flex-col m-3">
                 <button
                   onClick={handleNext}
-                  className="bg-primary hover:opacity-90 text-white font-bold text-xl py-3 px-6 m-2 rounded-xl w-1/2"
+                  className="bg-primary hover:opacity-90 text-white font-bold text-xl py-3 px-6 m-2 rounded-xl w-1/2 shadow-xl"
                 >
                   Tiếp theo
                 </button>
                 <p className="text-primary text-xl m-2">Hoặc</p>
                 <button
                   onClick={handleNext}
-                  className="bg-third hover:opacity-90 text-white font-bold text-xl py-3 px-6 m-2 rounded-xl w-1/2"
+                  className="bg-third hover:opacity-90 text-white font-bold text-xl py-3 px-6 m-2 rounded-xl w-1/2 cursor-not-allowed shadow-xl"
+                  disabled
                 >
                   Đăng ký với google
                 </button>

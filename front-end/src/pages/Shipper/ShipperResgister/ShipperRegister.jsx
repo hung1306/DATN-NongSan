@@ -20,7 +20,7 @@ const ShipperRegister = () => {
   const [commune, setCommune] = useState("");
   const [district, setDistrict] = useState("");
   const [province, setProvince] = useState("");
-  const [identitycard, setIdentitycard] = useState("");
+  const [indentitycard, setIndentitycard] = useState("");
   const [avatar, setAvatar] = useState("");
   const [dob, setDob] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -33,7 +33,7 @@ const ShipperRegister = () => {
   const [confirmPasswordError, setConfirmPasswordError] = useState("");
   const [fullnameError, setFullnameError] = useState("");
   const [phonenumberError, setPhonenumberError] = useState("");
-  const [identitycardError, setIdentitycardError] = useState("");
+  const [indentitycardError, setIndentitycardError] = useState("");
   const [avatarError, setAvatarError] = useState("");
   const [dobError, setDobError] = useState("");
   const [streetError, setStreetError] = useState("");
@@ -52,7 +52,7 @@ const ShipperRegister = () => {
 
     // Validate username
     if (username === "") {
-      setUsernameError("Tên đăng nhập là bắt buộc");
+      setUsernameError("Tên đăng nhập là bắt buộc!");
       isValid = false;
     } else {
       setUsernameError("");
@@ -60,7 +60,7 @@ const ShipperRegister = () => {
 
     // Validate email
     if (email === "") {
-      setEmailError("Email là bắt buộc");
+      setEmailError("Email là bắt buộc!");
       isValid = false;
     } else {
       setEmailError("");
@@ -68,7 +68,7 @@ const ShipperRegister = () => {
 
     // Validate password
     if (password === "") {
-      setPasswordError("Mật khẩu là bắt buộc");
+      setPasswordError("Mật khẩu là bắt buộc!");
       isValid = false;
     } else {
       setPasswordError("");
@@ -76,7 +76,7 @@ const ShipperRegister = () => {
 
     // Validate confirm password
     if (confirmPassword === "" || confirmPassword !== password) {
-      setConfirmPasswordError("Mật khẩu không khớp");
+      setConfirmPasswordError("Mật khẩu không khớp!");
       isValid = false;
     } else {
       setConfirmPasswordError("");
@@ -84,7 +84,7 @@ const ShipperRegister = () => {
 
     // Validate fullname
     if (fullname === "") {
-      setFullnameError("Họ và tên là bắt buộc");
+      setFullnameError("Họ và tên là bắt buộc!");
       isValid = false;
     } else {
       setFullnameError("");
@@ -92,50 +92,50 @@ const ShipperRegister = () => {
 
     // Validate phonenumber
     if (phonenumber === "") {
-      setPhonenumberError("Số điện thoại là bắt buộc");
+      setPhonenumberError("Số điện thoại là bắt buộc!");
       isValid = false;
     } else {
       setPhonenumberError("");
     }
 
-    if (identitycard === "") {
-      setIdentitycardError("Số CCCD/CMND là bắt buộc");
+    if (indentitycard === "") {
+      setIndentitycardError("Số CCCD là bắt buộc!");
       isValid = false;
     } else {
-      setIdentitycardError("");
+      setIndentitycardError("");
     }
     if (avatar === "") {
-      setAvatarError("Ảnh đại diện là bắt buộc");
+      setAvatarError("Ảnh đại diện là bắt buộc!");
       isValid = false;
     } else {
       setAvatarError("");
     }
     if (dob === "") {
-      setDobError("Ngày, tháng, năm sinh là bắt buộc");
+      setDobError("Ngày, tháng, năm sinh là bắt buộc!");
       isValid = false;
     } else {
       setDobError("");
     }
     if (street === "") {
-      setStreetError("Tên đường là bắt buộc");
+      setStreetError("Tên đường là bắt buộc!");
       isValid = false;
     } else {
       setStreetError("");
     }
     if (commune === "") {
-      setCommuneError("Tên xã, phường là bắt buộc");
+      setCommuneError("Tên xã, phường là bắt buộc!");
       isValid = false;
     } else {
       setCommuneError("");
     }
     if (district === "") {
-      setDistrictError("Tên quận, huyện là bắt buộc");
+      setDistrictError("Tên quận, huyện là bắt buộc!");
       isValid = false;
     } else {
       setDistrictError("");
     }
     if (province === "") {
-      setProvinceError("Tên tỉnh là bắt buộc");
+      setProvinceError("Tên tỉnh là bắt buộc!");
       isValid = false;
     } else {
       setProvinceError("");
@@ -147,7 +147,7 @@ const ShipperRegister = () => {
     //   setShiperstatusError("");
     // }
     if (deliveryarea == "") {
-      setDeliveryareaError("Khu vực giao hàng là bắt buộc");
+      setDeliveryareaError("Khu vực giao hàng là bắt buộc!");
       isValid = false;
     } else {
       setDeliveryareaError("");
@@ -189,8 +189,8 @@ const ShipperRegister = () => {
       case "province":
         setProvince(value);
         break;
-      case "identitycard":
-        setIdentitycard(value);
+      case "indentitycard":
+        setIndentitycard(value);
         break;
       case "avatar":
         setAvatar(value);
@@ -229,7 +229,7 @@ const ShipperRegister = () => {
         })
       );
       formData.append("phonenumber", phonenumber);
-      formData.append("identityCard", identitycard);
+      formData.append("indentityCard", indentitycard);
       formData.append("dob", dob);
       formData.append("role", "shipper");
       formData.append("status", "false");
@@ -250,8 +250,7 @@ const ShipperRegister = () => {
       setToastMessage("Đăng ký thành công! Vui lòng chờ xác nhận.");
       navigate("/shipper/login");
     } catch (error) {
-      console.error(error.response.data); // In ra lỗi chi tiết
-      toast.error("Đăng ký thất bại, vui lòng thử lại sau!");
+      toast.error(error.response.data);
     } finally {
       setLoading(false);
     }
@@ -293,7 +292,7 @@ const ShipperRegister = () => {
                   className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-primary"
                 />
                 {usernameError && (
-                  <p className="text-red-500 text-sm">{usernameError}</p>
+                  <p className="text-red-500 italic text-sm">{usernameError}</p>
                 )}
               </div>
 
@@ -314,7 +313,7 @@ const ShipperRegister = () => {
                   className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-primary"
                 />
                 {emailError && (
-                  <p className="text-red-500 text-sm">{emailError}</p>
+                  <p className="text-red-500 italic text-sm">{emailError}</p>
                 )}
               </div>
 
@@ -335,7 +334,7 @@ const ShipperRegister = () => {
                   className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-primary"
                 />
                 {fullnameError && (
-                  <p className="text-red-500 text-sm">{fullnameError}</p>
+                  <p className="text-red-500 italic text-sm">{fullnameError}</p>
                 )}
               </div>
 
@@ -356,7 +355,9 @@ const ShipperRegister = () => {
                   className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-primary"
                 />
                 {phonenumberError && (
-                  <p className="text-red-500 text-sm">{phonenumberError}</p>
+                  <p className="text-red-500 italic text-sm">
+                    {phonenumberError}
+                  </p>
                 )}
               </div>
 
@@ -386,7 +387,7 @@ const ShipperRegister = () => {
                   </button>
                 </div>
                 {passwordError && (
-                  <p className="text-red-500 text-sm">{passwordError}</p>
+                  <p className="text-red-500 italic text-sm">{passwordError}</p>
                 )}
               </div>
 
@@ -417,29 +418,33 @@ const ShipperRegister = () => {
                 </div>
 
                 {confirmPasswordError && (
-                  <p className="text-red-500 text-sm">{confirmPasswordError}</p>
+                  <p className="text-red-500 italic text-sm">
+                    {confirmPasswordError}
+                  </p>
                 )}
               </div>
 
               {/* Right Column */}
               <div>
                 <label
-                  htmlFor="identitycard"
+                  htmlFor="indentitycard"
                   className="block text-lg text-gray-700 font-semibold mb-1"
                 >
                   Số chứng minh thư:
                 </label>
                 <input
-                  id="identitycard"
-                  name="identitycard"
+                  id="indentitycard"
+                  name="indentitycard"
                   type="text"
                   placeholder="Số chứng minh thư"
-                  value={identitycard}
+                  value={indentitycard}
                   onChange={handleChange}
                   className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-primary"
                 />
-                {identitycardError && (
-                  <p className="text-red-500 text-sm">{identitycardError}</p>
+                {indentitycardError && (
+                  <p className="text-red-500 italic text-sm">
+                    {indentitycardError}
+                  </p>
                 )}
               </div>
 
@@ -458,7 +463,9 @@ const ShipperRegister = () => {
                   onChange={handleChange}
                   className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-primary"
                 />
-                {dobError && <p className="text-red-500 text-sm">{dobError}</p>}
+                {dobError && (
+                  <p className="text-red-500 italic text-sm">{dobError}</p>
+                )}
               </div>
 
               <div>
@@ -476,7 +483,7 @@ const ShipperRegister = () => {
                   className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-primary"
                 />
                 {avatarError && (
-                  <p className="text-red-500 text-sm">{avatarError}</p>
+                  <p className="text-red-500 italic text-sm">{avatarError}</p>
                 )}
               </div>
 
@@ -497,7 +504,7 @@ const ShipperRegister = () => {
                   className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-primary"
                 />
                 {streetError && (
-                  <p className="text-red-500 text-sm">{streetError}</p>
+                  <p className="text-red-500 italic text-sm">{streetError}</p>
                 )}
               </div>
 
@@ -518,7 +525,7 @@ const ShipperRegister = () => {
                   className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-primary"
                 />
                 {communeError && (
-                  <p className="text-red-500 text-sm">{communeError}</p>
+                  <p className="text-red-500 italic text-sm">{communeError}</p>
                 )}
               </div>
 
@@ -539,7 +546,7 @@ const ShipperRegister = () => {
                   className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-primary"
                 />
                 {districtError && (
-                  <p className="text-red-500 text-sm">{districtError}</p>
+                  <p className="text-red-500 italic text-sm">{districtError}</p>
                 )}
               </div>
 
@@ -560,7 +567,7 @@ const ShipperRegister = () => {
                   className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-primary"
                 />
                 {provinceError && (
-                  <p className="text-red-500 text-sm">{provinceError}</p>
+                  <p className="text-red-500 italic text-sm">{provinceError}</p>
                 )}
               </div>
 
@@ -584,7 +591,9 @@ const ShipperRegister = () => {
                   <option value="Khu vực 3">Khu vực 3</option>
                 </select>
                 {deliveryareaError && (
-                  <p className="text-red-500 text-sm">{deliveryareaError}</p>
+                  <p className="text-red-500 italic text-sm">
+                    {deliveryareaError}
+                  </p>
                 )}
               </div>
             </div>
@@ -597,8 +606,8 @@ const ShipperRegister = () => {
             </button>
 
             <p className="text-center mt-4">
-              Đã có tài khoản?{" "}
-              <Link to="/login" className="text-primary font-semibold">
+              Bạn đã có tài khoản?{" "}
+              <Link to="/shipper/login" className="text-primary font-semibold">
                 Đăng nhập
               </Link>
             </p>

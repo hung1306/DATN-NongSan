@@ -7,29 +7,24 @@ import { jwtDecode } from "jwt-decode";
 import ChangeInfoFarmDialog from "../../../components/DialogFarm/ChangeInfoFarmDialog";
 import ChangeLogoDialog from "../../../components/DialogFarm/ChangeLogoDialog";
 import ChangeImageFarmDialog from "../../../components/DialogFarm/ChangeImageFarmDialog";
+
 export default function FarmDetailInfo() {
   const token = localStorage.getItem("accessToken");
   const decodedToken = jwtDecode(token);
   const userId = decodedToken.userid;
+
   const [farm, setFarm] = useState({});
+  const [isOpenChangeInfo, setIsOpenChangeInfo] = useState(false);
+  const [isOpenChangeLogo, setIsOpenChangeLogo] = useState(false);
+  const [isOpenChangeImage, setIsOpenChangeImage] = useState(false);
 
   useEffect(() => {
     const fetchFarm = async () => {
       const response = await axios.get(`${API_BASE_URL}/farm/user/${userId}`);
       setFarm(response.data);
     };
-
     fetchFarm();
   }, [userId]);
-
-  const [isOpenChangeInfo, setIsOpenChangeInfo] = useState(false);
-  const openChangeInfoDialog = () => setIsOpenChangeInfo(true);
-
-  const [isOpenChangeLogo, setIsOpenChangeLogo] = useState(false);
-  const openChangeLogoDialog = () => setIsOpenChangeLogo(true);
-
-  const [isOpenChangeImage, setIsOpenChangeImage] = useState(false);
-  const openChangeImageDialog = () => setIsOpenChangeImage(true);
 
   const refreshFarm = async () => {
     const response = await axios.get(`${API_BASE_URL}/farm/user/${userId}`);
@@ -41,114 +36,100 @@ export default function FarmDetailInfo() {
       <HeaderFarmer />
       <div className="flex">
         <FarmerNavBar />
-        <div className="w-5/6 h-screen ml-auto bg-fourth mt-16 p-8 rounded-lg shadow-2xl">
-          <h1 className="font-bold text-3xl text-primary mb-3 bg-white rounded-lg p-3 shadow-2xl">
-            Thông tin trang trại
-          </h1>
+        <div className="w-5/6 h-full ml-auto bg-fourth mt-14 p-8 rounded-lg shadow-2xl">
+          <div className="bg-secondary w-full m-auto mt-3 rounded-t-lg shadow-lg">
+            <h1 className="font-bold text-primary text-2xl p-5">
+              Thông tin trang trại
+            </h1>
+          </div>
 
-          {/* Thông tin chi tiết farm */}
-          <div className="flex flex-wrap justify-between bg-white p-6 rounded-lg shadow-md">
-            {farm && (
-              <>
-                {/* Thông tin cơ bản */}
-                <div className="w-full lg:w-7/12 space-y-6">
-                  {[
-                    { label: "Tên trang trại", value: farm.farmname },
-                    { label: "Diện tích", value: `${farm.farmarea} ha` },
-                    { label: "Loại hình", value: farm.farmtype },
-                    { label: "Số điện thoại", value: farm.farmphone },
-                    { label: "Email", value: farm.farmemail },
-                    { label: "Tổng sản phẩm", value: farm.farmproductstotal },
-                    { label: "Mô tả", value: farm.farmdes, break: true },
-                    { label: "Dịch vụ", value: farm.farmservice,  },
-                    {
-                      label: "Lời mời hợp tác",
-                      value: farm.farminvite,
-                      break: true,
-                    },
-                    {
-                      label: "Địa chỉ",
-                      value: `${farm.farmstreet}, ${farm.farmcommune}, ${farm.farmdistrict}, ${farm.farmprovince}`,
-                    },
-                  ].map((item, index) => (
-                    <div className="flex" key={index}>
-                      {item.break ? (
-                        <>
-                          <p className="font-bold text-lg text-primary w-3/12">
-                            {item.label}:
-                          </p>
-                          <p className="text-lg font-medium text-justify">
-                            {item.value}
-                          </p>
-                        </>
-                      ) : (
-                        <>
-                          <p className="font-bold text-lg text-primary">
-                            {item.label}:
-                          </p>
-                          <p className="ml-4 text-lg font-medium text-justify">
-                            {item.value}
-                          </p>
-                        </>
-                      )}
-                    </div>
-                  ))}
-                  <div className="flex justify-end mt-8">
-                    <button
-                      className="py-3 px-6 bg-primary text-white font-bold rounded-lg hover:opacity-80 transition-colors"
-                      onClick={openChangeInfoDialog}
-                    >
-                      Thay đổi thông tin
-                    </button>
-                  </div>
+          <div className="bg-white p-6 rounded-b-lg shadow-lg grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Cột thông tin chi tiết */}
+            <div className="col-span-2 space-y-6">
+              {[
+                { label: "Tên trang trại", value: farm.farmname },
+                { label: "Diện tích", value: `${farm.farmarea} ha` },
+                { label: "Số điện thoại", value: farm.farmphone },
+                { label: "Email", value: farm.farmemail },
+                {
+                  label: "Địa chỉ",
+                  value: `${farm.farmstreet}, ${farm.farmcommune}, ${farm.farmdistrict}, ${farm.farmprovince}`,
+                },
+                { label: "Mô tả", value: farm.farmdes },
+                { label: "Dịch vụ", value: farm.farmservice },
+                { label: "Lời mời hợp tác", value: farm.farminvite },
+              ].map((item, index) => (
+                <div
+                  key={index}
+                  className="flex justify-between items-center border-b pb-2"
+                >
+                  <p className="font-bold text-lg text-primary w-1/4">
+                    {item.label}:
+                  </p>
+                  <p className="text-lg w-3/4 text-justify">
+                    {item.value || "Đang cập nhật"}
+                  </p>
+                </div>
+              ))}
+              <div className="text-right mt-4">
+                <button
+                  className="bg-primary text-white font-bold py-2 px-5 rounded-md hover:opacity-85"
+                  onClick={() => setIsOpenChangeInfo(true)}
+                >
+                  Thay đổi thông tin
+                </button>
+              </div>
+            </div>
+
+            {/* Cột hình ảnh */}
+            <div className="text-center border-l-2 pl-4">
+              <div className="space-y-6">
+                {/* Logo */}
+                <div>
+                  <img
+                    src={farm.farmlogo || "/default-logo.png"}
+                    alt="Farm Logo"
+                    className="rounded-full w-40 h-40 object-cover mx-auto shadow-lg hover:scale-105"
+                  />
+                  <button
+                    className="mt-4 py-2 px-4 text-primary font-bold rounded-xl hover:bg-primary hover:text-white transition-colors shadow-lg"
+                    onClick={() => setIsOpenChangeLogo(true)}
+                  >
+                    Thay đổi logo
+                  </button>
                 </div>
 
-                {/* Hình ảnh */}
-                <div className="w-full lg:w-4/12 space-y-6">
-                  <div className="text-center">
-                    <img
-                      src={farm.farmlogo}
-                      alt="Farm Logo"
-                      className="rounded-full w-40 h-40 object-cover mx-auto mt-4 shadow-lg  hover:scale-105"
-                    />
-                    <button
-                      className="mt-4 py-2 px-4 text-primary font-bold rounded-xl hover:bg-primary hover:text-white transition-colors shadow-xl"
-                      onClick={openChangeLogoDialog}
-                    >
-                      Thay đổi logo trang trại
-                    </button>
+                {/* Hình ảnh trang trại */}
+                <div>
+                  <div className="grid grid-cols-2 gap-4">
+                    {[
+                      farm.farmimage,
+                      farm.farmimage1,
+                      farm.farmimage2,
+                      farm.farmimage3,
+                    ].map((image, index) => (
+                      <img
+                        key={index}
+                        src={image || "/default-image.png"}
+                        alt={`Farm Image ${index}`}
+                        className="rounded-lg w-full h-32 object-cover shadow-md hover:scale-105"
+                      />
+                    ))}
                   </div>
-
-                  <div className="text-center">
-                    <div className="grid grid-cols-2 gap-4 mt-4">
-                      {[
-                        farm.farmimage,
-                        farm.farmimage1,
-                        farm.farmimage2,
-                        farm.farmimage3,
-                      ].map((image, index) => (
-                        <img
-                          key={index}
-                          src={image}
-                          alt={`Farm Image ${index}`}
-                          className="rounded-lg w-full h-32 object-cover shadow-md  hover:scale-105"
-                        />
-                      ))}
-                    </div>
-                    <button
-                      className="mt-4 py-2 px-4 text-primary font-bold rounded-xl hover:bg-primary hover:text-white transition-colors shadow-xl"
-                      onClick={openChangeImageDialog}
-                    >
-                      Thay đổi hình ảnh trang trại
-                    </button>
-                  </div>
+                  <button
+                    className="mt-4 py-2 px-4 text-primary font-bold rounded-xl hover:bg-primary hover:text-white transition-colors shadow-lg"
+                    onClick={() => setIsOpenChangeImage(true)}
+                  >
+                    Thay đổi hình ảnh
+                  </button>
                 </div>
-              </>
-            )}
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
+      {/* Dialogs */}
       {isOpenChangeInfo && (
         <ChangeInfoFarmDialog
           onClose={() => setIsOpenChangeInfo(false)}

@@ -8,7 +8,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { API_BASE_URL } from "../../../config/config";
 import { useToast } from "../../../context/ToastContext";
 import { jwtDecode } from "jwt-decode";
-import Loading from "../../../components/Loading.jsx"; 
+import Loading from "../../../components/Loading.jsx";
 
 const LoginCustomer = () => {
   const navigate = useNavigate();
@@ -18,7 +18,7 @@ const LoginCustomer = () => {
   });
   const [showPassword, setShowPassword] = useState(false);
   const { toastMessage, setToastMessage } = useToast();
-  const [loading, setLoading] = useState(false); 
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     // Xóa token khỏi localStorage nếu có
@@ -53,7 +53,7 @@ const LoginCustomer = () => {
       return;
     }
 
-    setLoading(true); 
+    setLoading(true);
     try {
       const response = await axios.post(
         `${API_BASE_URL}/auth/login`,
@@ -66,13 +66,13 @@ const LoginCustomer = () => {
         const role = decodedToken?.role;
         if (role !== "customer") {
           toast.error("Đây không phải là tài khoản khách hàng");
-          setLoading(false); 
+          setLoading(false);
           return;
         }
 
         localStorage.setItem("accessToken", response.data.accessToken);
         localStorage.setItem("refreshToken", response.data.refreshToken);
-        setToastMessage("Đăng nhập thành công")
+        setToastMessage("Đăng nhập thành công");
         callProtectedApi();
         // Điều hướng người dùng đến trang chính
         navigate("/");
@@ -171,7 +171,7 @@ const LoginCustomer = () => {
           </h1>
 
           <div className="p-3 my-2">
-            <div className="bg-secondary mx-2 rounded-t-xl p-4">
+            <div className="bg-secondary mx-2 rounded-t-xl p-4 shadow-xl">
               <label
                 htmlFor="usernameOrEmail"
                 className="block text-xl text-primary font-bold mb-2"
@@ -187,7 +187,7 @@ const LoginCustomer = () => {
                 className="bg-fourth text-base text-primary p-2 rounded-2xl w-full border border-fourth"
               />
             </div>
-            <div className="bg-secondary mx-2 rounded-b-xl px-4">
+            <div className="bg-secondary mx-2 rounded-b-xl px-4 shadow-xl">
               <label
                 htmlFor="usernameOrEmail"
                 className="block text-xl text-primary font-bold mb-2"
@@ -209,7 +209,7 @@ const LoginCustomer = () => {
                   className="absolute right-3 top-3 cursor-pointer"
                 />
               </div>
-              <div className="flex justify-between my-3">
+              <div className="flex justify-between my-3 pb-3">
                 <div>
                   <input type="checkbox" className="mr-2" />
                   <label className="text-primary">Ghi nhớ mật khẩu</label>
@@ -230,7 +230,10 @@ const LoginCustomer = () => {
               Đăng nhập
             </button>
             <p className="text-primary text-xl m-2 font-bold">Hoặc</p>
-            <button className="bg-third hover:opacity-90 text-white font-bold py-2 px-4 m-2 rounded-xl w-full">
+            <button
+              className="bg-third hover:opacity-90 text-white font-bold py-2 px-4 m-2 rounded-xl w-full cursor-not-allowed"
+              disabled
+            >
               Đăng nhập với google
             </button>
             <p className="text-primary">

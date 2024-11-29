@@ -311,6 +311,7 @@ export default function FarmerUpdateProduct({
                     id="farm"
                     className="bg-fourth text-base text-primary p-2 rounded-xl w-full border border-gray-500"
                     onChange={(e) => setFarmid(e.target.value)}
+                    disabled
                   >
                     <option value={farmid} className="">
                       {farmName}

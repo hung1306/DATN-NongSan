@@ -138,6 +138,13 @@ def recommend():
                 'alpha': alpha
             }
         
+        else:
+            product_popularity = user_item_df.groupby('product_id')['interaction_score'].sum().reset_index()
+            product_popularity = product_popularity.sort_values(by='interaction_score', ascending=False)
+            top_n_popular = 32
+            popular_products = product_popularity['product_id'].head(top_n_popular).tolist()
+            recommendations = product_content_df[product_content_df['productid'].isin(popular_products)].to_dict(orient='records')
+        
         return jsonify({'recommendations': recommendations, 'evaluation': evaluation}), 200
 
     except Exception as e:

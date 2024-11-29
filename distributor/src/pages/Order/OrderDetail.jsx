@@ -129,12 +129,12 @@ export default function FarmerOrderDetail({
 
             <div className="flex flex-col my-2">
               <div className="font-bold text-xl my-3 mx-3">
-                Danh sách sản phẩm:
+                Danh sách các sản phẩm:
               </div>
               <ul>
                 {orderDetail?.items?.length > 0 ? (
                   orderDetail.items.map((item, index) => (
-                    <li key={index} className="flex items-center text-center">
+                    <li key={index} className="flex items-center text-center hover:bg-fourth rounded-sm">
                       <p className="text-lg w-3/12 mx-5 font-medium">
                         {item.productName}
                       </p>
@@ -177,13 +177,13 @@ export default function FarmerOrderDetail({
               <p className="text-lg w-3/4">{orderDetail?.paymentStatus}</p>
             </div>
             <div className="flex my-2">
-              <p className="font-bold text-xl w-1/4 mx-3">Chọn shipper:</p>
+              <p className="font-bold text-xl w-1/4 mx-3">Chọn người giao hàng:</p>
               <div className="text-lg w-3/4">
                 <select
                   value={selectedShipper || ""}
                   onChange={handleShipperChange}
                   className="mr-1"
-                  disabled={!isOrderEditable} // Disable nếu trạng thái không phải "Đã tạo"
+                  disabled={!isOrderEditable} 
                 >
                   <option value="" disabled>
                     {selectedShipper ? "Chọn shipper" : "Chưa có shipper"}

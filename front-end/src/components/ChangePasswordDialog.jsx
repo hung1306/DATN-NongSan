@@ -22,7 +22,7 @@ export default function ChangePasswordDialog({ onClose, userId, Role }) {
 
   const [showPassword, setShowPassword] = useState(false);
 
-  const { loading, setLoading } = useLoading(); // Sử dụng context loading
+  const { loading, setLoading } = useLoading();
 
   const validateForm = () => {
     if (!oldPassword) {

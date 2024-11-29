@@ -716,8 +716,12 @@ const getAllOrderToDistributor = async (req, res) => {
   const limit = parseInt(pageSize, 10);
 
   try {
-    // Lấy tổng số đơn hàng
-    const totalOrdersResult = await pool.query('SELECT COUNT(*) FROM "Order"');
+    // Lấy tổng số đơn hàng không có trạng thái 'Đã hủy' hoặc 'Hoàn tất'
+    const totalOrdersResult = await pool.query(`
+      SELECT COUNT(*) 
+      FROM "Order" 
+      WHERE orderstatus != 'Đã hủy' AND orderstatus != 'Hoàn tất'
+    `);
     const totalOrders = parseInt(totalOrdersResult.rows[0].count, 10);
 
     // Lấy danh sách đơn hàng cùng thông tin chi tiết
@@ -725,6 +729,7 @@ const getAllOrderToDistributor = async (req, res) => {
       SELECT o.*, u.fullname AS user_fullname, o.shipperid
       FROM "Order" o
       JOIN "User" u ON o.userid = u.userid
+      WHERE o.orderstatus != 'Đã hủy' AND o.orderstatus != 'Hoàn tất'
       ORDER BY o.orderupdatetime DESC
       LIMIT $1 OFFSET $2
     `;
@@ -761,6 +766,29 @@ const getAllOrderToDistributor = async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
+const searchOrders = async (req, res) => {
+  const { query } = req.query;
+
+  try {
+    // Search orders by orderid (first 8 characters)
+    const orderIdQuery = `
+      SELECT o.*, u.fullname AS user_fullname, s.fullname AS shipper_fullname
+      FROM "Order" o
+      JOIN "User" u ON o.userid = u.userid
+      LEFT JOIN "User" s ON o.shipperid = s.userid
+      WHERE LEFT(o.orderid, 8) = $1
+    `;
+    const orderIdResult = await pool.query(orderIdQuery, [query]);
+
+    // Return orders found by orderid
+    res.json({ orders: orderIdResult.rows });
+  } catch (error) {
+    console.error("Error searching orders:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
 
 // Distributor - Cập nhật trạng thái đơn hàng
 const updateStatusByDistributor = async (req, res) => {
@@ -961,18 +989,30 @@ const getAllShipperOfDeliveryarea = async (req, res) => {
 const updateShipperForOrder = async (req, res) => {
   const { orderId, shipperId } = req.body;
   const currentTime = new Date();
-  const sql = `UPDATE "Order" SET shipperid = $1, orderupdatetime = $2 WHERE orderid = $3`;
+  const sql = `UPDATE "Order" SET shipperid = $1, orderupdatetime = $2, orderstatus = $3 WHERE orderid = $4`;
 
   try {
-    // Thực hiện truy vấn cập nhật shipper cho đơn hàng
-    await pool.query(sql, [shipperId, currentTime, orderId]);
+    // Thực hiện truy vấn cập nhật shipper và trạng thái đơn hàng
+    await pool.query(sql, [shipperId, currentTime, "Đã xác nhận", orderId]);
+
+    // Gửi thông báo cho shipper về việc được chọn để giao hàng
+    notificationUtils.createNotification(
+      shipperId,
+      "User",
+      "Đơn hàng mới",
+      `Đơn hàng ${orderId.slice(
+        0,
+        8
+      )} đã được giao cho bạn, hãy gom đơn hàng và gửi đến đúng tay người mua!`,
+      "UpdateDeliveryOrder"
+    );
 
     res.json({
-      message: "Cập nhật shipper cho đơn hàng thành công",
+      message: "Cập nhật shipper và trạng thái đơn hàng thành công",
       updateTime: currentTime,
     });
   } catch (error) {
-    console.error("Error updating shipper for order:", error);
+    console.error("Error updating shipper and order status:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
@@ -1067,6 +1107,7 @@ module.exports = {
   getAllOrdersByFarmer,
   getOrderDetailFarmer,
   updateStatusOrder,
+  searchOrders,
   createPaymentSession,
   getOrderDetails,
   confirmPaymentSession,

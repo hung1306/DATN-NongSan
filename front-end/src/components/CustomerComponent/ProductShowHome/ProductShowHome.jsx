@@ -31,8 +31,8 @@ export default function ProductShowHome() {
     const fetchProducts = async () => {
       setLoading(true);
       try {
-        if(userId === "") return;
-        
+        if (userId === "") return;
+
         const response = await axios.get(
           `${API_BASE_URL}/recommendation/${userId}`
         );
@@ -70,6 +70,9 @@ export default function ProductShowHome() {
 
   return (
     <div className="bg-secondary m-auto flex flex-wrap justify-center py-6 rounded-lg shadow-2xl">
+      <h1 className="text-3xl font-bold text-center text-primary">
+        Dành cho bạn
+      </h1>
       {loading ? (
         <Loading />
       ) : (

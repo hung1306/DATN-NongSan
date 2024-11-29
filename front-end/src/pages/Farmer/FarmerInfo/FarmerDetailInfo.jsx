@@ -14,148 +14,101 @@ export default function FarmerDetailInfo() {
   const decodedToken = jwtDecode(token);
   const userId = decodedToken.userid;
   const [user, setUser] = useState({});
+  const [isOpenChangePassword, setIsOpenChangePassword] = useState(false);
+  const [isOpenChangeInfo, setIsOpenChangeInfo] = useState(false);
+  const [isOpenChangeAvatar, setIsOpenChangeAvatar] = useState(false);
 
-  useEffect(() => {
-    const fetchUser = async () => {
+  const fetchUser = async () => {
+    try {
       const response = await axios.get(`${API_BASE_URL}/user/${userId}`);
       setUser(response.data);
-    };
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
+  };
 
+  useEffect(() => {
     fetchUser();
   }, [userId]);
 
-  const [isOpenChangePassword, setIsOpenChangePassword] = useState(false);
-  const openChangePasswordDialog = () => {
-    setIsOpenChangePassword(true);
-  };
-
-  const [isOpenChangeInfo, setIsOpenChangeInfo] = useState(false);
-  const openChangeInfoDialog = () => {
-    setIsOpenChangeInfo(true);
-  };
-
-  const [isOpenChangeAvatar, setIsOpenChangeAvatar] = useState(false);
-  const openChangeAvatarDialog = () => {
-    setIsOpenChangeAvatar(true);
-  };
-
   const refreshUser = async () => {
-    const response = await axios.get(`${API_BASE_URL}/user/${userId}`);
-    setUser(response.data);
+    await fetchUser();
   };
 
   return (
     <div>
       <HeaderFarmer />
-      <div className="flex">
+      <div className="flex bg-fourth pb-10">
         <FarmerNavBar />
-        <div className="bg-fourth w-5/6 h-screen fixed right-0 top-0 mt-20">
-          <div className="bg-secondary w-11/12 m-auto mt-3 rounded-lg shadow-2xl">
-            <h1 className="font-bold text-primary text-2xl p-5">
+        <div className="bg-fourth w-5/6 h-screen fixed right-0 top-0 mt-5">
+          <div className="bg-white rounded-md p-6 mt-20 shadow-2xl w-11/12 m-auto">
+            <h1 className="font-bold text-primary text-2xl mb-5">
               Thông tin cá nhân
             </h1>
-          </div>
-          <div className="bg-secondary w-11/12 m-auto mt-3 rounded-lg p-5 shadow-2xl">
-            {user && (
-              <div className="flex flex-wrap justify-between ">
-                <div className="p-5 flex flex-col w-7/12">
-                  <div className="flex">
-                    <p className="font-bold text-xl p-3 text-primary">
-                      Họ và tên:{" "}
-                    </p>
-                    <p className="text-xl p-3 font-medium">{user.fullname}</p>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {/* Cột thông tin */}
+              <div className="col-span-2 space-y-4">
+                {[
+                  ["Họ và tên", user.fullname],
+                  ["Email", user.email],
+                  ["Tên đăng nhập", user.username],
+                  ["Số điện thoại", user.phonenumber],
+                  [
+                    "Địa chỉ",
+                    `${user.street || ""}, ${user.commune || ""}, ${
+                      user.district || ""
+                    }, ${user.province || ""}`,
+                  ],
+                  ["Ngày sinh", formatDate(user.dob)],
+                  ["Số CCCD", user.indentitycard],
+                ].map(([label, value], idx) => (
+                  <div
+                    key={idx}
+                    className="flex justify-between items-center border-b pb-2"
+                  >
+                    <p className="font-bold text-lg text-primary">{label}:</p>
+                    <p className="text-lg">{value || "Đang cập nhật"}</p>
                   </div>
-                  <div className="flex">
-                    <p className="font-bold text-xl p-3 text-primary">
-                      Email:{" "}
-                    </p>
-                    <p className="text-xl p-3 font-medium">{user.email}</p>
-                  </div>
-                  <div className="flex">
-                    <p className="font-bold text-xl p-3 text-primary">
-                      Tên đăng nhập:{" "}
-                    </p>
-                    <p className="text-xl p-3 font-medium">{user.username}</p>
-                  </div>
-                  <div className="flex">
-                    <p className="font-bold text-xl p-3 text-primary">
-                      Mật khẩu
-                    </p>
-                    <p
-                      className="text-xl p-3 text-primary cursor-pointer italic font-medium hover:opacity-85"
-                      onClick={() => openChangePasswordDialog()}
-                    >
-                      Thay đổi
-                    </p>
-                  </div>
-                  <div className="flex">
-                    <p className="font-bold text-xl p-3 text-primary">
-                      Số điện thoại:{" "}
-                    </p>
-                    <p className="text-xl p-3 font-medium">
-                      {user.phonenumber}
-                    </p>
-                  </div>
-                  <div className="flex">
-                    <p className="font-bold text-xl p-3 text-primary">
-                      Địa chỉ:{" "}
-                    </p>
-                    <p className="text-xl p-3 font-medium">
-                      {user.street +
-                        ", " +
-                        user.commune +
-                        ", " +
-                        user.district +
-                        ", " +
-                        user.province +
-                        "."}
-                    </p>
-                  </div>
-                  <div className="flex">
-                    <p className="font-bold text-xl p-3 text-primary">
-                      Ngày sinh:
-                    </p>
-                    <p className="text-xl p-3 font-medium">
-                      {formatDate(user.dob)}
-                    </p>
-                  </div>
-                  <div className="flex">
-                    <p className="font-bold text-xl p-3 text-primary">
-                      Số CCCD:
-                    </p>
-                    <p className="text-xl p-3 font-medium">
-                      {user.indentitycard}
-                    </p>
-                  </div>
-                  <div className="flex justify-end w-2/3">
-                    <button
-                      className="bg-primary text-secondary font-bold text-xl py-2 px-5 rounded-lg mt-5 hover:opacity-85"
-                      onClick={() => openChangeInfoDialog()}
-                    >
-                      Thay đổi thông tin
-                    </button>
-                  </div>
+                ))}
+                <div className="flex justify-between items-center border-b pb-2">
+                  <p className="font-bold text-lg text-primary">Mật khẩu:</p>
+                  <button
+                    className="text-primary underline hover:opacity-75"
+                    onClick={() => setIsOpenChangePassword(true)}
+                  >
+                    Thay đổi
+                  </button>
                 </div>
-                <div className="p-5 w-4/12 border-l-2 border-primary">
-                  <div className="flex flex-col items-center">
-                    <img
-                      src={user.avatar}
-                      alt="avatar"
-                      className="rounded-full w-2/3"
-                    />
-                    <button
-                      className="font-bold text-primary text-xl hover:opacity-85 mt-5"
-                      onClick={() => openChangeAvatarDialog()}
-                    >
-                      Thay đổi
-                    </button>
-                  </div>
+                <div className="text-right mt-4">
+                  <button
+                    className="bg-primary text-white font-bold py-2 px-5 rounded-md hover:opacity-85"
+                    onClick={() => setIsOpenChangeInfo(true)}
+                  >
+                    Thay đổi thông tin
+                  </button>
                 </div>
               </div>
-            )}
+
+              {/* Cột Avatar */}
+              <div className="text-center border-l-2 pl-4">
+                <img
+                  src={user.avatar || "/default-avatar.png"}
+                  alt="avatar"
+                  className="rounded-full w-48 h-48 object-cover mx-auto mb-4"
+                />
+                <button
+                  className="text-primary underline hover:opacity-75"
+                  onClick={() => setIsOpenChangeAvatar(true)}
+                >
+                  Thay đổi ảnh đại diện
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
+
+      {/* Dialogs */}
       {isOpenChangePassword && (
         <ChangePasswordDialog
           onClose={() => setIsOpenChangePassword(false)}

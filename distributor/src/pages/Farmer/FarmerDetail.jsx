@@ -17,7 +17,7 @@ export default function FarmerDetail({ onClose, farmerId }) {
           `${API_BASE_URL}/farmer/detail/${farmerId}`
         );
         setFarmerDetails(response.data);
-        setStatus(response.data.status); // Đảm bảo trạng thái được thiết lập sau khi lấy chi tiết
+        setStatus(response.data.status); 
       } catch (error) {
         console.error("Lỗi khi lấy thông tin nông dân:", error);
       }
@@ -58,7 +58,7 @@ export default function FarmerDetail({ onClose, farmerId }) {
         <div className="py-4 text-justify">
           <div className="flex m-3">
             <p className="font-bold text-xl text-primary">
-              Tên chủ trang trại:
+              Tên nông dân:
             </p>
             <p className="text-lg font-medium ml-2">
               {farmerDetails?.fullname}
@@ -66,20 +66,20 @@ export default function FarmerDetail({ onClose, farmerId }) {
           </div>
           <div className="flex m-3">
             <p className="font-bold text-xl text-primary">
-              Tên chủ trang trại:
+              Email:
             </p>
             <p className="text-lg font-medium ml-2">{farmerDetails?.email}</p>
-          </div>
-          <div className="flex m-3">
-            <p className="font-bold text-xl text-primary">Tên trang trại:</p>
-            <p className="text-lg font-medium ml-2">
-              {farmerDetails?.farmname}
-            </p>
           </div>
           <div className="flex m-3">
             <p className="font-bold text-xl text-primary">Số điện thoại:</p>
             <p className="text-lg font-medium ml-2">
               {farmerDetails?.phonenumber}
+            </p>
+          </div>
+          <div className="flex m-3">
+            <p className="font-bold text-xl text-primary">Tên trang trại:</p>
+            <p className="text-lg font-medium ml-2">
+              {farmerDetails?.farmname}
             </p>
           </div>
           <div className="flex m-3">

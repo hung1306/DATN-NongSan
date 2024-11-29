@@ -62,11 +62,15 @@ export default function ShipperDetail({ onClose, shipperId }) {
         <div className="py-4">
           <div className="flex my-3">
             <p className="font-bold text-xl text-primary w-1/3">
-              Tên người giao hàng:
+              Họ và tên:
             </p>
             <p className="text-lg font-medium w-2/3">
               {shipperDetails?.fullname}
             </p>
+          </div>
+          <div className="flex my-3">
+            <p className="font-bold text-xl text-primary w-1/3">Email:</p>
+            <p className="text-lg font-medium w-2/3">{shipperDetails?.email}</p>
           </div>
           <div className="flex my-3">
             <p className="font-bold text-xl text-primary w-1/3">Địa chỉ:</p>
@@ -77,16 +81,13 @@ export default function ShipperDetail({ onClose, shipperId }) {
           </div>
           <div className="flex my-3">
             <p className="font-bold text-xl text-primary w-1/3">
-              Số CMND/CCCD:
+              Số CMND:
             </p>
             <p className="text-lg font-medium w-2/3">
               {shipperDetails?.indentitycard}
             </p>
           </div>
-          <div className="flex my-3">
-            <p className="font-bold text-xl text-primary w-1/3">Email:</p>
-            <p className="text-lg font-medium w-2/3">{shipperDetails?.email}</p>
-          </div>
+
           <div className="flex my-3">
             <p className="font-bold text-xl text-primary w-1/3">
               Số điện thoại:

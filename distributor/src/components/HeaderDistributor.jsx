@@ -1,9 +1,10 @@
 import { useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useToast } from "../context/ToastContext";
 
 export default function HeaderDistributor() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { setToastMessage } = useToast();
 
   useEffect(() => {
@@ -17,6 +18,12 @@ export default function HeaderDistributor() {
     localStorage.removeItem("token");
     navigate("/login");
     setToastMessage("Đăng xuất thành công");
+  };
+
+  const getLinkClass = (path) => {
+    return location.pathname === path
+      ? "bg-white text-primary font-medium px-2 py-1 rounded-lg transition duration-150"
+      : "text-white font-medium px-2 py-1 rounded-lg transition duration-150";
   };
 
   return (
@@ -33,52 +40,31 @@ export default function HeaderDistributor() {
           </span>
         </div>
 
-        <div className="flex flex-wrap items-center ">
-          <Link
-            to="/"
-            className="text-white hover:bg-white hover:text-primary font-medium px-2 py-1 rounded-lg transition duration-150"
-          >
+        <div className="flex flex-wrap items-center">
+          <Link to="/" className={getLinkClass("/")}>
             Trang chủ
           </Link>
-          <Link
-            to="/farmer"
-            className="text-white hover:bg-white hover:text-primary font-medium px-2 py-1 rounded-lg transition duration-150"
-          >
+          <Link to="/farmer" className={getLinkClass("/farmer")}>
             Nông dân
           </Link>
-          <Link
-            to="/shipper"
-            className="text-white hover:bg-white hover:text-primary font-medium px-2 py-1 rounded-lg transition duration-150"
-          >
+          <Link to="/shipper" className={getLinkClass("/shipper")}>
             Người giao hàng
           </Link>
-          <Link
-            to="/category"
-            className="text-white hover:bg-white hover:text-primary font-medium px-2 py-1 rounded-lg transition duration-150"
-          >
+          <Link to="/category" className={getLinkClass("/category")}>
             Danh mục
           </Link>
-          <Link
-            to="/product"
-            className="text-white hover:bg-white hover:text-primary font-medium px-2 py-1 rounded-lg transition duration-150"
-          >
+          <Link to="/product" className={getLinkClass("/product")}>
             Sản phẩm
           </Link>
-          <Link
-            to="/order"
-            className="text-white hover:bg-white hover:text-primary font-medium px-2 py-1 rounded-lg transition duration-150"
-          >
+          <Link to="/order" className={getLinkClass("/order")}>
             Đơn hàng
           </Link>
-          <Link
-            to="/notification"
-            className="text-white hover:bg-white hover:text-primary font-medium px-2 py-1 rounded-lg transition duration-150"
-          >
+          <Link to="/notification" className={getLinkClass("/notification")}>
             Thông báo
           </Link>
           <button
             onClick={onLogout}
-            className=" hover:bg-white hover:text-primary text-white font-medium px-3 py-2 rounded-lg transition duration-150"
+            className="text-white font-medium px-3 py-2 rounded-lg transition duration-150"
           >
             Đăng xuất
           </button>

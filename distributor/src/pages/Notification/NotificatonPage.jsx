@@ -10,6 +10,7 @@ export default function NotificatonPage() {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
   const [notifications, setNotifications] = useState([]);
+
   useEffect(() => {
     if (!token) {
       navigate("/login");
@@ -80,23 +81,33 @@ export default function NotificatonPage() {
           Tất cả thông báo
         </h1>
         <div className="mt-7 w-2/3 m-auto">
-          {notifications.map((notification) => (
-            <div
-              key={notification.notificationid}
-              className={`p-3 my-3 border-2 border-primary text-primary rounded shadow-2xl ${
-                notification.is_read ? "bg-white" : "bg-fourth hover:opacity-80"
-              } cursor-pointer`}
-              onClick={() => onNotificationClick(notification.notificationid)}
-            >
-              <div className="flex">
-                <h2 className="font-bold text-xl my-1">{notification.title}</h2>
-                <p className="text-xs font-thin italic ml-3 my-2">
-                  {formatDate(notification.created_at)}
-                </p>
+          {notifications.length === 0 ? (
+            <p className="text-center text-lg text-primary">
+              Chưa có thông báo mới nào!
+            </p>
+          ) : (
+            notifications.map((notification) => (
+              <div
+                key={notification.notificationid}
+                className={`p-3 my-3 border-2 border-primary text-primary rounded shadow-2xl ${
+                  notification.is_read
+                    ? "bg-white"
+                    : "bg-fourth hover:opacity-80"
+                } cursor-pointer`}
+                onClick={() => onNotificationClick(notification.notificationid)}
+              >
+                <div className="flex">
+                  <h2 className="font-bold text-xl my-1">
+                    {notification.title}
+                  </h2>
+                  <p className="text-xs font-thin italic ml-3 my-2">
+                    {formatDate(notification.created_at)}
+                  </p>
+                </div>
+                <p className="my-1 font-medium">{notification.message}</p>
               </div>
-              <p className="my-1 font-medium">{notification.message}</p>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </div>
     </div>

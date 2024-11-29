@@ -66,11 +66,12 @@ export default function ShipperPage() {
               <table className="w-full border-collapse shadow-2xl">
                 <thead>
                   <tr className="bg-primary text-white">
-                    <th className="w-1/6 py-2">Tên người giao hàng</th>
+                    <th className="w-1/12 py-2">Tên</th>
                     <th className="w-1/12 py-2">Số điện thoại</th>
                     <th className="w-1/4 py-2">Địa chỉ</th>
-                    <th className="w-1/6 py-2">Trạng thái người giao hàng</th>
-                    <th className="w-1/6 py-2">Trạng thái tài khoản</th>
+                    <th className="w-1/12 py-2">Trạng thái giao hàng</th>
+                    <th className="w-1/6 py-2">Khu vực giao hàng</th>
+                    <th className="w-1/12 py-2">Trạng thái tài khoản</th>
                     <th className="w-1/6 py-2"></th>
                   </tr>
                 </thead>
@@ -88,6 +89,7 @@ export default function ShipperPage() {
                           {shipper?.district}, {shipper?.province}
                         </td>
                         <td className="py-2">{shipper.shipperstatus}</td>
+                        <td className="py-2">{shipper.deliveryarea}</td>
                         <td className="py-2">
                           {shipper.status ? "Đã kích hoạt" : "Chưa kích hoạt"}
                         </td>

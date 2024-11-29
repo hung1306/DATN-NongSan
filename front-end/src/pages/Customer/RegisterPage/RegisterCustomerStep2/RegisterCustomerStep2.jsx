@@ -147,11 +147,11 @@ const RegisterCustomerStep2 = () => {
         <>
           <div className="backgroundImg">
             <div className="w-1/2 m-auto bg-fourth rounded-2xl px-2 py-4 shadow-2xl">
-              <h1 className="text-primary py-3 font-bold text-center text-4xl">
-                Đăng ký
+              <h1 className="text-primary py-3 font-bold text-center text-3xl">
+                Đăng ký tài khoản khách hàng 
               </h1>
               <div className="flex justify-center px-5 my-3">
-                <div className="bg-secondary w-6/12 mx-2 rounded-xl p-2">
+                <div className="bg-secondary w-6/12 mx-2 rounded-xl p-3 shadow-xl">
                   <label
                     htmlFor="street"
                     className="block text-xl text-primary font-bold mb-2"
@@ -170,7 +170,7 @@ const RegisterCustomerStep2 = () => {
                     <p className="text-red-500 italic">{streetError}</p>
                   )}
                 </div>
-                <div className="bg-secondary w-6/12 mx-2 rounded-xl p-2">
+                <div className="bg-secondary w-6/12 mx-2 rounded-xl p-3 shadow-xl">
                   <label
                     htmlFor="commune"
                     className="block text-xl text-primary font-bold mb-2"
@@ -191,7 +191,7 @@ const RegisterCustomerStep2 = () => {
                 </div>
               </div>
               <div className="flex justify-center px-5 my-3">
-                <div className="bg-secondary w-6/12 mx-2 rounded-xl p-2">
+                <div className="bg-secondary w-6/12 mx-2 rounded-xl p-3 shadow-xl">
                   <label
                     htmlFor="district"
                     className="block text-xl text-primary font-bold mb-2"
@@ -210,7 +210,7 @@ const RegisterCustomerStep2 = () => {
                     <p className="text-red-500 italic">{districtError}</p>
                   )}
                 </div>
-                <div className="bg-secondary w-6/12 mx-2 rounded-xl p-2">
+                <div className="bg-secondary w-6/12 mx-2 rounded-xl p-3 shadow-xl">
                   <label
                     htmlFor="province"
                     className="block text-xl text-primary font-bold mb-2"
@@ -231,7 +231,7 @@ const RegisterCustomerStep2 = () => {
                 </div>
               </div>
               <div className="flex justify-center px-5 my-3">
-                <div className="bg-secondary w-6/12 mx-2 rounded-xl p-2">
+                <div className="bg-secondary w-6/12 mx-2 rounded-xl p-3 shadow-xl">
                   <label
                     htmlFor="identityCard"
                     className="block text-xl text-primary font-bold mb-2"
@@ -250,7 +250,7 @@ const RegisterCustomerStep2 = () => {
                     <p className="text-red-500 italic">{identityCardError}</p>
                   )}
                 </div>
-                <div className="bg-secondary w-6/12 mx-2 rounded-xl p-2">
+                <div className="bg-secondary w-6/12 mx-2 rounded-xl p-3 shadow-xl">
                   <label
                     htmlFor="dateOfBirth"
                     className="block text-xl text-primary font-bold mb-2"
@@ -271,7 +271,7 @@ const RegisterCustomerStep2 = () => {
                 </div>
               </div>
               <div className="flex justify-center px-5 my-3">
-                <div className="bg-secondary w-full mx-2 rounded-xl p-2">
+                <div className="bg-secondary w-full mx-2 rounded-xl p-3 shadow-xl">
                   <label
                     htmlFor="avatar"
                     className="block text-xl text-primary font-bold mb-2"
@@ -293,7 +293,7 @@ const RegisterCustomerStep2 = () => {
               <div className="flex items-center flex-col m-3">
                 <button
                   onClick={handleSubmit}
-                  className="bg-primary hover:opacity-90 text-white font-bold text-xl py-2 px-6 m-2 rounded-xl w-1/2"
+                  className="bg-primary hover:opacity-90 text-white font-bold text-xl py-3 px-6 m-2 rounded-xl w-1/2"
                 >
                   Hoàn tất
                 </button>

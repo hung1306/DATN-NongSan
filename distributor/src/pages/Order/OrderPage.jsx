@@ -6,6 +6,8 @@ import { formatDate } from "../../utils/formatDate";
 import OrderDetail from "./OrderDetail";
 import { Pagination } from "../../components/Pagination";
 import { ToastContainer } from "react-toastify";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSearch } from "@fortawesome/free-solid-svg-icons";
 
 export default function OrderPage() {
   const [orders, setOrders] = useState([]);
@@ -60,7 +62,13 @@ export default function OrderPage() {
     };
     fetchOrders();
   };
-
+  const [searchInput, setSearchInput] = useState("");
+  const handleSearch = () => {};
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
+  };
   return (
     <div>
       <HeaderDistributor />
@@ -68,9 +76,28 @@ export default function OrderPage() {
       <div className="flex">
         <div className="bg-secondary w-full right-0 top-0 mt-20">
           <div className="w-10/12 m-auto bg-white rounded-lg px-3 mt-5">
-            <h2 className="my-4 px-4 text-primary font-bold text-3xl">
-              Danh sách đơn hàng
-            </h2>
+            <div className="flex justify-between items-center my-3">
+              <h2 className="my-4 px-4 text-primary font-bold text-3xl">
+                Danh sách đơn hàng
+              </h2>
+
+              <div className="relative w-1/4">
+                <input
+                  type="text"
+                  placeholder="Tìm kiếm sản phẩm"
+                  className="w-full p-2 border rounded-lg placeholder-color pr-5 text-primary border-black"
+                  value={searchInput}
+                  onChange={(e) => setSearchInput(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                />
+                <button
+                  className="absolute right-1 top-1/2 transform -translate-y-1/2 px-2 py-1 bg-primary text-white rounded-lg"
+                  onClick={handleSearch}
+                >
+                  <FontAwesomeIcon icon={faSearch} />
+                </button>
+              </div>
+            </div>
             <div className="overflow-x-auto">
               <table className="w-full border-collapse shadow-2xl">
                 <thead>

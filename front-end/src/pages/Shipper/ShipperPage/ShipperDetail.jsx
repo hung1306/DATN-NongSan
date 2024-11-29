@@ -33,9 +33,9 @@ export default function ShipperDetail({
   }, [orderIdDetail]);
 
   const validStatuses = {
-    "Đã tạo": ["Đã tạo", "Đã xác nhận", "Đã hủy"],
-    "Đã xác nhận": ["Đã xác nhận", "Đang giao hàng", "Đã hủy"],
-    "Đang giao hàng": ["Đang giao hàng", "Hoàn tất", "Đã hủy"],
+    "Đã tạo": ["Đã tạo", "Đã xác nhận"],
+    "Đã xác nhận": ["Đã xác nhận", "Đang giao hàng"],
+    "Đang giao hàng": ["Đang giao hàng", "Hoàn tất"],
     "Hoàn tất": ["Hoàn tất"],
     "Đã hủy": ["Đã hủy"],
   };

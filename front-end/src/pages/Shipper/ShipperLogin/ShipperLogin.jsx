@@ -80,14 +80,14 @@ export default function ShipperLogin() {
   };
 
   return (
-    <div className="h-screen bg-fourth p-2 flex items-center justify-center">
+    <div className="h-screen bg-fourth flex items-center justify-center">
       <ToastContainer />
       {loading ? (
         <div className="flex justify-center items-center h-full w-full">
           <Loading />
         </div>
       ) : (
-        <div className="w-2/3 m-auto shadow-lg bg-secondary rounded-2xl flex">
+        <div className="w-2/3 m-auto shadow-lg bg-secondary rounded-2xl flex p-3">
           <div className="text-primary w-2/3 flex items-center justify-center">
             <div className="w-11/12 h-1/3 m-auto flex flex-col justify-center">
               <h2 className="text-3xl text-center font-bold my-3 pt-5">
@@ -168,7 +168,10 @@ export default function ShipperLogin() {
                 Đăng nhập
               </button>
               <p className="text-primary text-xl m-2 font-bold">Hoặc</p>
-              <button className="bg-third hover:opacity-90 text-white font-bold py-2 px-4 m-3 rounded-xl w-full">
+              <button
+                className="bg-third hover:opacity-90 text-white font-bold py-2 px-4 m-3 rounded-xl w-full cursor-not-allowed"
+                disabled
+              >
                 Đăng nhập với Google
               </button>
               <p className="text-primary">

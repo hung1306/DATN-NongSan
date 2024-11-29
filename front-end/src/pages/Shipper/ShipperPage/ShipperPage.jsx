@@ -4,7 +4,7 @@ import axios from "axios";
 import { API_BASE_URL } from "../../../config/config";
 import ShipperDetail from "./ShipperDetail";
 import { Pagination } from "../../../components/Pagination";
-import {jwtDecode} from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 
 export default function ShipperPage() {
   const [orders, setOrders] = useState([]);
@@ -81,7 +81,9 @@ export default function ShipperPage() {
             </h2>
             <div className="overflow-x-auto">
               {orders.length === 0 ? (
-                <p className="text-center text-xl py-4 font-medium text-primary">Chưa có đơn hàng nào</p>
+                <p className="text-center text-xl py-4 font-medium text-primary">
+                  Chưa có đơn hàng nào
+                </p>
               ) : (
                 <table className="w-full border-collapse shadow-2xl">
                   <thead>

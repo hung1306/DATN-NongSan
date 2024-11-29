@@ -204,13 +204,13 @@ function FarmerRegisterStep1() {
     <div className="h-screen bg-fourth flex flex-col">
       <ToastContainer />
       {loading ? (
-        <div className="flex justify-center items-center h-full w-full"> 
+        <div className="flex justify-center items-center h-full w-full">
           <Loading />
         </div>
       ) : (
         <>
           <div className="bg-fourth px-10 py-3">
-          <div className="bg-white ml-10 mr-10  flex flex-col py-2 rounded-xl shadow-2xl">
+            <div className="bg-white ml-10 mr-10  flex flex-col py-2 rounded-xl shadow-2xl">
               <p className="text-center text-2xl text-primary font-bold p-2">
                 ĐĂNG KÝ ĐỂ ĐƯA NÔNG SẢN CỦA BẠN ĐẾN VỚI NGƯỜI TIÊU DÙNG KHẮP NƠI
                 TRÊN LÃNH THỔ VIỆT NAM
@@ -558,7 +558,8 @@ function FarmerRegisterStep1() {
                   <p className="text-center text-primary font-bold">Hoặc</p>
                   <button
                     onClick={handleNext}
-                    className="bg-white text-gray-600 border-2 border-fourth font-bold py-2 px-4 rounded-2xl w-full my-3"
+                    className="bg-white text-gray-600 border-2 border-fourth font-bold py-2 px-4 rounded-2xl w-full my-3 cursor-not-allowed"
+                    disabled
                   >
                     Đăng ký với Google
                   </button>

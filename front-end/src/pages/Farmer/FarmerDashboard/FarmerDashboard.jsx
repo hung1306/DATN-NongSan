@@ -67,7 +67,7 @@ export default function FarmerDashboard() {
     slidesToShow: 1,
     slidesToScroll: 1,
     autoplay: true,
-    autoplaySpeed: 3000,
+    autoplaySpeed: 2000,
   };
 
   return (
@@ -76,8 +76,8 @@ export default function FarmerDashboard() {
       <div className="flex mt-20">
         <FarmerNavBar />
         <div className="bg-fourth w-5/6 h-screen fixed right-0 top-0 mt-20">
-          <div className="flex justify-center mt-4">
-            <div className="bg-white shadow-2xl rounded p-9 mb-4 m-3 w-10/12">
+          <div className="flex justify-center mt-5">
+            <div className="bg-white shadow-2xl rounded p-10 mb-4 m-3 w-10/12">
               <h2 className="text-2xl m-2 font-bold text-primary">
                 Tổng quan trang trại
               </h2>
@@ -129,14 +129,12 @@ export default function FarmerDashboard() {
                 </div>
               </div>
             </div>
-
-            
           </div>
 
           <div className="flex justify-center">
-          <div className="bg-white shadow-2xl rounded p-2 mb-4 w-5/12 m-3">
+            <div className="bg-white shadow-2xl rounded p-2 mb-4 w-5/12 m-3">
               <h2 className="text-2xl m-2 font-bold text-primary">
-                Hình ảnh trang trại
+                Một số hình ảnh trang trại
               </h2>
               <div className="w-11/12 m-auto mt-5 px-5 pb-5">
                 <Slider {...settings}>
@@ -176,7 +174,7 @@ export default function FarmerDashboard() {
             {/* Biểu đồ thống kê theo danh mục */}
             <div className="bg-white shadow-2xl rounded p-2 mb-4 w-5/12 m-3">
               <h2 className="text-2xl m-2 font-bold text-primary">
-                Phân bố sản phẩm theo danh mục
+                Các sản phẩm của trang trại phân bố theo danh mục
               </h2>
               <div className="w-11/12 m-auto mt-5 px-5 pb-5">
                 <ResponsiveContainer width="100%" height={300}>

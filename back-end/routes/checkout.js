@@ -25,7 +25,7 @@ router.put(
   checkoutController.updateStatusByDistributor
 );
 router.put("/cancel-order", checkoutController.cancelOrderByCustomer);
-
+router.get("/distributor/search-order", checkoutController.searchOrders);
 router.get(
   "/shipper/deliveryArea/:orderId",
   checkoutController.getAllShipperOfDeliveryarea

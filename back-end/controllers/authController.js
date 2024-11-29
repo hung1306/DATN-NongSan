@@ -8,6 +8,7 @@ const multer = require("multer");
 const { v4: uuidv4 } = require("uuid");
 const { ref, uploadBytes, getDownloadURL } = require("firebase/storage");
 const notificationUtils = require("../utils/notificationsUtils");
+const validate = require("../validator/authValidator");
 // Cấu hình Multer để xử lý upload
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -20,48 +21,46 @@ const registerStep1 = async (req, res) => {
       req.body;
 
     // Validate required fields
-    if (
-      !username ||
-      !password ||
-      !email ||
-      !fullname ||
-      !phonenumber ||
-      !role ||
-      !status
-    ) {
-      return res.status(400).send("All fields are required");
-    }
+    const usernameError = validate.validateUsername(username);
+    if (usernameError) return res.status(400).send(usernameError);
 
+    const passwordError = validate.validatePassword(password);
+    if (passwordError) return res.status(400).send(passwordError);
+
+    const emailError = validate.validateEmail(email);
+    if (emailError) return res.status(400).send(emailError);
+
+    const fullnameError = validate.validateFullname(fullname);
+    if (fullnameError) return res.status(400).send(fullnameError);
+
+    const phonenumberError = validate.validatePhonenumber(phonenumber);
+    if (phonenumberError) return res.status(400).send(phonenumberError);
+
+    if (!role || !status) {
+      return res.status(400).send("Các trường không được để trống");
+    }
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
-
-    // Check for existing username
     const existingUsername = await pool.query(
       'SELECT * FROM "User" WHERE username = $1',
       [username]
     );
     if (existingUsername.rows.length > 0) {
-      return res.status(400).send("Username đã tồn tại");
+      return res.status(400).send("Tên đăng nhập đã tồn tại!");
     }
-
-    // Check for existing email
     const existingEmail = await pool.query(
       'SELECT * FROM "User" WHERE email = $1',
       [email]
     );
     if (existingEmail.rows.length > 0) {
-      return res.status(400).send("Email đã tồn tại, vui lòng chọn email khác");
+      return res.status(400).send("Email đã tồn tại!");
     }
-
-    // Check for existing fullname
     const existingFullname = await pool.query(
       'SELECT * FROM "User" WHERE fullname = $1',
       [fullname]
     );
     if (existingFullname.rows.length > 0) {
-      return res
-        .status(400)
-        .send("Họ và tên đã tồn tại, vui lòng chọn họ và tên khác");
+      return res.status(400).send("Họ và tên đã tồn tại!");
     }
 
     // Check for existing phonenumber
@@ -70,9 +69,7 @@ const registerStep1 = async (req, res) => {
       [phonenumber]
     );
     if (existingPhonenumber.rows.length > 0) {
-      return res
-        .status(400)
-        .send("Số điện thoại đã tồn tại, vui lòng chọn số điện thoại khác");
+      return res.status(400).send("Số điện thoại đã tồn tại!");
     }
 
     // Insert new user
@@ -92,7 +89,7 @@ const registerStep1 = async (req, res) => {
 const registerStep2 = async (req, res) => {
   try {
     const { userId } = req.params;
-    const { address, identityCard, dateOfBirth, status } = req.body;
+    const { address, indentityCard, dateOfBirth, status } = req.body;
     const avatar = req.file;
 
     // Kiểm tra tính hợp lệ của địa chỉ
@@ -102,16 +99,25 @@ const registerStep2 = async (req, res) => {
     const parsedAddress = JSON.parse(address);
     const { street, commune, district, province } = parsedAddress;
 
-    if (!street || !commune || !district || !province) {
-      return res.status(400).send("Địa chỉ không đầy đủ.");
+    if (!street) {
+      return res.status(400).send("Đường không được để trống.");
+    }
+    if (!commune) {
+      return res.status(400).send("Xã/Phường không được để trống.");
+    }
+    if (!district) {
+      return res.status(400).send("Quận/Huyện không được để trống.");
+    }
+    if (!province) {
+      return res.status(400).send("Tỉnh/Thành phố không được để trống.");
     }
 
     // Kiểm tra tính hợp lệ của các trường khác
-    if (!identityCard) {
-      return res.status(400).send("Số CMND không được gửi.");
+    if (!indentityCard) {
+      return res.status(400).send("Số CMND không được để trống.");
     }
     if (!dateOfBirth) {
-      return res.status(400).send("Ngày sinh không được gửi.");
+      return res.status(400).send("Ngày sinh không được để trống.");
     }
     let avatarUrl = null;
     if (avatar) {
@@ -132,7 +138,7 @@ const registerStep2 = async (req, res) => {
         commune,
         district,
         province,
-        identityCard,
+        indentityCard,
         dateOfBirth,
         avatarUrl,
         status,
@@ -251,11 +257,43 @@ const registerFarmerStep1 = async (req, res) => {
       province,
     } = req.body;
     const avatar = req.file;
+
+    // Validate required fields
+    const emailError = validate.validateEmail(email);
+    if (emailError) return res.status(400).send(emailError);
+
+    const usernameError = validate.validateUsername(username);
+    if (usernameError) return res.status(400).send(usernameError);
+
+    const passwordError = validate.validatePassword(password);
+    if (passwordError) return res.status(400).send(passwordError);
+
+    const fullnameError = validate.validateFullname(fullname);
+    if (fullnameError) return res.status(400).send(fullnameError);
+
+    const phonenumberError =validate. validatePhonenumber(phonenumber);
+    if (phonenumberError) return res.status(400).send(phonenumberError);
+
+    if (!role) return res.status(400).send("Vai trò không được để trống.");
+    if (!status) return res.status(400).send("Trạng thái không được để trống.");
+
+    if (!street) return res.status(400).send("Đường không được để trống.");
+    if (!commune) return res.status(400).send("Xã/Phường không được để trống.");
+    if (!district) return res.status(400).send("Quận/Huyện không được để trống.");
+    if (!province) return res.status(400).send("Tỉnh/Thành phố không được để trống.");
+
+    // Kiểm tra số CMND và ngày sinh
+    if (!indentitycard) return res.status(400).send("Số CMND không được để trống.");
+    if (!/^\d+$/.test(indentitycard)) return res.status(400).send("Số CMND phải là số.");
+
+    if (!dob) return res.status(400).send("Ngày sinh không được để trống.");
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+    if (!dateRegex.test(dob)) return res.status(400).send("Ngày sinh phải có định dạng YYYY-MM-DD.");
+    const date = new Date(dob);
+    if (isNaN(date.getTime())) return res.status(400).send("Ngày sinh không hợp lệ.");
+
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
-    if (!street || !commune || !district || !province) {
-      return res.status(400).send("Địa chỉ không đầy đủ.");
-    }
 
     // Check for existing username
     const existingUsername = await pool.query(
@@ -281,9 +319,7 @@ const registerFarmerStep1 = async (req, res) => {
       [fullname]
     );
     if (existingFullname.rows.length > 0) {
-      return res
-        .status(400)
-        .send("Họ và tên đã tồn tại, vui lòng chọn họ và tên khác");
+      return res.status(400).send("Họ và tên đã tồn tại, vui lòng chọn họ và tên khác");
     }
 
     // Check for existing phonenumber
@@ -292,9 +328,7 @@ const registerFarmerStep1 = async (req, res) => {
       [phonenumber]
     );
     if (existingPhonenumber.rows.length > 0) {
-      return res
-        .status(400)
-        .send("Số điện thoại đã tồn tại, vui lòng chọn số điện thoại khác");
+      return res.status(400).send("Số điện thoại đã tồn tại, vui lòng chọn số điện thoại khác");
     }
 
     let avatarUrl = null;
@@ -337,6 +371,7 @@ const registerFarmerStep1 = async (req, res) => {
   }
 };
 
+
 const registerFarmerStep2 = async (req, res) => {
   const { userId } = req.params;
   const {
@@ -356,22 +391,28 @@ const registerFarmerStep2 = async (req, res) => {
   } = req.body;
 
   // Kiểm tra xem các thông tin bắt buộc đã được gửi lên từ client chưa
-  if (
-    !farmname ||
-    !farmtype ||
-    !farmemail ||
-    !farmarea ||
-    !farmdescription ||
-    !farmphone ||
-    !farmproductstotal ||
-    !farmservice ||
-    !farminvite
-  ) {
-    return res.status(400).send("Vui lòng nhập đầy đủ thông tin.");
-  }
-  if (!farmstreet || !farmcommune || !farmdistrict || !farmprovince) {
-    return res.status(400).send("Địa chỉ không đầy đủ.");
-  }
+  if (!farmname) return res.status(400).send("Tên trang trại không được để trống.");
+  if (!farmtype) return res.status(400).send("Loại trang trại không được để trống.");
+  if (!farmemail) return res.status(400).send("Email trang trại không được để trống.");
+  if (!farmarea) return res.status(400).send("Diện tích trang trại không được để trống.");
+  if (!farmdescription) return res.status(400).send("Mô tả trang trại không được để trống.");
+  if (!farmphone) return res.status(400).send("Số điện thoại trang trại không được để trống.");
+  if (!farmproductstotal) return res.status(400).send("Tổng sản phẩm trang trại không được để trống.");
+  if (!farmservice) return res.status(400).send("Dịch vụ trang trại không được để trống.");
+  if (!farminvite) return res.status(400).send("Lời mời trang trại không được để trống.");
+
+  if (!farmstreet) return res.status(400).send("Đường không được để trống.");
+  if (!farmcommune) return res.status(400).send("Xã/Phường không được để trống.");
+  if (!farmdistrict) return res.status(400).send("Quận/Huyện không được để trống.");
+  if (!farmprovince) return res.status(400).send("Tỉnh/Thành phố không được để trống.");
+
+  // Validate email format
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(farmemail)) return res.status(400).send("Email trang trại không hợp lệ.");
+
+  // Validate phone number format
+  const phoneRegex = /^0[0-9]{9}$/;
+  if (!phoneRegex.test(farmphone)) return res.status(400).send("Số điện thoại trang trại phải có 10 chữ số và bắt đầu bằng số 0.");
 
   try {
     const uploadImage = async (image) => {
@@ -515,12 +556,68 @@ const shipperRegister = async (req, res) => {
       role,
       status,
       address,
-      identityCard,
+      indentityCard,
       dob,
       shipperstatus,
       deliveryarea,
     } = req.body;
     const avatar = req.file;
+
+    // Validate required fields
+    const usernameError = validate.validateUsername(username);
+    if (usernameError) return res.status(400).send(usernameError);
+
+    const emailError = validate.validateEmail(email);
+    if (emailError) return res.status(400).send(emailError);
+
+    const passwordError = validate.validatePassword(password);
+    if (passwordError) return res.status(400).send(passwordError);
+
+    const fullnameError = validate.validateFullname(fullname);
+    if (fullnameError) return res.status(400).send(fullnameError);
+
+    const phonenumberError =validate. validatePhonenumber(phonenumber);
+    if (phonenumberError) return res.status(400).send(phonenumberError);
+
+    if (!role) return res.status(400).send("Vai trò không được để trống.");
+    if (!status) return res.status(400).send("Trạng thái không được để trống.");
+    if (!shipperstatus)
+      return res
+        .status(400)
+        .send("Trạng thái người giao hàng không được để trống.");
+    if (!deliveryarea)
+      return res.status(400).send("Khu vực giao hàng không được để trống.");
+
+    // Kiểm tra tính hợp lệ của địa chỉ
+    let parsedAddress;
+    try {
+      parsedAddress = JSON.parse(address);
+    } catch (error) {
+      return res.status(400).send("Địa chỉ không hợp lệ.");
+    }
+
+    const { street, commune, district, province } = parsedAddress;
+
+    if (!street) return res.status(400).send("Đường không được để trống.");
+    if (!commune) return res.status(400).send("Xã/Phường không được để trống.");
+    if (!district)
+      return res.status(400).send("Quận/Huyện không được để trống.");
+    if (!province)
+      return res.status(400).send("Tỉnh/Thành phố không được để trống.");
+
+    // Kiểm tra số CMND và ngày sinh
+    if (!indentityCard)
+      return res.status(400).send("Số CMND không được để trống.");
+    if (!/^\d+$/.test(indentityCard))
+      return res.status(400).send("Số CMND phải là số.");
+
+    if (!dob) return res.status(400).send("Ngày sinh không được để trống.");
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+    if (!dateRegex.test(dob))
+      return res.status(400).send("Ngày sinh phải có định dạng YYYY-MM-DD.");
+    const date = new Date(dob);
+    if (isNaN(date.getTime()))
+      return res.status(400).send("Ngày sinh không hợp lệ.");
 
     // Mã hóa mật khẩu
     const saltRounds = 10;
@@ -573,22 +670,6 @@ const shipperRegister = async (req, res) => {
 
     const userId = newUser.rows[0].userid; // Lấy userId vừa được tạo
 
-    // Kiểm tra tính hợp lệ của địa chỉ
-    const parsedAddress = JSON.parse(address);
-    const { street, commune, district, province } = parsedAddress;
-
-    if (!street || !commune || !district || !province) {
-      return res.status(400).send("Địa chỉ không đầy đủ.");
-    }
-
-    // Kiểm tra số CMND và ngày sinh
-    if (!identityCard) {
-      return res.status(400).send("Số CMND không được gửi.");
-    }
-    if (!dob) {
-      return res.status(400).send("Ngày sinh không được gửi.");
-    }
-
     // Tải ảnh đại diện lên Storage
     let avatarUrl = null;
     if (avatar) {
@@ -610,7 +691,7 @@ const shipperRegister = async (req, res) => {
         commune,
         district,
         province,
-        identityCard,
+        indentityCard,
         dob,
         avatarUrl,
         userId,
