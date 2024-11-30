@@ -61,7 +61,7 @@ export default function FarmProductPage() {
         <>
           {/* Nội dung chính của trang */}
           <div className="bg-fourth m-auto flex flex-wrap justify-center">
-            <div className="w-4/5 my-5 mb-10 rounded-md bg-white m-auto flex flex-wrap justify-center shadow-2xl">
+            <div className="w-4/5 mt-3 mb-10 rounded-md bg-white m-auto flex flex-wrap justify-center shadow-2xl">
               {loading ? (
                 <Loading />
               ) : (

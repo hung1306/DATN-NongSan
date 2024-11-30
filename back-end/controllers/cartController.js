@@ -37,8 +37,8 @@ const pool = require("../config/dbConnect");
 //     if (existingProduct.rows.length > 0) {
 //       // Cập nhật số lượng nếu sản phẩm đã tồn tại trong giỏ hàng
 //       const updateCartQuery = `
-//         UPDATE cart SET quantity = quantity + $1 
-//         WHERE userid = $2 AND productid = $3 AND batchid = $4 
+//         UPDATE cart SET quantity = quantity + $1
+//         WHERE userid = $2 AND productid = $3 AND batchid = $4
 //         RETURNING *
 //       `;
 //       const updatedCart = await pool.query(updateCartQuery, [
@@ -52,8 +52,8 @@ const pool = require("../config/dbConnect");
 
 //     // Thêm sản phẩm mới vào giỏ hàng
 //     const insertCartQuery = `
-//       INSERT INTO cart (userid, productid, quantity, batchid) 
-//       VALUES ($1, $2, $3, $4) 
+//       INSERT INTO cart (userid, productid, quantity, batchid)
+//       VALUES ($1, $2, $3, $4)
 //       RETURNING *
 //     `;
 //     const cart = await pool.query(insertCartQuery, [
@@ -87,7 +87,12 @@ const updateCartQuantity = async (quantity, userId, productId, batchId) => {
     WHERE userid = $2 AND productid = $3 AND batchid = $4 
     RETURNING *
   `;
-  const result = await pool.query(query, [quantity, userId, productId, batchId]);
+  const result = await pool.query(query, [
+    quantity,
+    userId,
+    productId,
+    batchId,
+  ]);
   return result.rows[0];
 };
 
@@ -97,7 +102,12 @@ const insertCart = async (userId, productId, quantity, batchId) => {
     VALUES ($1, $2, $3, $4) 
     RETURNING *
   `;
-  const result = await pool.query(query, [userId, productId, quantity, batchId]);
+  const result = await pool.query(query, [
+    userId,
+    productId,
+    quantity,
+    batchId,
+  ]);
   return result.rows[0];
 };
 
@@ -105,7 +115,9 @@ exports.addToCart = async (req, res) => {
   const { userId, productId, quantity, batchId } = req.body;
 
   if (quantity === 0) {
-    return res.status(400).json({ message: "Số lượng sản phẩm phải lớn hơn 0" });
+    return res
+      .status(400)
+      .json({ message: "Số lượng sản phẩm phải lớn hơn 0" });
   }
 
   try {
@@ -116,13 +128,24 @@ exports.addToCart = async (req, res) => {
     }
 
     if (quantity > batchQuantity) {
-      return res.status(400).json({ message: "Số lượng sản phẩm vượt quá số lượng trong kho" });
+      return res
+        .status(400)
+        .json({ message: "Số lượng sản phẩm vượt quá số lượng trong kho" });
     }
 
-    const existingProduct = await getExistingProduct(userId, productId, batchId);
+    const existingProduct = await getExistingProduct(
+      userId,
+      productId,
+      batchId
+    );
 
     if (existingProduct) {
-      const updatedCart = await updateCartQuantity(quantity, userId, productId, batchId);
+      const updatedCart = await updateCartQuantity(
+        quantity,
+        userId,
+        productId,
+        batchId
+      );
       return res.status(200).json(updatedCart);
     }
 
@@ -154,9 +177,9 @@ exports.getAllCart = async (req, res) => {
 
     const totalCount = parseInt(totalCountResult.rows[0].count);
 
-    if (cart.rows.length === 0) {
-      return res.status(400).json({ message: "Giỏ hàng của bạn đang trống" });
-    }
+    // if (cart.rows.length === 0) {
+    //   return res.status(400).json({ message: "Giỏ hàng của bạn đang trống" });
+    // }
 
     // Get product IDs and batch IDs from cart items
     const productIds = cart.rows.map((item) => item.productid);

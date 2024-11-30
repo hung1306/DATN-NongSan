@@ -83,12 +83,12 @@ export default function PurchasesHistory() {
   return (
     <div className="bg-fourth">
       <HeaderCustomer />
-      <div className="w-9/12 mx-auto bg-white rounded-md p-6 mt-36 shadow-2xl">
+      <div className="bg-fourth mt-36 h-5"></div>
+      <div className="w-9/12 mx-auto bg-white rounded-md p-4 shadow-2xl">
         <h1 className="font-bold text-primary text-3xl">Lịch sử mua hàng</h1>
       </div>
-
-      <div className="w-9/12 mx-auto mb-7 bg-white rounded-md p-5 mt-5 shadow-2xl min-h-screen">
-        <table className="min-w-full divide-y divide-gray-300 mt-7 ">
+      <div className="w-9/12 mx-auto mb-7 bg-white rounded-md p-3 mt-3 shadow-2xl min-h-screen">
+        <table className="min-w-full divide-y divide-gray-300 ">
           <thead className="bg-secondary">
             <tr>
               <th className="px-6 py-4 text-xl font-bold text-gray-900 tracking-wider text-center">

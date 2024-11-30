@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { jwtDecode } from "jwt-decode";
+import {jwtDecode} from "jwt-decode";
 import FooterCustomer from "../../../components/CustomerComponent/FooterCustomer/FooterCustomer";
 import "react-confirm-alert/src/react-confirm-alert.css";
 import { toast } from "react-toastify";
@@ -68,13 +68,25 @@ export default function CartPage() {
       console.error("Error fetching cart:", error);
     }
   };
+
   const onDeleteCart = async (productId) => {
     setIsOpenDeleteCart(true);
     setProductId(productId);
   };
 
+  const handleDeleteCart = async () => {
+    try {
+      await axios.delete(`${API_BASE_URL}/cart/${userId}/${productId}`);
+      toast.success("Xóa sản phẩm khỏi giỏ hàng thành công");
+      setIsOpenDeleteCart(false);
+      refreshCart();
+    } catch (error) {
+      console.error("Error deleting cart item:", error);
+      toast.error("Xóa sản phẩm khỏi giỏ hàng thất bại");
+    }
+  };
+
   const [selectedItems, setSelectedItems] = useState([]);
-  // const [totalPrice, setTotalPrice] = useState(0);
 
   const handleCheckboxChange = (item) => {
     setSelectedItems((prevSelectedItems) => {
@@ -85,12 +97,6 @@ export default function CartPage() {
       }
     });
   };
-
-  // const calculateTotalPrice = () => {
-  //   return selectedItems.reduce((total, item) => {
-  //     return total + item.productprice * item.quantity;
-  //   }, 0);
-  // };
 
   const handleUpdateQuantity = (productid, quantity) => {
     if (quantity === 0) {
@@ -125,14 +131,14 @@ export default function CartPage() {
       ) : (
         <div className="bg-fourth">
           <HeaderCustomer />
-
-          <div className="w-4/5 mx-auto bg-white rounded-md p-5 mt-36 shadow-2xl">
+          <div className="bg-fourth mt-36 h-5"></div>
+          <div className="w-4/5 mx-auto bg-white rounded-md p-5 shadow-2xl">
             <h1 className="font-bold text-primary text-2xl">
-              GIỎ HÀNG CỦA BẠN
+              Giỏ hàng của bạn 
             </h1>
           </div>
 
-          <div className="w-4/5 mx-auto bg-white rounded-lg p-6 my-5 shadow-2xl mt-5 min-h-screen">
+          <div className="w-4/5 mx-auto bg-white rounded-lg p-6 my-5 shadow-2xl mt-3 min-h-screen">
             <table className="min-w-full divide-y">
               <thead className="bg-white shadow-2xl">
                 <tr className="border rounded-xl">
@@ -280,11 +286,6 @@ export default function CartPage() {
                 )}
               </tbody>
             </table>
-            {/* <div className="flex justify-end p-3 ">
-              <span className="text-lg font-bold">
-                Tổng tiền: {calculateTotalPrice()}{" "}
-              </span>
-            </div> */}
             {/* pagination */}
             {totalPages > 1 && (
               <Pagination
@@ -312,6 +313,7 @@ export default function CartPage() {
               productId={productId}
               userId={userId}
               refreshCart={refreshCart}
+              handleDeleteCart={handleDeleteCart}
             />
           )}
         </div>

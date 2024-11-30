@@ -195,7 +195,7 @@ export default function CommentShow() {
               comments.map((comment) => (
                 <div
                   key={comment.reviewid} // Ensure the key is unique
-                  className="w-full my-2 bg-white p-1 rounded-lg shadow-2xl"
+                  className="w-full my-1 bg-white p-1 rounded-lg shadow-2xl"
                 >
                   <div className="flex my-auto">
                     <img

@@ -44,7 +44,7 @@ export default function FarmInfoPage() {
           </div>
         ) : (
           <>
-            <div className="container mx-auto p-5 mt-5 bg-white rounded-lg shadow-2xl w-4/5 text-primary text-justify">
+            <div className="container mx-auto p-5 mt-3 bg-white rounded-lg shadow-2xl w-4/5 text-primary text-justify">
               {/* Nội dung farm */}
               <div className="mb-5">
                 <h2 className="text-2xl font-bold mb-3">Mô tả về trang trại</h2>
@@ -85,7 +85,7 @@ export default function FarmInfoPage() {
             </div>
 
             {/* Thông tin liên hệ và tổng số sản phẩm */}
-            <div className="container mx-auto p-8 my-6 bg-white rounded-lg shadow-2xl w-4/5 text-primary">
+            <div className="container mx-auto p-8 mt-2 mb-10 bg-white rounded-lg shadow-2xl w-4/5 text-primary">
               <h2 className="text-2xl font-bold mb-2"> Thông tin liên hệ</h2>
               <p className="text-lg">
                 {" "}

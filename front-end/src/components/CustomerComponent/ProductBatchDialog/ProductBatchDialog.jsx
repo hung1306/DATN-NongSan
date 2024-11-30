@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { API_BASE_URL } from "../../../config/config";
 import axios from "axios";
 import { addToCart } from "../../../service/CustomerService/cartService";
-import { jwtDecode } from "jwt-decode";
+import {jwtDecode} from "jwt-decode";
 import { toast, ToastContainer } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
@@ -58,119 +58,93 @@ export default function ProductBatchDialog({ onClose, selectedProduct }) {
   };
 
   const handleDecrease = () => {
-    quantity === 1 ? toast.error("Số lượng không thể nhỏ hơn 1") : setQuantity(prev => prev - 1);
+    quantity === 1
+      ? toast.error("Số lượng không thể nhỏ hơn 1")
+      : setQuantity((prev) => prev - 1);
   };
   const handleIncrease = () => {
-    setQuantity((prev) => prev + 1)
+    setQuantity((prev) => prev + 1);
   };
 
   return (
     <div className="z-50 fixed top-0 left-0 inset-0 bg-gray-900 bg-opacity-80 flex justify-center items-center m-auto">
-      <div className="bg-white p-3 rounded-lg w-4/12 h-2/5 m-auto text-primary overflow-auto shadow-2xl border border-primary relative">
+      <div className="bg-white p-6 rounded-lg w-1/3 h-auto m-auto text-primary shadow-2xl border border-primary relative">
         <ToastContainer />
-        <div className="flex justify-end">
-          <button
-            className="text-primary px-2 hover:bg-primary hover:text-secondary hover:px-2 text-3xl font-bold fixed"
-            onClick={onClose}
-          >
-            <FontAwesomeIcon icon={faTimes} />
-          </button>
-        </div>
-        <h2 className="text-2xl text-center font-bold">
+        {/* Button đóng */}
+        <button
+          className="absolute top-3 right-3 text-primary text-2xl hover:bg-primary hover:text-white rounded-full p-1"
+          onClick={onClose}
+        >
+          <FontAwesomeIcon icon={faTimes} />
+        </button>
+
+        {/* Tiêu đề */}
+        <h2 className="text-3xl text-center font-bold mb-6">
           Thêm vào giỏ hàng của bạn
         </h2>
-        {/* Them dau gach */}
-        {/* <div className="flex justify-center w-full">
-          <div className="w-full bg-primary h-1 mt-3 mb-3"></div>
-        </div> */}
-        <div className="flex mt-3 m-auto">
-          <span className="text-primary font-bold mr-1 my-auto">
-            Chọn số lượng:{" "}
-          </span>
-          <div className="w-9/12 p-1 flex items-center bg-white space-x-2 ml-3 rounded-md font-bold border">
-            <button
-              onClick={handleDecrease}
-              className="w-1/3 px-2 py-1 rounded-md text-gray-900 hover:bg-gray-200"
-            >
-              -
-            </button>
-            <span className="w-1/3 px-2 text-center">{quantity}</span>
-            <button
-              onClick={handleIncrease}
-              className="w-1/3 px-2 py-1 rounded-md text-gray-900 hover:bg-gray-200"
-            >
-              +
-            </button>
-          </div>
-        </div>
-        <div className="m-2 flex flex-wrap justify-around">
+        {/* Danh sách lô hàng */}
+        <div className={`grid ${productBatchs.length === 1 ? 'grid-cols-1' : 'grid-cols-2'} gap-4 mb-6`}>
           {productBatchs.map((batch) => (
             <div
               key={batch.batchid}
-              className={`p-3 rounded-lg my-4 shadow-lg cursor-pointer border hover:opacity-80 transition duration-300 ease-in-out transform hover:scale-105 w-5/12 ${
+              className={`p-4 rounded-lg shadow-lg border cursor-pointer hover:opacity-90 transition-transform transform ${
                 batchId === batch.batchid
                   ? "bg-primary text-white"
-                  : "bg-fourth"
-              }`}
+                  : "bg-fourth text-primary"
+              } ${productBatchs.length === 1 ? 'w-9/12 m-auto' : ''}`}
               onClick={() =>
                 setBatchId(batchId === batch.batchid ? "" : batch.batchid)
               }
             >
-              <div className="mb-2 text-center">
-                {/* <span className={`font-medium mr-1 ${batchId === batch.batchid ? "text-white" : "text-primary"}`}>
-                  Mã lô hàng:{" "}
-                </span> */}
-                <span
-                  className={`font-bold text-xl text-center ${
-                    batchId === batch.batchid ? "text-white" : ""
-                  }`}
-                >
-                  {batch.batchid.substring(0, 8)}
-                </span>
+              <div className="text-center font-bold text-xl mb-2">
+                {batch.batchid.substring(0, 8)}
               </div>
-              <div className="mb-2">
-                <span
-                  className={`font-medium mr-1 ${
-                    batchId === batch.batchid ? "text-white" : "text-primary"
-                  }`}
-                >
+              <div className="text-sm">
+                <div className="mb-1">
                   Giá:{" "}
-                </span>
-                <span
-                  className={`font-semibold ${
-                    batchId === batch.batchid ? "text-white" : ""
-                  }`}
-                >
-                  {Number(batch.batchprice).toLocaleString()} (
-                  {batch.unitofmeasure})
-                </span>
-              </div>
-              <div className="mb-2">
-                <span
-                  className={`font-medium mr-1 ${
-                    batchId === batch.batchid ? "text-white" : "text-primary"
-                  }`}
-                >
+                  <span className="font-semibold">
+                    {Number(batch.batchprice).toLocaleString()} (
+                    {batch.unitofmeasure})
+                  </span>
+                </div>
+                <div>
                   Giảm giá:{" "}
-                </span>
-                <span
-                  className={`font-semibold ${
-                    batchId === batch.batchid ? "text-white" : ""
-                  }`}
-                >
-                  {batch.promotion} %
-                </span>
+                  <span className="font-semibold">{batch.promotion} %</span>
+                </div>
               </div>
             </div>
           ))}
         </div>
-        <div className="flex justify-end">
-          <button
-            className="bg-primary font-bold text-white px-5 py-2 rounded-xl hover:opacity-90"
-            onClick={handleAddToCart}
-          >
-            Thêm vào giỏ hàng
-          </button>
+        <div className="flex justify-between">
+          {/* Chọn số lượng */}
+          <div className="flex items-center justify-center w-7/12 py-3">
+            <span className="text-primary font-bold mr-2">Chọn số lượng:</span>
+            <div className="flex items-center border rounded-md w-7/12">
+              <button
+                onClick={handleDecrease}
+                className="w-1/3 px-2 py-1 rounded-md text-gray-900 hover:bg-gray-200"
+              >
+                -
+              </button>
+              <span className="w-1/3 px-2 text-center">{quantity}</span>
+              <button
+                onClick={handleIncrease}
+                className="w-1/3 px-2 py-1 rounded-md text-gray-900 hover:bg-gray-200"
+              >
+                +
+              </button>
+            </div>
+          </div>
+
+          {/* Nút thêm vào giỏ hàng */}
+          <div className="">
+            <button
+              className="bg-primary font-bold text-white px-7 py-3 rounded-xl hover:opacity-90"
+              onClick={handleAddToCart}
+            >
+              Thêm vào giỏ hàng
+            </button>
+          </div>
         </div>
       </div>
     </div>

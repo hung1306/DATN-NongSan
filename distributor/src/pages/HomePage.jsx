@@ -2,9 +2,17 @@ import { useEffect, useState } from "react";
 import HeaderDistributor from "../components/HeaderDistributor";
 import { useToast } from "../context/ToastContext";
 import { toast, ToastContainer } from "react-toastify";
-import axios from 'axios';
+import axios from "axios";
 import { API_BASE_URL } from "../config/config";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from "recharts";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+} from "recharts";
 
 export default function HomePage() {
   const { toastMessage } = useToast();
@@ -45,9 +53,9 @@ export default function HomePage() {
     const fetchCategories = async () => {
       try {
         const response = await axios.get(`${API_BASE_URL}/count-categories`);
-        const categoriesData = response.data.map(category => ({
+        const categoriesData = response.data.map((category) => ({
           ...category,
-          quantity: Number(category.quantity)
+          quantity: Number(category.quantity),
         }));
         setCategories(categoriesData);
       } catch (error) {
@@ -63,27 +71,31 @@ export default function HomePage() {
       <HeaderDistributor />
       <ToastContainer />
       <div className="w-10/12 m-auto flex justify-center mt-32">
-        <div className="bg-primary text-center p-5 rounded-xl w-56 h-56 flex flex-col justify-center items-center transform transition-all duration-500 hover:bg-fourth hover:text-black shadow-lg hover:shadow-2xl m-10 text-white cursor-pointer">
+        <div className="bg-primary text-center p-7 rounded-xl w-56 h-56 flex flex-col justify-center items-center shadow-lg m-10 text-white cursor-pointer">
           <p className="font-bold text-2xl">Số sản phẩm</p>
-          <p className="font-extrabold italic text-7xl animate-bounce mt-6">
+          <p className="font-extrabold italic text-7xl mt-6">
             {info?.productCount}
           </p>
         </div>
-        <div className="bg-red-700 text-center p-5 rounded-xl w-56 h-56 flex flex-col justify-center items-center transform transition-all duration-500 hover:bg-fourth hover:text-black shadow-lg hover:shadow-2xl m-10 text-white cursor-pointer ">
-          <p className="font-bold text-2xl">Số nông trại</p>
-          <p className="font-extrabold italic text-7xl animate-bounce mt-6">
-            10
+        <div className="bg-yellow-600 text-center p-7 rounded-xl w-56 h-56 flex flex-col justify-center items-center shadow-lg m-10 text-white cursor-pointer">
+          <p className="font-bold text-2xl">Số danh mục sản phẩm</p>
+          <p className="font-extrabold italic text-7xl mt-6">
+            {info?.categoryCount}
           </p>
         </div>
-        <div className="bg-blue-600 text-center p-5 rounded-xl w-56 h-56 flex flex-col justify-center items-center transform transition-all duration-500 hover:bg-fourth hover:text-black shadow-lg hover:shadow-2xl m-10 text-white cursor-pointer ">
+        <div className="bg-red-700 text-center p-7 rounded-xl w-56 h-56 flex flex-col justify-center items-center shadow-lg m-10 text-white cursor-pointer">
+          <p className="font-bold text-2xl">Số nông trại</p>
+          <p className="font-extrabold italic text-7xl mt-6">10</p>
+        </div>
+        <div className="bg-blue-600 text-center p-7 rounded-xl w-56 h-56 flex flex-col justify-center items-center shadow-lg m-10 text-white cursor-pointer">
           <p className="font-bold text-2xl">Số khách hàng</p>
-          <p className="font-extrabold italic text-7xl animate-bounce mt-6">
+          <p className="font-extrabold italic text-7xl mt-6">
             {info?.customerCount}
           </p>
         </div>
-        <div className="bg-fuchsia-800 text-center p-5 rounded-xl w-56 h-56 flex flex-col justify-center items-center transform transition-all duration-500 hover:bg-fourth hover:text-black shadow-lg hover:shadow-2xl m-10 text-white cursor-pointer ">
+        <div className="bg-fuchsia-800 text-center p-7 rounded-xl w-56 h-56 flex flex-col justify-center items-center shadow-lg m-10 text-white cursor-pointer">
           <p className="font-bold text-2xl">Số đơn hàng</p>
-          <p className="font-extrabold italic text-7xl animate-bounce mt-6">
+          <p className="font-extrabold italic text-7xl mt-6">
             {info?.orderCount}
           </p>
         </div>
@@ -92,8 +104,10 @@ export default function HomePage() {
       <div className="w-10/12 flex justify-center m-auto">
         {/* Biểu đồ số sản phẩm theo danh mục */}
         <div className="w-6/12 bg-white h-96 m-7 rounded-lg shadow-lg p-5">
-          <h2 className="text-center text-primary font-bold text-2xl mb-4">Số Sản Phẩm Theo Danh Mục</h2>
-          <BarChart width={700} height={320} data={categories} >
+          <h2 className="text-center text-primary font-bold text-2xl mb-4">
+            Số Sản Phẩm Theo Danh Mục
+          </h2>
+          <BarChart width={700} height={320} data={categories}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="categoryname" />
             <YAxis />
@@ -105,7 +119,9 @@ export default function HomePage() {
 
         {/* Biểu đồ doanh số bán hàng */}
         <div className="w-6/12 bg-white h-96 m-7 rounded-lg shadow-lg p-5">
-          <h2 className="text-center font-bold text-xl mb-4">Doanh Số Bán Hàng</h2>
+          <h2 className="text-center font-bold text-xl mb-4">
+            Doanh Số Bán Hàng
+          </h2>
           <BarChart width={400} height={300} data={salesData}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="month" />

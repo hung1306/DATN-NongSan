@@ -32,7 +32,9 @@ function HomePage() {
         <Loading />
       ) : (
         <>
-          <div className="flex justify-center my-10 mt-44 pt-10">
+          <div className="w-full bg-fourth mt-28 "></div>
+          <div className="flex justify-center my-10 pt-10">
+            
             <SlideShow className="w-4/5" />
             <div
               className="w-1/5 flex flex-col items-center justify-center h-full shadow-lg rounded-lg cursor-pointer"
@@ -55,34 +57,57 @@ function HomePage() {
           </div>
           <div className="w-full bg-fourth py-5">
             <div className="w-3/5 mx-auto bg-secondary px-9 py-7 rounded-lg shadow-xl">
-              <h1 className="text-3xl font-bold text-primary">
+              <h1 className="text-3xl font-bold text-primary text-center">
                 Danh mục sản phẩm
               </h1>
               <CategoryShow />
             </div>
           </div>
           <div className="w-full bg-fourth py-3">
-            <div className="m-auto w-4/5 px-9 py-5 rounded-lg">
+            <div className="m-auto w-4/5 px-9 py-3 rounded-lg">
               <PolicyShow />
             </div>
             <div className="m-auto w-4/5 px-9 rounded-lg">
               <ProductShowHome />
 
-              <div className="bg-secondary px-14 py-5 pb-14 my-5 rounded-lg shadow-xl text-center">
+              {/* <div className="w-full mx-auto mt-8 bg-white  text-primary py-6 rounded-lg shadow-lg">
+                <h2 className="text-2xl font-bold mb-4 ml-5">Tin tức nổi bật</h2>
+                <div>
+                  <ul className="list-disc list-inside space-y-3 ml-5 ">
+                    <li>
+                      <a href="/news/1" className="hover:underline">
+                        Khuyến mãi lớn nhân dịp Tết Nguyên Đán!
+                      </a>
+                    </li>
+                    <li>
+                      <a href="/news/2" className="hover:underline">
+                        Các loại nông sản tốt cho sức khỏe gia đình bạn.
+                      </a>
+                    </li>
+                    <li>
+                      <a href="/news/3" className="hover:underline">
+                        Hành trình phát triển của Agrimart trong năm qua.
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              </div> */}
+
+              
+
+              <div className="bg-secondary px-14 py-5 pb-14 mb-5 mt-3 rounded-lg shadow-xl text-center">
                 <h2 className="text-3xl font-bold text-primary mb-4">
-                  Đăng ký nhận tin
+                  Gửi yêu cầu đến hệ thống
                 </h2>
-                <p className="text-primary font-medium mb-4">
-                  Nhận ngay thông tin về ưu đãi và sản phẩm mới nhất!
-                </p>
+
                 <form className="flex justify-center w-full">
                   <input
-                    type="email"
-                    placeholder="Nhập email của bạn"
+                    placeholder="Nhập yêu cầu của bạn"
                     className="px-4 py-2 rounded-l-lg border focus:outline-none focus:ring-2 focus:ring-primary w-9/12"
+                    rows="4"
                   />
-                  <button className="px-4 py-2 bg-primary text-white rounded-r-lg font-semibold hover:bg-primary-dark">
-                    Đăng ký
+                  <button className="px-6 py-2 bg-primary text-white rounded-r-lg font-semibold hover:bg-primary-dark transition duration-300 ease-in-out transform hover:scale-105">
+                    Gửi yêu cầu
                   </button>
                 </form>
               </div>

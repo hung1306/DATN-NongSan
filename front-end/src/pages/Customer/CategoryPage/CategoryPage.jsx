@@ -52,8 +52,9 @@ function CategoryPage() {
   return (
     <>
       <HeaderCustomer />
+      <div className="bg-fourth mt-36 h-5"></div>
       <div className="bg-fourth">
-        <div className="w-4/5 mx-auto bg-white rounded-md p-5 mt-36 shadow-2xl">
+        <div className="w-4/5 mx-auto bg-white rounded-md p-5 shadow-2xl">
           {products && products.length > 0 ? (
             <h1 className="font-bold text-primary text-2xl">
               Danh mục sản phẩm: {products[0].categoryname} 
@@ -64,7 +65,7 @@ function CategoryPage() {
             </h1>
           )}
         </div>
-        <div className="rounded-md w-4/5 bg-white m-auto flex flex-wrap justify-center my-5 shadow-2xl mb-10">
+        <div className="rounded-md w-4/5 bg-white m-auto flex flex-wrap justify-center mt-3 shadow-2xl mb-16">
           {loading ? (
             <Loading />
           ) : (

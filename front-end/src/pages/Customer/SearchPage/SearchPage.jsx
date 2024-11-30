@@ -46,8 +46,9 @@ function SearchPage() {
   return (
     <>
       <HeaderCustomer />
+      <div className="bg-fourth mt-36 h-5"></div>
       <div className="bg-fourth">
-        <div className="w-4/5 mx-auto bg-white rounded-md p-5 mt-36 shadow-2xl">
+        <div className="w-4/5 mx-auto bg-white rounded-md p-5 shadow-2xl">
           {productSearch && productSearch.length > 0 ? (
             <h1 className="font-bold text-primary text-2xl">
               Sản phẩm tìm được...
@@ -59,7 +60,7 @@ function SearchPage() {
           )}
         </div>
 
-        <div className="rounded-md shadow-2xl w-4/5 bg-white mx-auto flex flex-wrap my-12 min-h-96">
+        <div className="rounded-md shadow-2xl w-4/5 bg-white mx-auto flex flex-wrap mt-3 mb-12 min-h-96">
           {loading ? (
             <Loading />
           ) : (

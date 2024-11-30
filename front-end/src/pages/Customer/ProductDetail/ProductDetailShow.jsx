@@ -103,7 +103,7 @@ export default function ProductDetail() {
     <>
       <FarmInfoShow />
       {product && (
-        <div className="bg-fourth py-5">
+        <div className="bg-fourth py-3">
           <div className="w-4/5 mx-auto bg-white rounded-md flex p-5 shadow-xl">
             <div className="m-5 w-1/2">
               <img
@@ -283,13 +283,10 @@ export default function ProductDetail() {
             </div>
           </div>
 
-          <div className="w-4/5 mx-auto bg-white rounded-md p-5 mt-7 shadow-lg">
-            <h1 className="font-bold text-primary text-2xl">
+          <div className="w-4/5 mx-auto bg-white rounded-lg p-6 mt-5 shadow-xl space-y-6">
+          <h1 className="font-bold text-primary text-2xl">
               Thông tin chi tiết về sản phẩm
             </h1>
-          </div>
-
-          <div className="w-4/5 mx-auto bg-white rounded-lg p-6 mt-5 shadow-xl space-y-6">
             <p className="text-justify text-base font-medium text-gray-700 leading-relaxed">
               {product.overviewdes}
             </p>
@@ -328,12 +325,11 @@ export default function ProductDetail() {
             )}
           </div>
 
-          <div className="w-4/5 mx-auto bg-secondary rounded-md p-5 mt-7 shadow-2xl">
-            <h1 className="font-bold text-primary text-2xl">
+          
+          <div className="w-4/5 mx-auto bg-white rounded-md p-5 mt-3 mb-7 shadow-2xl">
+          <h1 className="font-bold text-primary text-2xl my-3">
               Bình luận, đánh giá về sản phẩm
             </h1>
-          </div>
-          <div className="w-4/5 mx-auto bg-white rounded-md p-5 mt-7 shadow-2xl">
             <CommentShow />
           </div>
         </div>

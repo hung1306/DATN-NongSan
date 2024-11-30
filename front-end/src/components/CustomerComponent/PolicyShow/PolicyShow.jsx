@@ -25,7 +25,7 @@ const policies = [
 
 function PolicyShow() {
   return (
-    <div className="bg-gradient-to-r from-green-50 to-blue-50 p-8 rounded-lg shadow-2xl">
+    <div className="bg-gradient-to-r from-green-50 to-blue-50 p-8 rounded-lg shadow-2xl mb-5">
       <h2 className="text-3xl font-bold text-primary mb-8 text-center">
         Chính sách của chúng tôi
       </h2>

@@ -789,7 +789,6 @@ const searchOrders = async (req, res) => {
   }
 };
 
-
 // Distributor - Cập nhật trạng thái đơn hàng
 const updateStatusByDistributor = async (req, res) => {
   const { orderId, status } = req.body;
@@ -912,55 +911,33 @@ const getAllShipperOfDeliveryarea = async (req, res) => {
     );
 
     const shippingAddress = shippingAddressResult.rows[0]?.shippingaddress;
+    if (!shippingAddress) {
+      return res.status(400).json({ message: "Địa chỉ giao hàng không hợp lệ" });
+    }
 
-    // Tìm khu vực giao hàng từ địa chỉ
-    const deliveryArea = shippingAddress.match(/Quận\s+\d+/);
+    // Tách địa chỉ giao hàng thành mảng
+    const addressParts = shippingAddress.split(",");
+    const deliveryArea = addressParts[2]?.trim();
     if (!deliveryArea) {
       return res.status(400).json({ message: "Khu vực không hợp lệ" });
     }
 
-    let areaConditions;
-    const area = deliveryArea[0]; // lấy chuỗi khu vực như "Quận 2"
-
     // Xác định khu vực dựa trên input của người dùng
-    if (
-      [
-        "Quận 1",
-        "Quận 2",
-        "Quận 3",
-        "Quận 5",
-        "Quận 10",
-        "Quận 4",
-        "Quận Phú Nhuận",
-        "Quận Bình Thạnh",
-      ].includes(area)
-    ) {
-      areaConditions = "Khu vực 1";
-    } else if (
-      [
-        "Quận 8",
-        "Quận Tân Bình",
-        "Quận Tân Phú",
-        "Quận Gò Vấp",
-        "Quận 11",
-        "Quận 7",
-      ].includes(area)
-    ) {
-      areaConditions = "Khu vực 2";
-    } else if (
-      [
-        "Thủ Đức",
-        "Quận 9",
-        "Quận 12",
-        "Củ Chi",
-        "Hóc Môn",
-        "Quận Bình Chánh",
-        "Cần Giờ",
-        "Nhà Bè",
-      ].includes(area)
-    ) {
-      areaConditions = "Khu vực 3";
-    } else {
+    const areaMapping = {
+      "Khu vực 1": ["Quận 1", "Quận 2", "Quận 3", "Quận 5", "Quận 10", "Quận 4", "Quận Phú Nhuận", "Quận Bình Thạnh"],
+      "Khu vực 2": ["Quận 8", "Quận Tân Bình", "Quận Tân Phú", "Quận Gò Vấp", "Quận 11", "Quận 7"],
+      "Khu vực 3": ["Thủ Đức", "Quận 9", "Quận 12", "Củ Chi", "Hóc Môn", "Quận Bình Chánh", "Cần Giờ", "Nhà Bè"]
+    };
+
+    let areaConditions;
+    for (const [key, value] of Object.entries(areaMapping)) {
+      if (value.includes(deliveryArea)) {
+        areaConditions = key;
+        break;
+      }
+    }
+
+    if (!areaConditions) {
       return res.status(400).json({ message: "Khu vực không hợp lệ" });
     }
 
@@ -972,9 +949,7 @@ const getAllShipperOfDeliveryarea = async (req, res) => {
 
     // Kiểm tra xem có shipper nào không
     if (shippersResult.rows.length === 0) {
-      return res
-        .status(404)
-        .json({ message: "Không tìm thấy shipper cho khu vực này." });
+      return res.status(404).json({ message: "Không tìm thấy shipper cho khu vực này." });
     }
 
     // Trả về danh sách shipper
