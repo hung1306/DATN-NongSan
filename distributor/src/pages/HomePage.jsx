@@ -122,7 +122,7 @@ export default function HomePage() {
           <h2 className="text-center font-bold text-xl mb-4">
             Doanh Số Bán Hàng
           </h2>
-          <BarChart width={400} height={300} data={salesData}>
+          <BarChart width={700} height={320} data={salesData}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="month" />
             <YAxis />

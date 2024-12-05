@@ -138,7 +138,8 @@ export default function CartPage() {
             </h1>
           </div>
 
-          <div className="w-4/5 mx-auto bg-white rounded-lg p-6 my-5 shadow-2xl mt-3 min-h-screen">
+          <div className="w-4/5 mx-auto bg-white rounded-lg p-6 my-3 shadow-2xl min-h-screen">
+          
             <table className="min-w-full divide-y">
               <thead className="bg-white shadow-2xl">
                 <tr className="border rounded-xl">

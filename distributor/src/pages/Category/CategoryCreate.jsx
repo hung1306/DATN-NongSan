@@ -33,7 +33,7 @@ const CreateCategory = ({ onClose, refreshCategoryList }) => {
       setCategorydesErrol("");
     }
 
-    if(standardexpiry <= 0 ){
+    if (standardexpiry <= 0) {
       setStandardexpiryErrol("Tiêu chuẩn hết hạn không được để trống");
       isValid = false;
     } else {
@@ -48,7 +48,6 @@ const CreateCategory = ({ onClose, refreshCategoryList }) => {
     if (!validateForm()) {
       return;
     }
-
     const categorydata = new FormData();
     categorydata.append("categoryname", categoryname);
     categorydata.append("categorydes", categorydes);
@@ -163,7 +162,7 @@ const CreateCategory = ({ onClose, refreshCategoryList }) => {
                   {standardexpiryErrol}
                 </p>
               )}
-              </div>
+            </div>
           </div>
           {/* 5 */}
           <div className="flex justify-between my-2">

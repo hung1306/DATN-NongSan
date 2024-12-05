@@ -8,6 +8,7 @@ import os
 from PIL import Image, ImageOps, ImageEnhance, ImageFilter
 import logging
 import random
+import time  # Thêm thư viện time để đo thời gian
 
 # Khởi tạo Flask app
 app = Flask(__name__)
@@ -65,6 +66,9 @@ def search_image():
     image_file.save(image_path)
 
     try:
+        # Đo thời gian bắt đầu
+        start_time = time.time()
+
         # Trích xuất đặc trưng của ảnh tải lên
         query_features = extract_features(image_path)
         
@@ -81,9 +85,16 @@ def search_image():
         similarities = sorted(similarities, key=lambda x: x[1], reverse=True)
         top_product_ids = [item[0] for item in similarities][:5]  # Limit to top 5
         similarities_score = [item[1] for item in similarities][:5]  # Limit to top 5
-        logging.debug(f"Similarities: {similarities_score}")
+        # logging.debug(f"Similarities: {similarities_score}")
 
-        return jsonify({'product_ids': top_product_ids})
+        # Đo thời gian kết thúc
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+        logging.debug(f"Processing time: {elapsed_time:.2f} seconds")
+        return jsonify({
+            'product_ids': top_product_ids,
+            'processing_time': f"{elapsed_time:.2f} seconds"
+        })
 
     except Exception as e:
         logging.error(f"Error during image search: {e}")

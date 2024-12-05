@@ -2,9 +2,13 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faShoppingCart, faMoneyBillWave, faStar } from "@fortawesome/free-solid-svg-icons";
+import {
+  faShoppingCart,
+  faMoneyBillWave,
+  faStar,
+} from "@fortawesome/free-solid-svg-icons";
 import { addToCart } from "../../../service/CustomerService/cartService.js";
-import {jwtDecode} from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import FooterCustomer from "../../../components/CustomerComponent/FooterCustomer/FooterCustomer.jsx";
@@ -31,11 +35,12 @@ export default function ProductDetail() {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const [productResponse, reviewResponse, batchResponse] = await Promise.all([
-          axios.get(`${API_BASE_URL}/product/${id}`),
-          getAmountOfReview(id),
-          axios.get(`${API_BASE_URL}/product-batch/customer/${id}`)
-        ]);
+        const [productResponse, reviewResponse, batchResponse] =
+          await Promise.all([
+            axios.get(`${API_BASE_URL}/product/${id}`),
+            getAmountOfReview(id),
+            axios.get(`${API_BASE_URL}/product-batch/customer/${id}`),
+          ]);
         setProduct(productResponse.data);
         setReviewCount(reviewResponse.data);
         setBatchList(batchResponse.data);
@@ -50,7 +55,9 @@ export default function ProductDetail() {
 
   const handleIncrease = () => setQuantity((prev) => prev + 1);
   const handleDecrease = () => {
-    quantity === 1 ? toast.error("Số lượng không thể nhỏ hơn 1") : setQuantity(prev => prev - 1);
+    quantity === 1
+      ? toast.error("Số lượng không thể nhỏ hơn 1")
+      : setQuantity((prev) => prev - 1);
   };
 
   const changeImage = (newImage) => {
@@ -114,7 +121,11 @@ export default function ProductDetail() {
                 }`}
               />
               <div className="flex justify-center mt-10">
-                {[product.productimage1, product.productimage2, product.productimage3].map((image, index) => (
+                {[
+                  product.productimage1,
+                  product.productimage2,
+                  product.productimage3,
+                ].map((image, index) => (
                   <img
                     key={index}
                     src={image}
@@ -139,9 +150,7 @@ export default function ProductDetail() {
                   <span className="text-primary font-medium mr-1">
                     Giao hàng từ:{" "}
                   </span>
-                  <span className="font-semibold">
-                    {product.farmprovince}
-                  </span>
+                  <span className="font-semibold">{product.farmprovince}</span>
                 </div>
 
                 <div className="m-2">
@@ -187,9 +196,7 @@ export default function ProductDetail() {
                     >
                       -
                     </button>
-                    <span className="w-1/3 px-2 text-center">
-                      {quantity}
-                    </span>
+                    <span className="w-1/3 px-2 text-center">{quantity}</span>
                     <button
                       onClick={handleIncrease}
                       className="w-1/3 px-2 py-1 rounded-md text-gray-900 hover:bg-gray-200"
@@ -206,9 +213,15 @@ export default function ProductDetail() {
                     <div
                       key={batch.batchid}
                       className={`p-4 rounded-lg mr-4 my-4 shadow-lg cursor-pointer border hover:opacity-80 transition duration-300 ease-in-out transform hover:scale-105 w-5/12 ${
-                        batchId === batch.batchid ? "bg-primary text-white" : "bg-fourth"
+                        batchId === batch.batchid
+                          ? "bg-primary text-white"
+                          : "bg-fourth"
                       }`}
-                      onClick={() => setBatchId(batchId === batch.batchid ? "" : batch.batchid)}
+                      onClick={() =>
+                        setBatchId(
+                          batchId === batch.batchid ? "" : batch.batchid
+                        )
+                      }
                     >
                       <div className="mb-2 text-center">
                         <span
@@ -222,7 +235,9 @@ export default function ProductDetail() {
                       <div className="mb-2">
                         <span
                           className={`font-medium mr-1 ${
-                            batchId === batch.batchid ? "text-white" : "text-primary"
+                            batchId === batch.batchid
+                              ? "text-white"
+                              : "text-primary"
                           }`}
                         >
                           Giá:{" "}
@@ -232,13 +247,16 @@ export default function ProductDetail() {
                             batchId === batch.batchid ? "text-white" : ""
                           }`}
                         >
-                          {Number(batch.batchprice).toLocaleString()} ({batch.unitofmeasure})
+                          {Number(batch.batchprice).toLocaleString()} (
+                          {batch.unitofmeasure})
                         </span>
                       </div>
                       <div className="mb-2">
                         <span
                           className={`font-medium mr-1 ${
-                            batchId === batch.batchid ? "text-white" : "text-primary"
+                            batchId === batch.batchid
+                              ? "text-white"
+                              : "text-primary"
                           }`}
                         >
                           Giảm giá:{" "}
@@ -262,10 +280,7 @@ export default function ProductDetail() {
                   >
                     <>
                       Thêm vào giỏ hàng
-                      <FontAwesomeIcon
-                        icon={faShoppingCart}
-                        className="ml-2"
-                      />
+                      <FontAwesomeIcon icon={faShoppingCart} className="ml-2" />
                     </>
                   </button>
                   <button
@@ -273,10 +288,7 @@ export default function ProductDetail() {
                     onClick={() => navigate("/cart")}
                   >
                     Mua ngay{" "}
-                    <FontAwesomeIcon
-                      icon={faMoneyBillWave}
-                      className="ml-2"
-                    />
+                    <FontAwesomeIcon icon={faMoneyBillWave} className="ml-2" />
                   </button>
                 </div>
               </div>
@@ -284,7 +296,7 @@ export default function ProductDetail() {
           </div>
 
           <div className="w-4/5 mx-auto bg-white rounded-lg p-6 mt-5 shadow-xl space-y-6">
-          <h1 className="font-bold text-primary text-2xl">
+            <h1 className="font-bold text-primary text-2xl">
               Thông tin chi tiết về sản phẩm
             </h1>
             <p className="text-justify text-base font-medium text-gray-700 leading-relaxed">
@@ -325,13 +337,14 @@ export default function ProductDetail() {
             )}
           </div>
 
-          
           <div className="w-4/5 mx-auto bg-white rounded-md p-5 mt-3 mb-7 shadow-2xl">
-          <h1 className="font-bold text-primary text-2xl my-3">
+            <h1 className="font-bold text-primary text-2xl my-3">
               Bình luận, đánh giá về sản phẩm
             </h1>
             <CommentShow />
           </div>
+
+          
         </div>
       )}
       <FooterCustomer />

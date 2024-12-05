@@ -8,7 +8,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import { API_BASE_URL } from "../../../config/config";
-import { jwtDecode } from "jwt-decode";
+import {jwtDecode} from "jwt-decode";
 import { toast } from "react-toastify";
 import { useNavigate, useParams } from "react-router-dom";
 import { formatDate } from "../../../utils/formatDate";

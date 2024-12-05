@@ -87,7 +87,7 @@ export default function PurchasesHistory() {
       <div className="w-9/12 mx-auto bg-white rounded-md p-4 shadow-2xl">
         <h1 className="font-bold text-primary text-3xl">Lịch sử mua hàng</h1>
       </div>
-      <div className="w-9/12 mx-auto mb-7 bg-white rounded-md p-3 mt-3 shadow-2xl min-h-screen">
+      <div className="w-9/12 mx-auto mb-7 bg-white rounded-md p-3 my-3 shadow-2xl min-h-screen">
         <table className="min-w-full divide-y divide-gray-300 ">
           <thead className="bg-secondary">
             <tr>
