@@ -119,7 +119,7 @@ export default function HomePage() {
 
         {/* Biểu đồ doanh số bán hàng */}
         <div className="w-6/12 bg-white h-96 m-7 rounded-lg shadow-lg p-5">
-          <h2 className="text-center font-bold text-xl mb-4">
+          <h2 className="text-center text-primary font-bold text-2xl mb-4">
             Doanh Số Bán Hàng
           </h2>
           <BarChart width={700} height={320} data={salesData}>

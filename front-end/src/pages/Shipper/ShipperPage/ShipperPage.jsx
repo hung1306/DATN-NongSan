@@ -5,6 +5,7 @@ import { API_BASE_URL } from "../../../config/config";
 import ShipperDetail from "./ShipperDetail";
 import { Pagination } from "../../../components/Pagination";
 import { jwtDecode } from "jwt-decode";
+import FooterCustomer from "../../../components/CustomerComponent/FooterCustomer/FooterCustomer";
 
 export default function ShipperPage() {
   const [orders, setOrders] = useState([]);

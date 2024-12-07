@@ -23,7 +23,7 @@ export default function ShipperDetail({
           `${API_BASE_URL}/shipper/orderdetail/${orderIdDetail}`
         );
         setOrderDetail(response.data);
-        setOrderStatus(response.data.orderstatus); // Initialize orderStatus based on fetched data
+        setOrderStatus(response.data.orderstatus);
       } catch (error) {
         console.error("Failed to fetch order details:", error);
       }
@@ -68,7 +68,7 @@ export default function ShipperDetail({
 
   return (
     <div className="fixed inset-0 bg-gray-900 bg-opacity-70 flex justify-center items-center z-50">
-      <div className="bg-white rounded-lg shadow-lg w-11/12 sm:w-8/12 lg:w-6/12 xl:w-5/12 p-6 relative">
+      <div className="bg-white rounded-lg shadow-lg w-11/12 sm:w-8/12 lg:w-6/12 xl:w-5/12 p-6 relative h-4/5 overflow-auto">
         <button
           onClick={onClose}
           className="absolute hover:bg-primary hover:px-2 px-2 top-3 right-3 text-primary hover:text-white text-3xl"
@@ -93,7 +93,7 @@ export default function ShipperDetail({
             ],
           ].map(([label, value]) => (
             <div
-              className="flex justify-between items-center text-lg"
+              className="flex justify-between items-center text-lg text-primary"
               key={label}
             >
               <p className="font-medium w-1/3">{label}</p>
@@ -101,7 +101,7 @@ export default function ShipperDetail({
             </div>
           ))}
 
-          <div className="flex items-center text-lg">
+          <div className="flex items-center text-lg text-primary">
             <p className="font-medium w-1/3">Trạng thái đơn hàng:</p>
             <div className="w-2/3 flex items-center space-x-2">
               <select
@@ -130,6 +130,28 @@ export default function ShipperDetail({
                 Thay đổi
               </button>
             </div>
+          </div>
+
+          {/* Product Items */}
+          <h3 className="text-lg font-bold text-primary mt-6">Danh sách sản phẩm:</h3>
+          <div className="space-y-4">
+            {orderDetail?.items?.map((item) => (
+              <div
+                key={item.productId}
+                className="flex items-center border border-gray-300 p-4 rounded-lg"
+              >
+                <img
+                  src={item.productImage}
+                  alt={item.productName}
+                  className="w-20 h-16 object-cover rounded-lg mr-4"
+                />
+                <div className="flex-1 text-primary ">
+                  <p className="font-bold  text-lg">{item.productName}</p>
+                  <p className="text-sm ">{item.overview}</p>
+                  <p className="text-sm font-bold">Số lượng: {item.quantity}</p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>

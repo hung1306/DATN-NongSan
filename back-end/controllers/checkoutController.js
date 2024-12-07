@@ -1037,6 +1037,43 @@ const getAllOrderToShipper = async (req, res) => {
   }
 };
 
+// const getOrderDetailShipper = async (req, res) => {
+//   const { orderIdDetail } = req.params; // Lấy orderIdDetail từ URL params
+
+//   try {
+//     // Truy vấn chi tiết đơn hàng và thông tin khách hàng
+//     const orderDetailQuery = `
+//       SELECT 
+//         o.orderid, 
+//         o.shippingaddress, 
+//         o.totalamount, 
+//         o.orderstatus, 
+//         o.ordercreatetime, 
+//         o.orderupdatetime,
+//         u.fullname AS customer_name, 
+//         u.phonenumber AS customer_phone
+//       FROM "Order" o
+//       JOIN "User" u ON o.userid = u.userid
+//       WHERE o.orderid = $1
+//     `;
+
+//     const orderDetailResult = await pool.query(orderDetailQuery, [
+//       orderIdDetail,
+//     ]);
+
+//     // Kiểm tra xem đơn hàng có tồn tại không
+//     if (orderDetailResult.rows.length === 0) {
+//       return res.status(404).json({ message: "Đơn hàng không tồn tại" });
+//     }
+
+//     // Trả về thông tin chi tiết đơn hàng
+//     res.json(orderDetailResult.rows[0]);
+//   } catch (error) {
+//     console.error("Error fetching order detail:", error);
+//     res.status(500).json({ message: "Internal Server Error" });
+//   }
+// };
+
 const getOrderDetailShipper = async (req, res) => {
   const { orderIdDetail } = req.params; // Lấy orderIdDetail từ URL params
 
@@ -1057,22 +1094,64 @@ const getOrderDetailShipper = async (req, res) => {
       WHERE o.orderid = $1
     `;
 
-    const orderDetailResult = await pool.query(orderDetailQuery, [
-      orderIdDetail,
-    ]);
+    const orderDetailResult = await pool.query(orderDetailQuery, [orderIdDetail]);
 
     // Kiểm tra xem đơn hàng có tồn tại không
     if (orderDetailResult.rows.length === 0) {
       return res.status(404).json({ message: "Đơn hàng không tồn tại" });
     }
 
+    // Truy vấn danh sách sản phẩm từ bảng OrderItem
+    const orderItemsQuery = `
+      SELECT 
+        oi.productid, 
+        oi.quantityofitem 
+      FROM orderitem oi
+      WHERE oi.orderid = $1
+    `;
+
+    const orderItemsResult = await pool.query(orderItemsQuery, [orderIdDetail]);
+
+    // Lấy thông tin chi tiết từng sản phẩm
+    const productDetails = [];
+    for (const item of orderItemsResult.rows) {
+      const getProductSQL = `
+        SELECT 
+          p.productid, 
+          p.productimage1, 
+          p.productname, 
+          p.overviewdes 
+        FROM product p 
+        WHERE p.productid = $1
+      `;
+      const productResult = await pool.query(getProductSQL, [item.productid]);
+
+      // Kiểm tra nếu sản phẩm không tồn tại
+      if (productResult.rows.length > 0) {
+        productDetails.push({
+          productId: productResult.rows[0].productid,
+          productImage: productResult.rows[0].productimage1,
+          productName: productResult.rows[0].productname,
+          overview: productResult.rows[0].overviewdes,
+          quantity: item.quantityofitem,
+        });
+      }
+    }
+
+    // Kết hợp thông tin đơn hàng và danh sách sản phẩm
+    const orderDetail = {
+      ...orderDetailResult.rows[0],
+      items: productDetails,
+    };
+
     // Trả về thông tin chi tiết đơn hàng
-    res.json(orderDetailResult.rows[0]);
+    res.json(orderDetail);
   } catch (error) {
     console.error("Error fetching order detail:", error);
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
 
 module.exports = {
   addCheckOut,

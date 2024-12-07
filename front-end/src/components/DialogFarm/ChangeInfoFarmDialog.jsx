@@ -137,7 +137,7 @@ export default function ChangeInfoDialog({ onClose, farm, refreshFarm }) {
 
   return (
     <div className="z-50 fixed top-0 left-0 inset-0 bg-gray-900 bg-opacity-80 flex justify-center items-center m-auto">
-      <div className="bg-white p-4 rounded-lg w-1/2 m-auto text-primary h-7/12 overflow-auto shadow-xl border border-primary">
+      <div className="bg-white p-4 rounded-lg w-1/2 h-4/5 m-auto text-primary h-7/12 overflow-auto shadow-xl border border-primary">
         {loading ? (
           <Loading />
         ) : (
@@ -304,7 +304,7 @@ export default function ChangeInfoDialog({ onClose, farm, refreshFarm }) {
                   <label className="block text-xl text-primary font-bold mb-2">
                     Dịch vụ trang trại
                   </label>
-                  <input
+                  <textarea
                     type="text"
                     placeholder="Nhập dịch vụ"
                     className="bg-fourth text-base text-primary p-2 rounded-xl w-full border border-gray-500"
@@ -321,7 +321,7 @@ export default function ChangeInfoDialog({ onClose, farm, refreshFarm }) {
                   <label className="block text-xl text-primary font-bold mb-2">
                     Lời mời trang trại
                   </label>
-                  <input
+                  <textarea
                     type="text"
                     placeholder="Nhập lời mời"
                     className="bg-fourth text-base text-primary p-2 rounded-xl w-full border border-gray-500"
@@ -336,7 +336,7 @@ export default function ChangeInfoDialog({ onClose, farm, refreshFarm }) {
                   <label className="block text-xl text-primary font-bold mb-2">
                     Mô tả trang trại
                   </label>
-                  <input
+                  <textarea
                     type="text"
                     placeholder="Nhập mô tả"
                     className="bg-fourth text-base text-primary p-2 rounded-xl w-full border border-gray-500"

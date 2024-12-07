@@ -250,10 +250,11 @@ const CheckoutPage = () => {
   return (
     <div className="bg-fourth">
       <HeaderCustomer />
-      <div className="w-4/5 mx-auto bg-white rounded-md p-5 mt-36 shadow-2xl">
+      <div className="bg-fourth mt-36 h-5"></div>
+      <div className="w-4/5 mx-auto bg-white rounded-md p-5 shadow-2xl">
         <h1 className="font-bold text-primary text-2xl">THÔNG TIN ĐƠN HÀNG</h1>
       </div>
-      <div className="w-4/5 mx-auto bg-white rounded-md p-5 py-7 mt-5 flex justify-center shadow-2xl mb-10">
+      <div className="w-4/5 mx-auto bg-white rounded-md p-5 py-7 mt-3 flex justify-center shadow-2xl mb-10">
         <div className="w-1/2 justify-between">
           <h1 className="font-bold text-2xl mb-4 text-primary">
             Thông tin sản phẩm

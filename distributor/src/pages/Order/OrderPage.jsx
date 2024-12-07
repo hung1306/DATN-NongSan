@@ -84,7 +84,7 @@ export default function OrderPage() {
               <div className="relative w-1/4">
                 <input
                   type="text"
-                  placeholder="Tìm kiếm sản phẩm"
+                  placeholder="Tìm kiếm đơn hàng"
                   className="w-full p-2 border rounded-lg placeholder-color pr-5 text-primary border-black"
                   value={searchInput}
                   onChange={(e) => setSearchInput(e.target.value)}

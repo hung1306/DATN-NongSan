@@ -271,7 +271,7 @@ const registerFarmerStep1 = async (req, res) => {
     const fullnameError = validate.validateFullname(fullname);
     if (fullnameError) return res.status(400).send(fullnameError);
 
-    const phonenumberError =validate. validatePhonenumber(phonenumber);
+    const phonenumberError = validate.validatePhonenumber(phonenumber);
     if (phonenumberError) return res.status(400).send(phonenumberError);
 
     if (!role) return res.status(400).send("Vai trò không được để trống.");
@@ -279,18 +279,24 @@ const registerFarmerStep1 = async (req, res) => {
 
     if (!street) return res.status(400).send("Đường không được để trống.");
     if (!commune) return res.status(400).send("Xã/Phường không được để trống.");
-    if (!district) return res.status(400).send("Quận/Huyện không được để trống.");
-    if (!province) return res.status(400).send("Tỉnh/Thành phố không được để trống.");
+    if (!district)
+      return res.status(400).send("Quận/Huyện không được để trống.");
+    if (!province)
+      return res.status(400).send("Tỉnh/Thành phố không được để trống.");
 
     // Kiểm tra số CMND và ngày sinh
-    if (!indentitycard) return res.status(400).send("Số CMND không được để trống.");
-    if (!/^\d+$/.test(indentitycard)) return res.status(400).send("Số CMND phải là số.");
+    if (!indentitycard)
+      return res.status(400).send("Số CMND không được để trống.");
+    if (!/^\d+$/.test(indentitycard))
+      return res.status(400).send("Số CMND phải là số.");
 
     if (!dob) return res.status(400).send("Ngày sinh không được để trống.");
     const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-    if (!dateRegex.test(dob)) return res.status(400).send("Ngày sinh phải có định dạng YYYY-MM-DD.");
+    if (!dateRegex.test(dob))
+      return res.status(400).send("Ngày sinh phải có định dạng YYYY-MM-DD.");
     const date = new Date(dob);
-    if (isNaN(date.getTime())) return res.status(400).send("Ngày sinh không hợp lệ.");
+    if (isNaN(date.getTime()))
+      return res.status(400).send("Ngày sinh không hợp lệ.");
 
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
@@ -319,7 +325,9 @@ const registerFarmerStep1 = async (req, res) => {
       [fullname]
     );
     if (existingFullname.rows.length > 0) {
-      return res.status(400).send("Họ và tên đã tồn tại, vui lòng chọn họ và tên khác");
+      return res
+        .status(400)
+        .send("Họ và tên đã tồn tại, vui lòng chọn họ và tên khác");
     }
 
     // Check for existing phonenumber
@@ -328,7 +336,9 @@ const registerFarmerStep1 = async (req, res) => {
       [phonenumber]
     );
     if (existingPhonenumber.rows.length > 0) {
-      return res.status(400).send("Số điện thoại đã tồn tại, vui lòng chọn số điện thoại khác");
+      return res
+        .status(400)
+        .send("Số điện thoại đã tồn tại, vui lòng chọn số điện thoại khác");
     }
 
     let avatarUrl = null;
@@ -371,7 +381,6 @@ const registerFarmerStep1 = async (req, res) => {
   }
 };
 
-
 const registerFarmerStep2 = async (req, res) => {
   const { userId } = req.params;
   const {
@@ -391,28 +400,48 @@ const registerFarmerStep2 = async (req, res) => {
   } = req.body;
 
   // Kiểm tra xem các thông tin bắt buộc đã được gửi lên từ client chưa
-  if (!farmname) return res.status(400).send("Tên trang trại không được để trống.");
-  if (!farmtype) return res.status(400).send("Loại trang trại không được để trống.");
-  if (!farmemail) return res.status(400).send("Email trang trại không được để trống.");
-  if (!farmarea) return res.status(400).send("Diện tích trang trại không được để trống.");
-  if (!farmdescription) return res.status(400).send("Mô tả trang trại không được để trống.");
-  if (!farmphone) return res.status(400).send("Số điện thoại trang trại không được để trống.");
-  if (!farmproductstotal) return res.status(400).send("Tổng sản phẩm trang trại không được để trống.");
-  if (!farmservice) return res.status(400).send("Dịch vụ trang trại không được để trống.");
-  if (!farminvite) return res.status(400).send("Lời mời trang trại không được để trống.");
+  if (!farmname)
+    return res.status(400).send("Tên trang trại không được để trống.");
+  if (!farmtype)
+    return res.status(400).send("Loại trang trại không được để trống.");
+  if (!farmemail)
+    return res.status(400).send("Email trang trại không được để trống.");
+  if (!farmarea)
+    return res.status(400).send("Diện tích trang trại không được để trống.");
+  if (!farmdescription)
+    return res.status(400).send("Mô tả trang trại không được để trống.");
+  if (!farmphone)
+    return res
+      .status(400)
+      .send("Số điện thoại trang trại không được để trống.");
+  if (!farmproductstotal)
+    return res
+      .status(400)
+      .send("Tổng sản phẩm trang trại không được để trống.");
+  if (!farmservice)
+    return res.status(400).send("Dịch vụ trang trại không được để trống.");
+  if (!farminvite)
+    return res.status(400).send("Lời mời trang trại không được để trống.");
 
   if (!farmstreet) return res.status(400).send("Đường không được để trống.");
-  if (!farmcommune) return res.status(400).send("Xã/Phường không được để trống.");
-  if (!farmdistrict) return res.status(400).send("Quận/Huyện không được để trống.");
-  if (!farmprovince) return res.status(400).send("Tỉnh/Thành phố không được để trống.");
+  if (!farmcommune)
+    return res.status(400).send("Xã/Phường không được để trống.");
+  if (!farmdistrict)
+    return res.status(400).send("Quận/Huyện không được để trống.");
+  if (!farmprovince)
+    return res.status(400).send("Tỉnh/Thành phố không được để trống.");
 
   // Validate email format
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(farmemail)) return res.status(400).send("Email trang trại không hợp lệ.");
+  if (!emailRegex.test(farmemail))
+    return res.status(400).send("Email trang trại không hợp lệ.");
 
   // Validate phone number format
   const phoneRegex = /^0[0-9]{9}$/;
-  if (!phoneRegex.test(farmphone)) return res.status(400).send("Số điện thoại trang trại phải có 10 chữ số và bắt đầu bằng số 0.");
+  if (!phoneRegex.test(farmphone))
+    return res
+      .status(400)
+      .send("Số điện thoại trang trại phải có 10 chữ số và bắt đầu bằng số 0.");
 
   try {
     const uploadImage = async (image) => {
@@ -576,7 +605,7 @@ const shipperRegister = async (req, res) => {
     const fullnameError = validate.validateFullname(fullname);
     if (fullnameError) return res.status(400).send(fullnameError);
 
-    const phonenumberError =validate. validatePhonenumber(phonenumber);
+    const phonenumberError = validate.validatePhonenumber(phonenumber);
     if (phonenumberError) return res.status(400).send(phonenumberError);
 
     if (!role) return res.status(400).send("Vai trò không được để trống.");

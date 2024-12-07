@@ -255,7 +255,7 @@ export default function FarmerRegisterStep2() {
       navigate(`/farmer/register/step3?userId=${userId}`);
     } catch (error) {
       console.error("Error during registration:", error);
-      toast.error(error.response.data);
+      toast.error(error.response.message);
     } finally {
       setLoading(false);
     }
