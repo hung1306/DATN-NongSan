@@ -139,9 +139,8 @@ export default function PurchasesHistory() {
                   </td>
 
                   <td className="p-7 text-lg text-center text-gray-900 bg-fourth ">
-                    {Number(purchase.totalAmount)
-                      .toFixed(0)
-                      .toLocaleString("vi-VN")}{" "}
+                
+                    {Number(purchase.totalAmount).toLocaleString()}{" "}
                     đ
                   </td>
 

@@ -56,7 +56,7 @@ const CheckoutPage = () => {
       shippingInfo.estimatedDeliveryTime
     ).getTime();
     const deliveryDistrict = shippingInfo.districtDelivery;
-
+  
     let adjustedTime;
     if (
       deliveryDistrict.includes("Quận 1") ||
@@ -80,14 +80,22 @@ const CheckoutPage = () => {
     } else {
       adjustedTime = new Date(estimatedDeliveryTime + 4 * 60 * 60 * 1000); // add 4 hours
     }
-
+  
+    // Kiểm tra nếu thời gian giao hàng nằm trong khoảng từ 22h đến 6h sáng hôm sau
+    const deliveryHour = adjustedTime.getHours();
+    if (deliveryHour >= 22 || deliveryHour < 6) {
+      // Đặt lại thời gian giao hàng thành 6h sáng hôm sau
+      adjustedTime.setHours(6, 0, 0, 0);
+      adjustedTime.setDate(adjustedTime.getDate() + (deliveryHour >= 22 ? 1 : 0));
+    }
+  
     // Làm tròn thời gian theo giờ
     const startOfHour = new Date(adjustedTime);
     startOfHour.setMinutes(0, 0, 0);
-
+  
     const endOfHour = new Date(startOfHour);
     endOfHour.setHours(startOfHour.getHours() + 1);
-
+  
     return {
       start: startOfHour,
       end: endOfHour,
@@ -145,15 +153,14 @@ const CheckoutPage = () => {
           className="w-1/5 object-cover rounded"
         />
         <h3 className="w-1/4 text-lg font-bold text-primary ml-2 text-center">
-          <p>
-          {item.productname}
-          </p>
-          <span className="font-normal italic">
-            ({item.farmname})
-          </span>
+          <p>{item.productname}</p>
+          <span className="font-normal italic">({item.farmname})</span>
         </h3>
         <p className="w-1/4 text-lg font-semibold text-primary text-center">
-          {Math.round(item.batchprice * (1 - 0.01 * item.promotion))} đ
+          {Number(
+            Math.round(item.batchprice * (1 - 0.01 * item.promotion))
+          ).toLocaleString()}{" "}
+          đ
         </p>
         <p className="w-1/4 text-lg font-semibold text-primary text-center">
           {item.quantity} kg
@@ -410,19 +417,19 @@ const CheckoutPage = () => {
               <div className="flex items-center ml-5 my-3">
                 <p className="font-bold w-1/3 text-left">Tạm tính:</p>
                 <p className="text-gray-900 w-2/3 text-left font-bold">
-                  {calculateTotalPrice()} đ
+                  {Number(calculateTotalPrice()).toLocaleString()} đ
                 </p>
               </div>
               <div className="flex items-center ml-5 my-3">
                 <p className="font-bold w-1/3 text-left">Phí vận chuyển:</p>
                 <p className="text-gray-900 w-2/3 text-left font-bold">
-                  {calculateShippingFee()} đ
+                  {Number(calculateShippingFee()).toLocaleString()} đ
                 </p>
               </div>
               <div className="flex items-center ml-5 my-3">
                 <p className="font-bold  w-1/3 text-left">Tổng cộng:</p>
                 <p className="text-gray-900 w-2/3 text-left font-bold">
-                  {calculateTotalPrice() + calculateShippingFee()} đ
+                  {Number(calculateTotalPrice() + calculateShippingFee()).toLocaleString()} đ
                 </p>
               </div>
             </div>

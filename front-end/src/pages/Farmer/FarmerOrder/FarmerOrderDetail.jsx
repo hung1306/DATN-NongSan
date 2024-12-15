@@ -159,7 +159,8 @@ export default function FarmerOrderDetail({ onClose, orderIdDetail, refreshOrder
             </div>
             <div className="flex my-2">
               <p className="font-medium text-xl w-1/4 mr-3">Tổng tiền:</p>
-              <p className="text-lg w-3/4">{orderDetail?.totalAmount} đ</p>
+              <p className="text-lg w-3/4">
+              {Number(orderDetail?.totalAmount).toLocaleString()} đ</p>
             </div>
             <div className="flex my-2">
               <p className="font-medium text-xl w-1/4 mr-3">

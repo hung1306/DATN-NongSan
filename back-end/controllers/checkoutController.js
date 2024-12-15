@@ -23,7 +23,7 @@ const addCheckOut = async (req, res) => {
   }
 
   const orderStatus = "Đã tạo";
-  const paymentStatus = "Đang chờ thanh toán";
+  const paymentStatus = "Chưa thanh toán";
   const currentTime = new Date();
 
   const sqlOrder = `INSERT INTO "Order" (userid, estimatedelivery, shippingaddress, orderstatus, ordercreatetime, orderupdatetime, totalamount) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING orderid`;
@@ -554,7 +554,7 @@ const createPaymentSession = async (req, res) => {
       VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING paymentid`;
 
     const paymentMethod = "Thanh toán online"; // Vì đây là thanh toán online
-    const paymentStatus = "Đang chờ thanh toán"; // Thanh toán chưa hoàn tất
+    const paymentStatus = "Chưa thanh toán"; // Thanh toán chưa hoàn tất
     const paymentCreateTime = currentTime;
     const paymentUpdateTime = currentTime;
 

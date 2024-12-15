@@ -297,7 +297,7 @@ export default function CreateProductBatch({ onClose, producid }) {
 
               {productBatchError.batchprice && (
                 <p className="text-red-500 mt-1 text-xs italic">
-                  {productBatchError.batchprice}
+                  {Number(productBatchError.batchprice).toLocaleString()}
                 </p>
               )}
             </div>

@@ -101,8 +101,8 @@ export default function HeaderShipper() {
           <h1 className="font-bold text-3xl sm:text-4xl mx-2 sm:mx-5">
             <Link to="/shipper">AgriMart</Link>
           </h1>
-          <div className="text-2xl font-medium">
-            <p>Kênh giao hàng</p>
+          <div className="text-xl font-medium">
+            <p>Kênh người giao hàng</p>
           </div>
         </section>
         <section className="flex space-x-2 text-xl">

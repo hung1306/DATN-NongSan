@@ -85,7 +85,7 @@ export default function ShipperDetail({
             ["Tên khách hàng:", orderDetail?.customer_name],
             ["Số điện thoại:", orderDetail?.customer_phone],
             ["Địa chỉ giao hàng:", orderDetail?.shippingaddress],
-            ["Tổng tiền:", `${orderDetail?.totalamount} đ`],
+            ["Tổng tiền:", `${Number(orderDetail?.totalamount).toLocaleString()} đ`],
             ["Ngày tạo đơn:", formatDate(orderDetail?.ordercreatetime)],
             [
               "Ngày cập nhật:",

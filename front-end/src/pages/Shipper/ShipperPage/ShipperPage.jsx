@@ -5,7 +5,6 @@ import { API_BASE_URL } from "../../../config/config";
 import ShipperDetail from "./ShipperDetail";
 import { Pagination } from "../../../components/Pagination";
 import { jwtDecode } from "jwt-decode";
-import FooterCustomer from "../../../components/CustomerComponent/FooterCustomer/FooterCustomer";
 
 export default function ShipperPage() {
   const [orders, setOrders] = useState([]);
@@ -109,7 +108,7 @@ export default function ShipperPage() {
                         <td className="py-2">{order.phonenumber}</td>
                         <td className="py-2">{order.shippingaddress}</td>
                         <td className="py-2">
-                          {order.totalamount.toLocaleString()} đ
+                          {Number(order.totalamount).toLocaleString()}
                         </td>
                         <td className="py-2">{order.orderstatus}</td>
                         <td className="py-2">

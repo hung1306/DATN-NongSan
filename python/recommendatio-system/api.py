@@ -119,7 +119,7 @@ def recommend():
             hybrid_scores = alpha * collab_scores + (1 - alpha) * content_scores
             hybrid_scores = hybrid_scores.fillna(0)
 
-            top_n = 36
+            top_n = 16
             top_products = hybrid_scores.sort_values(ascending=False).head(top_n).index.tolist()
             recommendations = product_content_df[product_content_df['productid'].isin(top_products)].to_dict(orient='records')
 
@@ -141,7 +141,7 @@ def recommend():
         else:
             product_popularity = user_item_df.groupby('product_id')['interaction_score'].sum().reset_index()
             product_popularity = product_popularity.sort_values(by='interaction_score', ascending=False)
-            top_n_popular = 32
+            top_n_popular = 16
             popular_products = product_popularity['product_id'].head(top_n_popular).tolist()
             recommendations = product_content_df[product_content_df['productid'].isin(popular_products)].to_dict(orient='records')
         
