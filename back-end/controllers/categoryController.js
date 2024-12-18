@@ -218,9 +218,9 @@ exports.getCategoryCount = async (req, res) => {
         GROUP BY category.categoryname`
     );
 
-    res.json(categorySalesResult.rows );
+    res.json(categorySalesResult.rows);
   } catch (error) {
     console.error("Error fetching category count:", error);
     res.status(500).json({ message: "Internal Server Error" });
   }
-}
+};

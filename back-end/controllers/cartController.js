@@ -42,6 +42,15 @@ const insertCart = async (userId, productId, quantity, batchId) => {
   return result.rows[0];
 };
 
+// Hàm để thêm tương tác của người dùng vào bảng user_item_interactions
+const addUserInteraction = async (userId, productId, interactionType, interactionScore) => {
+  const query = `
+    INSERT INTO user_item_interactions (user_id, productid, interaction_type, interaction_score) 
+    VALUES ($1, $2, $3, $4)
+  `;
+  await pool.query(query, [userId, productId, interactionType, interactionScore]);
+};
+
 exports.addToCart = async (req, res) => {
   const { userId, productId, quantity, batchId } = req.body;
 
@@ -77,10 +86,19 @@ exports.addToCart = async (req, res) => {
         productId,
         batchId
       );
+
+      // Thêm vào bảng user_item_interactions
+      await addUserInteraction(userId, productId, 'add_to_cart', "3");
+
       return res.status(200).json(updatedCart);
     }
 
     const cart = await insertCart(userId, productId, quantity, batchId);
+    const interaction_type = 'add_to_cart';
+    const interaction_score = 3;
+    // Thêm vào bảng user_item_interactions
+    await addUserInteraction(userId, productId, interaction_type, interaction_score);
+
     res.status(200).json(cart);
   } catch (error) {
     console.error("Error adding to cart:", error);
@@ -107,10 +125,6 @@ exports.getAllCart = async (req, res) => {
     ]);
 
     const totalCount = parseInt(totalCountResult.rows[0].count);
-
-    // if (cart.rows.length === 0) {
-    //   return res.status(400).json({ message: "Giỏ hàng của bạn đang trống" });
-    // }
 
     // Get product IDs and batch IDs from cart items
     const productIds = cart.rows.map((item) => item.productid);

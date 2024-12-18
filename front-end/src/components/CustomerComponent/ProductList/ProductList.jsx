@@ -3,13 +3,13 @@ import {
   faMapMarkerAlt,
   faTractor,
   faCartPlus,
+  faStar,
 } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import { useState } from "react";
 import ProductBatchDialog from "../ProductBatchDialog/ProductBatchDialog";
 import { toast } from "react-toastify";
-
 
 const ProductList = ({ products }) => {
   // const navigate = useNavigate();
@@ -51,11 +51,25 @@ const ProductList = ({ products }) => {
                   <p className="font-bold text-center text-2xl">
                     {product.productname}
                   </p>
+                  <p className="text-center text-lg text-primary ml-2 mt-1">
+                    (
+                      {product.average_rating ? product.average_rating : "0"}
+                      <FontAwesomeIcon icon={faStar} color="#ffd700" size="1x" />
+                    )
+
+                  </p>
                 </div>
-                <p className="text-sm m-2 text-primary">
-                  Trạng thái sản phẩm:{" "}
+                {product.batchquality === "Mới thu hoạch" && (
+                  <p className="text-sm m-1 text-primary text-center">
+                    <span className="text-primary italic">
+                      (Mới thu hoạch, còn tươi)
+                    </span>
+                  </p>
+                )}
+                <p className="text-sm text-center m-2 text-primary">
+                  Số lượng còn lại:{" "}
                   <span className="text-primary font-bold">
-                    {product.batchquantity ? "Còn hàng" : "Hết hàng"}
+                    {product.batchquantity}
                   </span>
                 </p>
                 <div className="flex justify-between m-3">

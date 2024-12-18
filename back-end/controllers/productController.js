@@ -66,7 +66,41 @@ exports.getProductsByCategoryId = async (req, res) => {
         p.categoryid = $1 AND p.isvisibleweb = true
     `;
     const productsWithFarm = await pool.query(query, [id]);
-    res.json(productsWithFarm.rows);
+
+    // Lấy danh sách id sản phẩm
+    const productIds = productsWithFarm.rows.map((item) => item.productid);
+
+    // Kiểm tra nếu danh sách ID sản phẩm trống
+    if (productIds.length === 0) {
+      return res.status(200).json([]);
+    }
+
+    // Lấy điểm đánh giá trung bình cho mỗi sản phẩm
+    const reviewQuery = `
+      SELECT 
+        productid, 
+        AVG(rating) as average_rating
+      FROM 
+        review
+      WHERE 
+        productid IN (${productIds.map((id) => `'${id}'`).join(",")})
+      GROUP BY 
+        productid
+    `;
+    const reviewResults = await pool.query(reviewQuery);
+    const reviewMap = reviewResults.rows.reduce((acc, row) => {
+      acc[row.productid] = parseFloat(row.average_rating).toFixed(1);
+      return acc;
+    }, {});
+
+    // Kết hợp điểm đánh giá trung bình với danh sách sản phẩm
+    const productsWithRatings = productsWithFarm.rows.map((product) => ({
+      ...product,
+      average_rating: reviewMap[product.productid] || 0,
+    }));
+
+    // Trả về kết quả
+    res.status(200).json(productsWithRatings);
   } catch (error) {
     console.error("Error fetching products:", error);
     res.status(500).json({ message: "Internal Server Error" });
@@ -159,7 +193,41 @@ exports.searchProduct = async (req, res) => {
         AND p.isvisibleweb = true
     `;
     const productsWithFarm = await pool.query(query, [`%${search}%`]);
-    res.json(productsWithFarm.rows);
+
+    // Lấy danh sách id sản phẩm
+    const productIds = productsWithFarm.rows.map((item) => item.productid);
+
+    // Kiểm tra nếu danh sách ID sản phẩm trống
+    if (productIds.length === 0) {
+      return res.status(200).json([]);
+    }
+
+    // Lấy điểm đánh giá trung bình cho mỗi sản phẩm
+    const reviewQuery = `
+      SELECT 
+        productid, 
+        AVG(rating) as average_rating
+      FROM 
+        review
+      WHERE 
+        productid IN (${productIds.map((id) => `'${id}'`).join(",")})
+      GROUP BY 
+        productid
+    `;
+    const reviewResults = await pool.query(reviewQuery);
+    const reviewMap = reviewResults.rows.reduce((acc, row) => {
+      acc[row.productid] = parseFloat(row.average_rating).toFixed(1);
+      return acc;
+    }, {});
+
+    // Kết hợp điểm đánh giá trung bình với danh sách sản phẩm
+    const productsWithRatings = productsWithFarm.rows.map((product) => ({
+      ...product,
+      average_rating: reviewMap[product.productid] || 0,
+    }));
+
+    // Trả về kết quả
+    res.status(200).json(productsWithRatings);
   } catch (error) {
     console.error("Error searching products:", error);
     res.status(500).json({ message: "Internal Server Error" });
@@ -226,12 +294,43 @@ exports.getProductsByFarmId = async (req, res) => {
         p.farmid = $1 AND p.isvisibleweb = true
     `;
     const productsWithFarm = await pool.query(query, [id]);
-    if (productsWithFarm.rows.length === 0) {
+
+    // Lấy danh sách id sản phẩm
+    const productIds = productsWithFarm.rows.map((item) => item.productid);
+
+    // Kiểm tra nếu danh sách ID sản phẩm trống
+    if (productIds.length === 0) {
       return res
         .status(409)
         .json({ message: "No products found for this farm ID" });
     }
-    res.json(productsWithFarm.rows);
+
+    // Lấy điểm đánh giá trung bình cho mỗi sản phẩm
+    const reviewQuery = `
+      SELECT 
+        productid, 
+        AVG(rating) as average_rating
+      FROM 
+        review
+      WHERE 
+        productid IN (${productIds.map((id) => `'${id}'`).join(",")})
+      GROUP BY 
+        productid
+    `;
+    const reviewResults = await pool.query(reviewQuery);
+    const reviewMap = reviewResults.rows.reduce((acc, row) => {
+      acc[row.productid] = parseFloat(row.average_rating).toFixed(1);
+      return acc;
+    }, {});
+
+    // Kết hợp điểm đánh giá trung bình với danh sách sản phẩm
+    const productsWithRatings = productsWithFarm.rows.map((product) => ({
+      ...product,
+      average_rating: reviewMap[product.productid] || 0,
+    }));
+
+    // Trả về kết quả
+    res.status(200).json(productsWithRatings);
   } catch (error) {
     console.error("Error fetching products by farm ID:", error);
     res.status(500).json({ message: "Internal Server Error" });
@@ -802,6 +901,7 @@ exports.searchProductsForDistributor = async (req, res) => {
         p.categoryid = c.categoryid
       WHERE 
         (p.productname ILIKE $1 OR c.categoryname ILIKE $1 OR f.farmprovince ILIKE $1 OR f.farmname ILIKE $1)  
+        AND p.isvisibleweb = true
       LIMIT $2 OFFSET $3
     `;
 
@@ -836,9 +936,49 @@ exports.searchProductsForDistributor = async (req, res) => {
       offset,
     ]);
 
+    // Lấy danh sách id sản phẩm
+    const productIds = productsResult.rows.map((item) => item.productid);
+
+    // Kiểm tra nếu danh sách ID sản phẩm trống
+    if (productIds.length === 0) {
+      return res.status(200).json({
+        products: [],
+        pagination: {
+          totalProducts,
+          currentPage: parseInt(page, 10),
+          pageSize: limit,
+          totalPages: Math.ceil(totalProducts / limit),
+        },
+      });
+    }
+
+    // Lấy điểm đánh giá trung bình cho mỗi sản phẩm
+    const reviewQuery = `
+      SELECT 
+        productid, 
+        AVG(rating) as average_rating
+      FROM 
+        review
+      WHERE 
+        productid IN (${productIds.map((id) => `'${id}'`).join(",")})
+      GROUP BY 
+        productid
+    `;
+    const reviewResults = await pool.query(reviewQuery);
+    const reviewMap = reviewResults.rows.reduce((acc, row) => {
+      acc[row.productid] = parseFloat(row.average_rating).toFixed(1);
+      return acc;
+    }, {});
+
+    // Kết hợp điểm đánh giá trung bình với danh sách sản phẩm
+    const productsWithRatings = productsResult.rows.map((product) => ({
+      ...product,
+      average_rating: reviewMap[product.productid],
+    }));
+
     // Trả về kết quả sản phẩm và thông tin phân trang
     res.json({
-      products: productsResult.rows,
+      products: productsWithRatings,
       pagination: {
         totalProducts,
         currentPage: parseInt(page, 10),

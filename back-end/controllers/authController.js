@@ -89,7 +89,7 @@ const registerStep1 = async (req, res) => {
 const registerStep2 = async (req, res) => {
   try {
     const { userId } = req.params;
-    const { address, indentityCard, dateOfBirth, status } = req.body;
+    const { address, identityCard, dateOfBirth, status } = req.body;
     const avatar = req.file;
 
     // Kiểm tra tính hợp lệ của địa chỉ
@@ -113,7 +113,7 @@ const registerStep2 = async (req, res) => {
     }
 
     // Kiểm tra tính hợp lệ của các trường khác
-    if (!indentityCard) {
+    if (!identityCard) {
       return res.status(400).send("Số CMND không được để trống.");
     }
     if (!dateOfBirth) {
@@ -138,7 +138,7 @@ const registerStep2 = async (req, res) => {
         commune,
         district,
         province,
-        indentityCard,
+        identityCard,
         dateOfBirth,
         avatarUrl,
         status,
