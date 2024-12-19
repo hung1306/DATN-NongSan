@@ -1,5 +1,6 @@
 const pool = require("../config/dbConnect");
 const addUserInteraction = require("../utils/addUserInteraction");
+const axios = require('axios');
 
 const getBatchQuantity = async (batchId) => {
   const query = `SELECT batchquantity FROM product_batch WHERE batchid = $1`;
@@ -80,8 +81,11 @@ exports.addToCart = async (req, res) => {
       );
 
       // Thêm vào bảng user_item_interactions
-      await addUserInteraction(userId, productId, 'add_to_cart', quantity);
-
+      const score = 3
+      await addUserInteraction(userId, productId, 'add_to_cart', score);
+      // Gọi api training model
+      const response = await axios.get(`http://127.0.0.1:8080/train-model`);
+      console.log(response.data.message);
       return res.status(200).json(updatedCart);
     }
 

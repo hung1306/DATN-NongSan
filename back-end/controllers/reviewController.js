@@ -1,5 +1,6 @@
 const pool = require("../config/dbConnect");
 const addUserInteraction = require("../utils/addUserInteraction");
+const axios = require('axios');
 
 const addReview = async (req, res) => {
   const { userId, productId, rating, comment } = req.body;
@@ -17,8 +18,10 @@ const addReview = async (req, res) => {
 
     // Thêm vào bảng user_item_interactions
     await addUserInteraction(userId, productId, 'review', rating);
-
-    res.status(201).json({ message: "Thêm đánh giá thành công" });
+    // Gọi api training model
+    const response = await axios.get(`http://127.0.0.1:8080/train-model`);
+    console.log(response.data.message);
+    res.status(200).json({ message: "Thêm đánh giá thành công" });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Internal Server Error" });

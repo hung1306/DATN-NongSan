@@ -5,15 +5,22 @@ import pandas as pd
 import numpy as np
 from scipy.special import softmax
 from sklearn.metrics import precision_score, recall_score, f1_score
+from train_model import train_and_save_models  # Import the training function
+from sqlalchemy import create_engine
+
 app = Flask(__name__)
 
 # Load models
-with open('./src/svd_model.pkl', 'rb') as f:
-    svd_model = pickle.load(f)
-with open('./src/tfidf_vectorizer.pkl', 'rb') as f:
-    tfidf = pickle.load(f)
-with open('./src/cosine_similarity.pkl', 'rb') as f:
-    cosine_sim = pickle.load(f)
+def load_models():
+    global svd_model, tfidf, cosine_sim
+    with open('./src/svd_model.pkl', 'rb') as f:
+        svd_model = pickle.load(f)
+    with open('./src/tfidf_vectorizer.pkl', 'rb') as f:
+        tfidf = pickle.load(f)
+    with open('./src/cosine_similarity.pkl', 'rb') as f:
+        cosine_sim = pickle.load(f)
+
+load_models()
 
 # Connection string
 DB_CONNECTION = "postgresql://postgres:hung123dac@localhost:5432/Nongsan"
@@ -86,7 +93,6 @@ def ndcg_score(true_labels, pred_scores):
     idcg = np.sum((2 ** np.sort(true_labels)[::-1] - 1) / np.log2(np.arange(2, len(true_labels_sorted) + 2)))
     return dcg / idcg if idcg > 0 else 0.0
 
-
 @app.route('/recommendation', methods=['GET'])
 def recommend():
     user_id = request.args.get('user_id')
@@ -156,6 +162,15 @@ def recommend():
             recommendations = products_df[products_df['productid'].isin(popular_products)].to_dict(orient='records')
             return jsonify({'recommendations': recommendations}), 200
 
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/train-model', methods=['GET'])
+def train_model():
+    try:
+        train_and_save_models()
+        load_models()  # Reload models after training
+        return jsonify({'message': 'Models trained and saved successfully💕!'}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
