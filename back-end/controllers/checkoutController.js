@@ -1,7 +1,7 @@
 const pool = require("../config/dbConnect");
-
 const stripe = require("stripe")(process.env.STRIPE_KEY);
 const notificationUtils = require("../utils/notificationsUtils");
+// const addUserInteraction = require("../utils/addUserInteraction");
 
 const addCheckOut = async (req, res) => {
   const {
@@ -139,6 +139,11 @@ const addCheckOut = async (req, res) => {
       "CreateNewOrder"
     );
 
+    // Thêm vào bảng user_item_interactions
+    // const totalQuantity = items.reduce((sum, item) => sum + item.quantity, 0);
+    // const score = 5
+    // await addUserInteraction(userId, null, 'purchase', score);
+
     res.json({ message: "Đơn hàng đã được tạo thành công" });
   } catch (error) {
     console.error("Error occurred:", error);
@@ -146,6 +151,7 @@ const addCheckOut = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 const getShippingInfo = async (req, res) => {
   const { id } = req.params;

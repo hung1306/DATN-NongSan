@@ -1,4 +1,5 @@
 const pool = require("../config/dbConnect");
+const addUserInteraction = require("../utils/addUserInteraction");
 
 const addReview = async (req, res) => {
   const { userId, productId, rating, comment } = req.body;
@@ -13,6 +14,10 @@ const addReview = async (req, res) => {
 
   try {
     await pool.query(sql, values);
+
+    // Thêm vào bảng user_item_interactions
+    await addUserInteraction(userId, productId, 'review', rating);
+
     res.status(201).json({ message: "Thêm đánh giá thành công" });
   } catch (error) {
     console.log(error);

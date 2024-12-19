@@ -99,7 +99,7 @@ def recommend():
             top_products = hybrid_scores.sort_values(ascending=False).head(top_n).index.tolist()
             recommendations = products_df[products_df['productid'].isin(top_products)].to_dict(orient='records')
 
-            return jsonify({'recommendations': recommendations, 'alpha': alpha}), 200
+            return jsonify({'recommendations': recommendations, 'evaluation': alpha}), 200
 
         else:
             # Default recommendations based on popularity

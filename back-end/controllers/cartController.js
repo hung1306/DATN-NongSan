@@ -1,4 +1,5 @@
 const pool = require("../config/dbConnect");
+const addUserInteraction = require("../utils/addUserInteraction");
 
 const getBatchQuantity = async (batchId) => {
   const query = `SELECT batchquantity FROM product_batch WHERE batchid = $1`;
@@ -42,15 +43,6 @@ const insertCart = async (userId, productId, quantity, batchId) => {
   return result.rows[0];
 };
 
-// Hàm để thêm tương tác của người dùng vào bảng user_item_interactions
-const addUserInteraction = async (userId, productId, interactionType, interactionScore) => {
-  const query = `
-    INSERT INTO user_item_interactions (user_id, productid, interaction_type, interaction_score) 
-    VALUES ($1, $2, $3, $4)
-  `;
-  await pool.query(query, [userId, productId, interactionType, interactionScore]);
-};
-
 exports.addToCart = async (req, res) => {
   const { userId, productId, quantity, batchId } = req.body;
 
@@ -88,16 +80,15 @@ exports.addToCart = async (req, res) => {
       );
 
       // Thêm vào bảng user_item_interactions
-      await addUserInteraction(userId, productId, 'add_to_cart', "3");
+      await addUserInteraction(userId, productId, 'add_to_cart', quantity);
 
       return res.status(200).json(updatedCart);
     }
 
     const cart = await insertCart(userId, productId, quantity, batchId);
-    const interaction_type = 'add_to_cart';
-    const interaction_score = 3;
+
     // Thêm vào bảng user_item_interactions
-    await addUserInteraction(userId, productId, interaction_type, interaction_score);
+    await addUserInteraction(userId, productId, 'add_to_cart', quantity);
 
     res.status(200).json(cart);
   } catch (error) {

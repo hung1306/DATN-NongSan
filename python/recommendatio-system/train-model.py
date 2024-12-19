@@ -1,22 +1,21 @@
-import psycopg2
 import pandas as pd
 from surprise import SVD, Dataset, Reader
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import pickle
+from sqlalchemy import create_engine
 
 # Connection string
 DB_CONNECTION = "postgresql://postgres:hung123dac@localhost:5432/Nongsan"
 
 # Load data from database
 def load_data():
-    conn = psycopg2.connect(DB_CONNECTION)
+    engine = create_engine(DB_CONNECTION)
     interactions_query = "SELECT user_id, productid, interaction_score FROM user_item_interactions"
     product_query = "SELECT productid, productname, categoryname, farmname, farmprovince FROM product_contents"
 
-    interactions_df = pd.read_sql(interactions_query, conn)
-    product_df = pd.read_sql(product_query, conn)
-    conn.close()
+    interactions_df = pd.read_sql(interactions_query, engine)
+    product_df = pd.read_sql(product_query, engine)
     return interactions_df, product_df
 
 # Train SVD model
