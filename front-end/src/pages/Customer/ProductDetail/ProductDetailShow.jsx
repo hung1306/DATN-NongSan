@@ -212,10 +212,10 @@ export default function ProductDetail() {
                   {batchList.map((batch) => (
                     <div
                       key={batch.batchid}
-                      className={`p-4 rounded-lg mr-4 my-4 shadow-lg cursor-pointer border hover:opacity-80 transition duration-300 ease-in-out transform hover:scale-105 w-5/12 ${
+                      className={`p-4 rounded-lg mr-4 my-4 shadow-lg cursor-pointer border hover:opacity-80 transition duration-300 ease-in-out transform hover:scale-105 w-4/12 ${
                         batchId === batch.batchid
                           ? "bg-primary text-white"
-                          : "bg-fourth"
+                          : "bg-fourth text-primary"
                       }`}
                       onClick={() =>
                         setBatchId(
@@ -223,51 +223,51 @@ export default function ProductDetail() {
                         )
                       }
                     >
-                      <div className="mb-2 text-center">
-                        <span
-                          className={`text-primary text-xl font-bold ${
-                            batchId === batch.batchid ? "text-white" : ""
-                          }`}
-                        >
-                          {batch.batchid.substring(0, 8)}
-                        </span>
-                      </div>
-                      <div className="mb-2">
-                        <span
-                          className={`font-medium mr-1 ${
-                            batchId === batch.batchid
+                      <div className="text-xl ">
+                        <div className="text-center">
+                          {batch.promotion > 0 ? (
+                            <div className="flex items-center justify-center text-center">
+                              <del className="text-xl font-medium italic text-red-500">
+                                {Number(batch.batchprice).toLocaleString(
+                                  "vi-VN"
+                                )}
+                                đ
+                              </del>
+                              <p className="text-sm bg-red-500 text-white p-1 ml-1 shadow-lg">
+                                <span className="font-bold italic text-center">
+                                  -{batch.promotion}%
+                                </span>
+                              </p>
+                            </div>
+                          ) : (
+                            <div className="flex items-center justify-center">
+                              <p className="text-sm text-red-600 rounded">
+                                <span className="font-bold text-center">
+                                  Mới thu hoạch
+                                </span>
+                              </p>
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="mb-1 flex justify-center">
+                          <span className="font-semibold text-center ">
+                            {(
+                              batch.batchprice -
+                              batch.batchprice * batch.promotion * 0.01
+                            ).toLocaleString("vi-VN")}
+                            đ / {batch.unitofmeasure}
+                          </span>
+                        </div>
+                        <div className="text-center ">
+                          <span
+                            className={`text-xs batchId === batch.batchid
                               ? "text-white"
-                              : "text-primary"
-                          }`}
-                        >
-                          Giá:{" "}
-                        </span>
-                        <span
-                          className={`font-semibold ${
-                            batchId === batch.batchid ? "text-white" : ""
-                          }`}
-                        >
-                          {Number(batch.batchprice).toLocaleString()} (
-                          {batch.unitofmeasure})
-                        </span>
-                      </div>
-                      <div className="mb-2">
-                        <span
-                          className={`font-medium mr-1 ${
-                            batchId === batch.batchid
-                              ? "text-white"
-                              : "text-primary"
-                          }`}
-                        >
-                          Giảm giá:{" "}
-                        </span>
-                        <span
-                          className={`font-semibold ${
-                            batchId === batch.batchid ? "text-white" : ""
-                          }`}
-                        >
-                          {batch.promotion} %
-                        </span>
+                              : "text-primary"`}
+                          >
+                            Còn {batch.batchquantity} phần
+                          </span>
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -343,8 +343,6 @@ export default function ProductDetail() {
             </h1>
             <CommentShow />
           </div>
-
-          
         </div>
       )}
       <FooterCustomer />

@@ -1,11 +1,11 @@
-import { faTimes } from "@fortawesome/free-solid-svg-icons";
+import { faCartPlus, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import { API_BASE_URL } from "../../../config/config";
 import axios from "axios";
 import { addToCart } from "../../../service/CustomerService/cartService";
-import {jwtDecode} from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 import { toast, ToastContainer } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
@@ -68,7 +68,7 @@ export default function ProductBatchDialog({ onClose, selectedProduct }) {
 
   return (
     <div className="z-50 fixed top-0 left-0 inset-0 bg-gray-900 bg-opacity-80 flex justify-center items-center m-auto">
-      <div className="bg-white p-6 rounded-lg w-1/3 h-auto m-auto text-primary shadow-2xl border border-primary relative">
+      <div className="bg-white p-6 rounded-lg w-3/12 h-auto m-auto text-primary shadow-2xl border border-primary relative">
         <ToastContainer />
         {/* Button đóng */}
         <button
@@ -80,10 +80,14 @@ export default function ProductBatchDialog({ onClose, selectedProduct }) {
 
         {/* Tiêu đề */}
         <h2 className="text-3xl text-center font-bold mb-6">
-          Thêm vào giỏ hàng của bạn
+          {selectedProduct.productname}
         </h2>
         {/* Danh sách lô hàng */}
-        <div className={`grid ${productBatchs.length === 1 ? 'grid-cols-1' : 'grid-cols-2'} gap-4 mb-6`}>
+        <div
+          className={`grid ${
+            productBatchs.length === 1 ? "grid-cols-1" : "grid-cols-2"
+          } gap-4 mb-6`}
+        >
           {productBatchs.map((batch) => (
             <div
               key={batch.batchid}
@@ -91,33 +95,62 @@ export default function ProductBatchDialog({ onClose, selectedProduct }) {
                 batchId === batch.batchid
                   ? "bg-primary text-white"
                   : "bg-fourth text-primary"
-              } ${productBatchs.length === 1 ? 'w-9/12 m-auto' : ''}`}
+              } ${productBatchs.length === 1 ? "w-9/12 m-auto" : ""}`}
               onClick={() =>
                 setBatchId(batchId === batch.batchid ? "" : batch.batchid)
               }
             >
-              <div className="text-center font-bold text-xl mb-2">
-                {batch.batchid.substring(0, 8)}
+              <div className="flex justify-center mb-2">
+                <img
+                  className="w-full h-36 object-cover rounded"
+                  src={selectedProduct.productimage1}
+                  alt={selectedProduct.productname}
+                />
               </div>
-              <div className="text-sm">
-                <div className="mb-1">
-                  Giá:{" "}
-                  <span className="font-semibold">
-                    {Number(batch.batchprice).toLocaleString()} (
-                    {batch.unitofmeasure})
-                  </span>
+
+              <div className="text-xl">
+                <div className="text-center">
+                  <span className="text-xs">Còn {batch.batchquantity} phần</span>
                 </div>
-                <div>
-                  Giảm giá:{" "}
-                  <span className="font-semibold">{batch.promotion} %</span>
+                <div className="text-center">
+                  {batch.promotion > 0 ? (
+                    <div className="flex items-center justify-center text-center">
+                      <del className="text-xl font-medium italic text-red-500">
+                        {Number(batch.batchprice).toLocaleString("vi-VN")}đ
+                      </del>
+                      <p className="text-sm bg-red-500 text-white p-1 ml-1 shadow-lg">
+                        <span className="font-bold italic text-center">
+                          -{batch.promotion}%
+                        </span>
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-center">
+                      <p className="text-sm text-red-600 rounded">
+                        <span className="font-bold text-center">
+                          Mới thu hoạch
+                        </span>
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                <div className="mb-1 flex justify-center">
+                  <span className="font-semibold text-center">
+                    {(
+                      batch.batchprice -
+                      batch.batchprice * batch.promotion * 0.01
+                    ).toLocaleString("vi-VN")}
+                    đ / {batch.unitofmeasure}
+                  </span>
                 </div>
               </div>
             </div>
           ))}
         </div>
-        <div className="flex justify-between">
+        <div className=" w-full flex justify-between flex-col">
           {/* Chọn số lượng */}
-          <div className="flex items-center justify-center w-7/12 py-3">
+          <div className="flex items-center justify-center w-11/12 py-3">
             <span className="text-primary font-bold mr-2">Chọn số lượng:</span>
             <div className="flex items-center border rounded-md w-7/12">
               <button
@@ -137,12 +170,17 @@ export default function ProductBatchDialog({ onClose, selectedProduct }) {
           </div>
 
           {/* Nút thêm vào giỏ hàng */}
-          <div className="">
+          <div className="w-full flex justify-center items-center">
             <button
-              className="bg-primary font-bold text-white px-7 py-3 rounded-xl hover:opacity-90"
+              className="bg-primary w-11/12 font-bold text-white px-7 py-3 rounded-xl hover:opacity-70"
               onClick={handleAddToCart}
             >
-              Thêm vào giỏ hàng
+              <span className="mb-2">Thêm vào giỏ hàng</span>
+              <FontAwesomeIcon
+                icon={faCartPlus}
+                size="x"
+                className="ml-1 bg-white text-primary p-1 rounded-full"
+              />
             </button>
           </div>
         </div>
