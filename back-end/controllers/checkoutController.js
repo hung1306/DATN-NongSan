@@ -152,7 +152,6 @@ const addCheckOut = async (req, res) => {
   }
 };
 
-
 const getShippingInfo = async (req, res) => {
   const { id } = req.params;
   const sql = `SELECT * FROM "User" WHERE userid = $1`;
@@ -918,7 +917,9 @@ const getAllShipperOfDeliveryarea = async (req, res) => {
 
     const shippingAddress = shippingAddressResult.rows[0]?.shippingaddress;
     if (!shippingAddress) {
-      return res.status(400).json({ message: "Địa chỉ giao hàng không hợp lệ" });
+      return res
+        .status(400)
+        .json({ message: "Địa chỉ giao hàng không hợp lệ" });
     }
 
     // Tách địa chỉ giao hàng thành mảng
@@ -930,9 +931,34 @@ const getAllShipperOfDeliveryarea = async (req, res) => {
 
     // Xác định khu vực dựa trên input của người dùng
     const areaMapping = {
-      "Khu vực 1": ["Quận 1", "Quận 2", "Quận 3", "Quận 5", "Quận 10", "Quận 4", "Quận Phú Nhuận", "Quận Bình Thạnh"],
-      "Khu vực 2": ["Quận 8", "Quận Tân Bình", "Quận Tân Phú", "Quận Gò Vấp", "Quận 11", "Quận 7"],
-      "Khu vực 3": ["Thủ Đức", "Quận 9", "Quận 12", "Củ Chi", "Hóc Môn", "Quận Bình Chánh", "Cần Giờ", "Nhà Bè"]
+      "Khu vực 1": [
+        "Quận 1",
+        "Quận 2",
+        "Quận 3",
+        "Quận 5",
+        "Quận 10",
+        "Quận 4",
+        "Quận Phú Nhuận",
+        "Quận Bình Thạnh",
+      ],
+      "Khu vực 2": [
+        "Quận 8",
+        "Quận Tân Bình",
+        "Quận Tân Phú",
+        "Quận Gò Vấp",
+        "Quận 11",
+        "Quận 7",
+      ],
+      "Khu vực 3": [
+        "Thủ Đức",
+        "Quận 9",
+        "Quận 12",
+        "Củ Chi",
+        "Hóc Môn",
+        "Quận Bình Chánh",
+        "Cần Giờ",
+        "Nhà Bè",
+      ],
     };
 
     let areaConditions;
@@ -955,7 +981,9 @@ const getAllShipperOfDeliveryarea = async (req, res) => {
 
     // Kiểm tra xem có shipper nào không
     if (shippersResult.rows.length === 0) {
-      return res.status(404).json({ message: "Không tìm thấy shipper cho khu vực này." });
+      return res
+        .status(404)
+        .json({ message: "Không tìm thấy shipper cho khu vực này." });
     }
 
     // Trả về danh sách shipper
@@ -1049,14 +1077,14 @@ const getAllOrderToShipper = async (req, res) => {
 //   try {
 //     // Truy vấn chi tiết đơn hàng và thông tin khách hàng
 //     const orderDetailQuery = `
-//       SELECT 
-//         o.orderid, 
-//         o.shippingaddress, 
-//         o.totalamount, 
-//         o.orderstatus, 
-//         o.ordercreatetime, 
+//       SELECT
+//         o.orderid,
+//         o.shippingaddress,
+//         o.totalamount,
+//         o.orderstatus,
+//         o.ordercreatetime,
 //         o.orderupdatetime,
-//         u.fullname AS customer_name, 
+//         u.fullname AS customer_name,
 //         u.phonenumber AS customer_phone
 //       FROM "Order" o
 //       JOIN "User" u ON o.userid = u.userid
@@ -1100,7 +1128,9 @@ const getOrderDetailShipper = async (req, res) => {
       WHERE o.orderid = $1
     `;
 
-    const orderDetailResult = await pool.query(orderDetailQuery, [orderIdDetail]);
+    const orderDetailResult = await pool.query(orderDetailQuery, [
+      orderIdDetail,
+    ]);
 
     // Kiểm tra xem đơn hàng có tồn tại không
     if (orderDetailResult.rows.length === 0) {
@@ -1157,7 +1187,6 @@ const getOrderDetailShipper = async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
-
 
 module.exports = {
   addCheckOut,

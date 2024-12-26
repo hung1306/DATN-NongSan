@@ -265,7 +265,7 @@ export default function ProductDetail() {
                               ? "text-white"
                               : "text-primary"`}
                           >
-                            Còn {batch.batchquantity} phần
+                            Còn {batch.batchquantity} suất
                           </span>
                         </div>
                       </div>

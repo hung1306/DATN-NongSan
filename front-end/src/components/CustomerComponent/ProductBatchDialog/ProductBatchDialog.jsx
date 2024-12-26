@@ -110,7 +110,9 @@ export default function ProductBatchDialog({ onClose, selectedProduct }) {
 
               <div className="text-xl">
                 <div className="text-center">
-                  <span className="text-xs">Còn {batch.batchquantity} phần</span>
+                  <span className="text-xs">
+                    Còn {batch.batchquantity} suất
+                  </span>
                 </div>
                 <div className="text-center">
                   {batch.promotion > 0 ? (

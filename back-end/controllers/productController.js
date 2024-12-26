@@ -58,7 +58,8 @@ exports.getProductsByCategoryId = async (req, res) => {
       LEFT JOIN (
         SELECT DISTINCT ON (productid) *
         FROM product_batch
-        ORDER BY productid, batchid
+        WHERE isvisible = true
+        ORDER BY productid, batchprice ASC
       ) pb
       ON 
         p.productid = pb.productid
@@ -184,7 +185,8 @@ exports.searchProduct = async (req, res) => {
       LEFT JOIN (
         SELECT DISTINCT ON (productid) *
         FROM product_batch
-        ORDER BY productid, batchid DESC
+        WHERE isvisible = true
+        ORDER BY productid, batchprice ASC
       ) pb
       ON 
         p.productid = pb.productid
@@ -194,15 +196,17 @@ exports.searchProduct = async (req, res) => {
     `;
     const productsWithFarm = await pool.query(query, [`%${search}%`]);
 
-    // Lấy danh sách id sản phẩm
-    const productIds = productsWithFarm.rows.map((item) => item.productid);
+    // Lấy danh sách id sản phẩm, loại bỏ các giá trị null
+    const productIds = productsWithFarm.rows
+      .map((item) => item.productid)
+      .filter((id) => id !== null);
 
     // Kiểm tra nếu danh sách ID sản phẩm trống
     if (productIds.length === 0) {
       return res.status(200).json([]);
     }
 
-    // Lấy điểm đánh giá trung bình cho mỗi sản phẩm
+    // Sử dụng tham số hoá cho truy vấn lấy điểm đánh giá
     const reviewQuery = `
       SELECT 
         productid, 
@@ -210,11 +214,13 @@ exports.searchProduct = async (req, res) => {
       FROM 
         review
       WHERE 
-        productid IN (${productIds.map((id) => `'${id}'`).join(",")})
+        productid = ANY($1)
       GROUP BY 
         productid
     `;
-    const reviewResults = await pool.query(reviewQuery);
+    const reviewResults = await pool.query(reviewQuery, [productIds]);
+
+    // Tạo mapping để kết hợp điểm đánh giá trung bình
     const reviewMap = reviewResults.rows.reduce((acc, row) => {
       acc[row.productid] = parseFloat(row.average_rating).toFixed(1);
       return acc;
@@ -286,7 +292,8 @@ exports.getProductsByFarmId = async (req, res) => {
       LEFT JOIN (
         SELECT DISTINCT ON (productid) *
         FROM product_batch
-        ORDER BY productid, batchid
+        WHERE isvisible = true
+        ORDER BY productid, batchprice ASC
       ) pb
       ON 
         p.productid = pb.productid

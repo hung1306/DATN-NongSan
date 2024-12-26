@@ -231,7 +231,8 @@ export default function CartPage() {
                         </Link>
                       </td>
                       <td className="px-3 py-2 whitespace-nowrap text-lg text-center text-primary font-medium border">
-                        {Number(item.batchprice).toLocaleString()} đ
+                        {Number(item.batchprice).toLocaleString()} đ {" "}
+                        ({item.unitofmeasure})
                       </td>
                       <td className="px-3 py-2 whitespace-nowrap text-lg text-center text-primary font-medium border">
                         {item.quantity > 0 && (

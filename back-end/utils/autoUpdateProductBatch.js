@@ -16,6 +16,7 @@ exports.autoUpdateProductBatch = async (req, res) => {
 
     const updatePromises = batches.map(async (batch) => {
       const expiryDate = moment(batch.expirydate);
+
       const daysUntilExpiry = expiryDate.diff(today, "days");
       const standardExpiry = batch.standardexpiry;
 

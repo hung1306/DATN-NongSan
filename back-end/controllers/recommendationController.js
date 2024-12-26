@@ -2,15 +2,15 @@ const axios = require("axios");
 const pool = require("../config/dbConnect");
 
 const getRecommendation = async (req, res) => {
-  const userId = req.params.userId || '16b9ab12-3876-4b2e-a983-57c491b9e3de';
+  const userId = req.params.userId || "16b9ab12-3876-4b2e-a983-57c491b9e3de";
   const url = `http://127.0.0.1:8080/recommendation`;
 
   try {
     // Gửi yêu cầu GET tới API Flask với user_id
     const response = await axios.get(url, {
       params: {
-        user_id: userId
-      }
+        user_id: userId,
+      },
     });
     const recommendation = response.data.recommendations || [];
     console.log(response.data.evaluation);
@@ -37,12 +37,13 @@ const getRecommendation = async (req, res) => {
         LEFT JOIN (
           SELECT DISTINCT ON (productid) *
           FROM product_batch
-          ORDER BY productid, batchid
+          WHERE isvisible = true
+          ORDER BY productid, batchprice ASC
         ) pb
         ON 
           p.productid = pb.productid
         WHERE 
-          p.productid IN (${productIds.map(id => `'${id}'`).join(",")}) 
+          p.productid IN (${productIds.map((id) => `'${id}'`).join(",")}) 
           AND p.isvisibleweb = true
       `;
     const productsWithFarm = await pool.query(query);
@@ -55,7 +56,7 @@ const getRecommendation = async (req, res) => {
       FROM 
         review
       WHERE 
-        productid IN (${productIds.map(id => `'${id}'`).join(",")})
+        productid IN (${productIds.map((id) => `'${id}'`).join(",")})
       GROUP BY 
         productid
     `;
@@ -66,18 +67,17 @@ const getRecommendation = async (req, res) => {
     }, {});
 
     // Kết hợp điểm đánh giá trung bình với danh sách sản phẩm
-    const productsWithRatings = productsWithFarm.rows.map(product => ({
+    const productsWithRatings = productsWithFarm.rows.map((product) => ({
       ...product,
-      average_rating: reviewMap[product.productid] || 0
+      average_rating: reviewMap[product.productid] || 0,
     }));
 
     // Trả về kết quả
     res.status(200).json(productsWithRatings);
-
   } catch (error) {
     console.error("Error fetching recommendations:", error);
     res.status(500).json({ message: "Internal Server Error" });
   }
-}
+};
 
 module.exports = { getRecommendation };

@@ -47,7 +47,8 @@ const searchByImage = async (req, res) => {
       LEFT JOIN (
         SELECT DISTINCT ON (productid) *
         FROM product_batch
-        ORDER BY productid, batchid
+        WHERE isvisible = true
+        ORDER BY productid, batchprice ASC
       ) pb
       ON 
         p.productid = pb.productid
