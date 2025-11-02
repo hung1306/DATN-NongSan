@@ -36,6 +36,7 @@ export default function ProductShowHome() {
         const response = await axios.get(
           `${API_BASE_URL}/recommendation/${userId}`
         );
+        console.log(response.data);
         setProducts(response.data);
       } catch (error) {
         console.error("Error fetching products:", error);

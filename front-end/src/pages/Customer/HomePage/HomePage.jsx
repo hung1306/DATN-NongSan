@@ -70,7 +70,7 @@ function HomePage() {
             <div className="m-auto w-4/5 px-9 rounded-lg">
               <ProductShowHome />
 
-              {/* <div className="w-full mx-auto mt-8 bg-white  text-primary py-6 rounded-lg shadow-lg">
+              <div className="w-full mx-auto mt-8 bg-white  text-primary py-6 rounded-lg shadow-lg">
                 <h2 className="text-2xl font-bold mb-4 ml-5">Tin tức nổi bật</h2>
                 <div>
                   <ul className="list-disc list-inside space-y-3 ml-5 ">
@@ -91,7 +91,7 @@ function HomePage() {
                     </li>
                   </ul>
                 </div>
-              </div> */}
+              </div>
 
               
 

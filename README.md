@@ -62,7 +62,7 @@ API sẽ được khởi chạy tại: `http://localhost:3000`.
 ```sh
 cd python/recommendation-system
 pip install -r requirements.txt
-python mainApi.py
+python apiNew.py
 ```  
 Flask API sẽ hoạt động tại: `http://localhost:5000`.  
 

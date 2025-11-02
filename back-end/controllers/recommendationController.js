@@ -3,7 +3,7 @@ const pool = require("../config/dbConnect");
 
 const getRecommendation = async (req, res) => {
   const userId = req.params.userId || "16b9ab12-3876-4b2e-a983-57c491b9e3de";
-  const url = `http://127.0.0.1:8080/recommendation`;
+  const url = `http://127.0.0.1:5050/recommendation`;
 
   try {
     // Gửi yêu cầu GET tới API Flask với user_id

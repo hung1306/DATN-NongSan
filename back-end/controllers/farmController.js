@@ -197,18 +197,22 @@ exports.updateImageFarm = async (req, res) => {
     );
     const currentImages = currentImagesQuery.rows[0];
 
-    const farmimageUrl = await uploadImage(
-      req.files.farmimage ? req.files.farmimage[0] : null
-    ) || currentImages.farmimage;
-    const farmimage1Url = await uploadImage(
-      req.files.farmimage1 ? req.files.farmimage1[0] : null
-    ) || currentImages.farmimage1;
-    const farmimage2Url = await uploadImage(
-      req.files.farmimage2 ? req.files.farmimage2[0] : null
-    ) || currentImages.farmimage2;
-    const farmimage3Url = await uploadImage(
-      req.files.farmimage3 ? req.files.farmimage3[0] : null
-    ) || currentImages.farmimage3;
+    const farmimageUrl =
+      (await uploadImage(
+        req.files.farmimage ? req.files.farmimage[0] : null
+      )) || currentImages.farmimage;
+    const farmimage1Url =
+      (await uploadImage(
+        req.files.farmimage1 ? req.files.farmimage1[0] : null
+      )) || currentImages.farmimage1;
+    const farmimage2Url =
+      (await uploadImage(
+        req.files.farmimage2 ? req.files.farmimage2[0] : null
+      )) || currentImages.farmimage2;
+    const farmimage3Url =
+      (await uploadImage(
+        req.files.farmimage3 ? req.files.farmimage3[0] : null
+      )) || currentImages.farmimage3;
 
     const newImages = await pool.query(
       "UPDATE farm SET farmimage = $1, farmimage1 = $2, farmimage2 = $3, farmimage3 = $4 WHERE farmid = $5 RETURNING *",
